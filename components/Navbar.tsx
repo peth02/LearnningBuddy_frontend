@@ -1,4 +1,6 @@
+'use client'
 import Link from "next/link";
+import { loginAction, logoutAction } from "@/lib/action";
 
 export function HomeNavbar() {
   return (
@@ -17,6 +19,8 @@ export function HomeNavbar() {
             <hr className="my-4" />
             <Link href={"/login"}>Login</Link>
             <Link href={"/login"}>Login</Link>
+            <button onClick={loginAction}>login</button>
+            <button onClick={logoutAction}>logout</button>
         </div>
       </div>
     </nav>
