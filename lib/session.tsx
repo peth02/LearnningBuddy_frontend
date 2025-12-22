@@ -1,4 +1,5 @@
-import 'server-only'
+"use server"
+// import 'server-only'
 import { SignJWT, jwtVerify } from 'jose'
 import { cookies } from 'next/headers'
 
@@ -59,8 +60,6 @@ export async function getUser() {
 
   if (!session) return null
 
-  // This returns { userId: '123', userName: 'Alice', ... }
   const payload = await decrypt(session)
-  
   return payload
 }
