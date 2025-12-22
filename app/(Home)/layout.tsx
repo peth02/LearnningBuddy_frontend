@@ -8,9 +8,9 @@ export default function HomeLayout({
   return (
     <div className="flex">
       <HomeNavbar />
-      <div className="w-screen">
+      <main className="w-screen">
         {children}
-      </div>
+      </main>
     </div>
   );
 }
