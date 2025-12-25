@@ -1,4 +1,5 @@
 import { Course } from "@/types/Course"
+import Link from "next/link";
 
 export default function CoursesCard(props:any) {
     return(
@@ -18,7 +19,8 @@ export default function CoursesCard(props:any) {
                 <div>total topics</div>
                 <div>total quizzes</div>
             </div>
-            <button className="">view continue</button>
+
+            <Link href={""} className="bg-blue-500 text-white font-bold p-2 rounded-lg text-center">Manage</Link>
         </div>
     );
 }

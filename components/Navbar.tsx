@@ -62,18 +62,17 @@ export function HomeNavbar() {
           ))}
         </div>
         <div className="flex flex-col mt-auto">
-          <hr className="my-4" />
-          {user ? (
-            <>
-              <span>Welcome, {user.userName}</span>
-              <button onClick={handleLogout}>logout</button>
-            </>
+          <hr/>
+          {!user ? (
+            <div className="flex flex-col mt-6 gap-6">
+              <Link href={"/login"} className="bg-blue-500 text-white font-bold p-2 rounded-lg text-center">Login</Link>
+              <button onClick={handleLogin} className="bg-blue-500 text-white font-bold p-2 rounded-lg cursor-pointer">Login</button>
+            </div>
           ) : (
-            <>
-              <Link href={"/login"}>Signin</Link>
-              <Link href={"/login"}>Login</Link>
-              <button onClick={handleLogin}>login</button>
-            </>
+            <div className="flex flex-col mt-6 gap-6">
+              <div>Welcome, {user.userName}</div>
+              <button onClick={handleLogout} className="bg-red-500 text-white font-bold p-2 rounded-lg cursor-pointer">Logout</button>
+            </div>
           )}
         </div>
       </div>
