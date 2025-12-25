@@ -2,7 +2,7 @@
 import CoursesCard from "@/components/CoursesCard";
 import { SearchBar } from "@/components/Searchbar";
 import { useEffect, useState } from "react";
-import { getPokemon } from "@/service/pokemon";
+import { getPokemon } from "@/services/pokemon";
 
 export default function Home() {
   const [search, setSearch] = useState<string>("");
