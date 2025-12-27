@@ -3,7 +3,7 @@ export function Topics(items: any) {
     <div className="p-10">
       <div className="place-content-end">
         {/*  only creator can see */}
-        <button className="mb-5 mr-auto min-w-[100px] bg-blue-500 text-white font-bold p-2 rounded-lg text-center cursor-pointer">
+        <button className="mb-5 mr-auto min-w-[100px] bg-blue-500 text-white font-bold p-2 rounded-lg text-center cursor-pointer hover:bg-blue-600">
           + Add Topic
         </button>
       </div>
@@ -33,7 +33,7 @@ export function Flashcards() {
     <div className="p-10">
       <div className="place-content-end">
         {/*  only creator can see */}
-        <button className="mb-5 mr-auto min-w-[100px] bg-blue-500 text-white font-bold p-2 rounded-lg text-center cursor-pointer">
+        <button className="mb-5 mr-auto min-w-[100px] bg-blue-500 text-white font-bold p-2 rounded-lg text-center cursor-pointer hover:bg-blue-600">
           + Create Deck
         </button>
       </div>
@@ -61,7 +61,7 @@ export function Quizzes() {
     <div className="p-10">
       <div className="place-content-end">
         {/*  only creator can see */}
-        <button className="mb-5 mr-auto min-w-[100px] bg-blue-500 text-white font-bold p-2 rounded-lg text-center cursor-pointer">
+        <button className="mb-5 mr-auto min-w-[100px] bg-blue-500 text-white font-bold p-2 rounded-lg text-center cursor-pointer hover:bg-blue-600">
           + Create Quiz
         </button>
       </div>

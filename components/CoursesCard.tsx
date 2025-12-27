@@ -20,7 +20,7 @@ export default function CoursesCard(props:any) {
                 <div>total quizzes</div>
             </div>
 
-            <Link href={"/course/1"} className="bg-blue-500 text-white font-bold p-2 rounded-lg text-center">Manage</Link>
+            <Link href={"/course/1"} className="bg-blue-500 text-white font-bold p-2 rounded-lg text-center hover:bg-blue-600">Manage</Link>
         </div>
     );
 }

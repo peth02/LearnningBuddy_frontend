@@ -1,18 +1,33 @@
 "use client";
 import { useState } from "react";
 import { Topics, Flashcards, Quizzes } from "@/components/CourseContentTabs";
+import { EditCourseForm } from "@/components/Forms";
 
 export default function Course() {
   const data = ["1", "2"];
   const [content, setContent] = useState("topic");
+  const [editCourse, setEditCourse ] = useState(false)
+
+  const HandleEdit = () => {
+    setEditCourse((prev) => !prev);
+  }
   return (
     <div className="flex flex-col min-h-screen gap-7 py-10 px-20 bg-gray-100">
       <section className="bg-white rounded-lg shadow-sm p-10">
-        {/* enroll */}
-        {/* edit  */}
-        <div>head</div>
-        <div>description</div>
-        <div>courses progress</div>
+        {
+          !editCourse 
+            ? (<div className="flex">
+                <div>
+                  <div>head</div>
+                  <div>description</div>
+                  <div>courses progress</div>
+                </div>
+                <div onClick={HandleEdit} className="ml-auto cursor-pointer h-fit text-gray-600 underline">Edit</div>
+              </div>)
+            : (<EditCourseForm stateChange={HandleEdit} />)
+        }
+      {/* enroll */}
+
       </section>
       <section className="bg-white rounded-lg shadow-sm min-h-screen">
         <div className="flex border-b-1 border-gray-300">
@@ -21,7 +36,7 @@ export default function Course() {
               setContent("topic");
             }}
             className={`px-10 py-4 cursor-pointer ${
-              content === "topic" ? "border-b border-black" : "border-b-0"
+              content === "topic" ? "text-blue-500 font-bold border-b-2 border-blue" : ""
             }`}
           >
             Topics
@@ -31,7 +46,7 @@ export default function Course() {
               setContent("flashcard");
             }}
             className={`px-10 py-4 cursor-pointer ${
-              content === "flashcard" ? "border-b border-black" : "border-b-0"
+              content === "flashcard" ? "text-blue-500 font-bold border-b-2 border-blue" : ""
             }`}
           >
             Flashcard
@@ -41,7 +56,7 @@ export default function Course() {
               setContent("quiz");
             }}
             className={`px-10 py-4 cursor-pointer ${
-              content === "quiz" ? "border-b border-black" : "border-b-0"
+              content === "quiz" ? "text-blue-500 font-bold border-b-2 border-blue" : ""
             }`}
           >
             Quizzes
