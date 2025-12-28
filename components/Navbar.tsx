@@ -40,7 +40,7 @@ export function HomeNavbar() {
   }
 
   return (
-    <nav className="min-w-[250px] w-auto h-screen px-4 py-10 sticky top-0">
+    <nav className="min-w-[250px] h-screen px-4 py-10 sticky top-0">
       <div className="flex flex-col h-full">
         <div>
           <p>Myapp Learning Platform</p>

@@ -29,13 +29,16 @@ export default function MyCreatedCourses() {
 
   return (
     <div className="flex flex-col min-h-screen gap-7 py-10 px-20 bg-gray-100">
-      <h3 className="text-3xl font-bold">My Created Courses</h3>
+      <div className="flex items-center">
+        <h3 className="text-3xl font-bold">My Created Courses</h3>
+        <button onClick={()=>{}} className="ml-auto bg-blue-500 text-white font-bold p-2 rounded-lg cursor-pointer hover:bg-blue-600">+ Add Course</button>
+      </div>
       <SearchBar
         search={search}
         handleSearch={handleSearch}
         setSearch={setSearch}
       />
-      <div className="grid grid-cols-3 grid-flow-2 gap-4">
+      <div className="grid grid-cols-3 grid-flow-2 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {
           data.map((value:any, index)=> (
             <CoursesCard key={index} creator={value.name} description={value.url}/>

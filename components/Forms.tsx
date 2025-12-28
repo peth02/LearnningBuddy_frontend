@@ -6,6 +6,7 @@ export function EditCourseForm(props: any) {
     alert("Successfully edit course")
     console.log("edit Course");
     props.stateChange()
+    // location.reload()
   };
   const DeleteCourseHandler = () => {
     const remove = confirm("do you want to delete this course")

@@ -22,7 +22,7 @@ export default function Course() {
                   <div>description</div>
                   <div>courses progress</div>
                 </div>
-                <div onClick={HandleEdit} className="ml-auto cursor-pointer h-fit text-gray-600 underline">Edit</div>
+                <a onClick={HandleEdit} className="ml-auto cursor-pointer h-fit text-gray-600 underline">Edit</a>
               </div>)
             : (<EditCourseForm stateChange={HandleEdit} />)
         }
@@ -30,8 +30,8 @@ export default function Course() {
 
       </section>
       <section className="bg-white rounded-lg shadow-sm min-h-screen">
-        <div className="flex border-b-1 border-gray-300">
-          <div
+        <nav className="flex border-b-1 border-gray-300">
+          <a
             onClick={() => {
               setContent("topic");
             }}
@@ -40,8 +40,8 @@ export default function Course() {
             }`}
           >
             Topics
-          </div>
-          <div
+          </a>
+          <a
             onClick={() => {
               setContent("flashcard");
             }}
@@ -50,8 +50,8 @@ export default function Course() {
             }`}
           >
             Flashcard
-          </div>
-          <div
+          </a>
+          <a
             onClick={() => {
               setContent("quiz");
             }}
@@ -60,8 +60,8 @@ export default function Course() {
             }`}
           >
             Quizzes
-          </div>
-        </div>
+          </a>
+        </nav>
         {/* <hr className="mb-3 bg-gray-300 h-[1px] border-none"/> */}
         <div>
           {content == "flashcard" ? (
