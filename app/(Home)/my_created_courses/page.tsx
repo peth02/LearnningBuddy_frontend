@@ -14,6 +14,7 @@ export default function MyCreatedCourses() {
   const searchParams = useSearchParams();
   const page = Number(searchParams.get("page")) || 1;
 
+  console.log("page :", page)
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
     console.log(search);
@@ -25,7 +26,7 @@ export default function MyCreatedCourses() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await getPokemon();
+        const response = await getPokemon(page);
         console.log("Data loaded:", response.results);
         setData(response.results);
       } catch (error) {
@@ -34,7 +35,7 @@ export default function MyCreatedCourses() {
     };
 
     fetchData();
-  }, []);
+  }, [page]);
 
   return (
     <div className="flex flex-col min-h-screen gap-7 py-10 px-20 bg-gray-100">

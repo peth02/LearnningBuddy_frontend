@@ -136,11 +136,11 @@ export default function Pagination({
 
 export function PaginationTemp({ page, pageSize, totalCount }: PaginationProps) {
 
-    const totalPages = Math.floor(totalCount/pageSize);
+    const totalPages = Math.ceil(totalCount/pageSize);
     const pathname = usePathname();
     const searchParams = useSearchParams();
 
-    console.log(page, pageSize, totalCount, totalPages)
+    // console.log(page, pageSize, totalCount, totalPages)
 
     const createPageURL = (pageNumber: number | string) => {
         const params = new URLSearchParams(searchParams);
@@ -149,7 +149,7 @@ export function PaginationTemp({ page, pageSize, totalCount }: PaginationProps) 
     };
     const getPages = () => {
         if (totalPages < 10) {
-            return Array.from(new Array(20), (x, i) => i + 1);
+            return Array.from(new Array(9), (x, i) => i + 1);
         } else if (totalPages >= 10) {
             if (page <= 3) {
                 return [1,2,3,4,5,"..."]
@@ -162,16 +162,16 @@ export function PaginationTemp({ page, pageSize, totalCount }: PaginationProps) 
         return []
     }
     const pages = getPages()
-    console.log(pages)
+    // console.log(pages)
     return (
         <nav className="flex gap-10 w-[120px]">
             <Link href={createPageURL(1)} className={page==1?"text-red-500":"text-black-500"}>First</Link>
             <Link href={createPageURL(page-1)} className={page==1?"text-red-500":"text-black-500"}>Prev</Link>
-            { pages.map((i)=> {
-                if (i == "..."){
-                    return <span key={`dots-${i}`+1}>...</span>
+            { pages.map((item, index)=> {
+                if (item == "..."){
+                    return <span key={index}>...</span>
                 }
-                return <Link key={i} href={createPageURL(i)} className={i==page?"text-red-500":"text-black-500"}>{i}</Link>
+                return <Link key={index} href={createPageURL(item)} className={item==page?"text-red-500":"text-black-500"}>{item}</Link>
             })}
             <Link href={createPageURL(page+1)} className={page==totalPages?"text-red-500":"text-black-500"}>Next</Link>
             <Link href={createPageURL(totalPages)} className={page==totalPages?"text-red-500":"text-black-500"}>Last</Link>
