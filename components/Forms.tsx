@@ -1,25 +1,26 @@
 import { redirect } from "next/navigation";
 import Form from "next/form";
+import React, { ChangeEvent, useState } from "react";
 
 export function EditCourseForm(props: any) {
   const EditCourseHandler = () => {
-    alert("Successfully edit course")
+    alert("Successfully edit course");
     console.log("edit Course");
-    props.stateChange()
+    props.stateChange();
     // location.reload()
   };
   const DeleteCourseHandler = () => {
-    const remove = confirm("do you want to delete this course")
+    const remove = confirm("do you want to delete this course");
     if (remove) {
-        console.log("delete Course");
-        // redirect("/my_created_courses");
+      console.log("delete Course");
+      // redirect("/my_created_courses");
     } else {
-        console.log("phewww almost delete a course")
+      console.log("phewww almost delete a course");
     }
   };
 
   return (
-    <div>
+    <section>
       <div>Edit course</div>
       <Form action={EditCourseHandler} className="flex flex-col mt-5 gap-5">
         <input
@@ -62,6 +63,105 @@ export function EditCourseForm(props: any) {
           </button>
         </div>
       </Form>
+    </section>
+  );
+}
+
+export function CreateCourseForm(props: any) {
+  type Status = "idle" | "loading" | "error";
+
+  const [stage, setStage] = useState(1);
+  const [name, setName] = useState<string>("");
+  const [desc, setDesc] = useState<string>("");
+  const [file, setFile] = useState<File | null>(null);
+  const [status, setStatus] = useState<Status>("idle");
+  const [uploadProgress, SetUploadProgress] = useState();
+
+  const handleNext = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const form = e.currentTarget.closest("form");
+    if (form) {
+      if (form.checkValidity()) {
+        setStage((prev) => prev + 1);
+      } else {
+        form.reportValidity();
+      }
+    }
+  };
+  const handleBack = () => {
+    setStage((prev) => prev - 1);
+  };
+  const handleFile = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setFile(e.target.files[0]);
+    }
+  };
+  const handleSubmit = () => {
+    const form = new FormData();
+  };
+  return (
+    <div>
+      <div
+        className="fixed inset-0 bg-black/50 z-40"
+        onClick={props.stageChange}
+      />
+      <section className="bg-white border-1 rounded-lg bg-white border-1 rounded-lg fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50">
+        <div onClick={props.stageChange}>close</div>
+        <Form
+          action={() => {
+            console.log("submit name:", name, "desc :", desc, "file :", file);
+          }}
+        >
+          {stage == 1 && (
+            <div>
+              <div>Name Your Course</div>
+              <p>Give your Course a descriptive name and description</p>
+              <input
+                type="text"
+                name="name"
+                placeholder="Name"
+                value={name}
+                required={true}
+                onChange={(e) => setName(e.target.value)}
+                className="border-1"
+              />
+              <input
+                type="text"
+                name="description"
+                placeholder="Description"
+                value={desc}
+                required={true}
+                onChange={(e) => setDesc(e.target.value)}
+                className="border-1"
+              />
+              <button
+                type="button"
+                onClick={handleNext}
+                className="bg-blue-500 text-white font-bold p-2 rounded-lg cursor-pointer hover:bg-blue-600"
+              >
+                Continue
+              </button>
+            </div>
+          )}
+          {stage == 2 && (
+            <div>
+              <div>submit</div>
+              <input
+                type="file"
+                accept=".pdf"
+                required={true}
+                onChange={handleFile}
+              />
+              <button onClick={handleBack}>Back</button>
+              <button
+                type="submit"
+                className="bg-blue-500 text-white font-bold p-2 rounded-lg cursor-pointer hover:bg-blue-600"
+              >
+                Continue
+              </button>
+            </div>
+          )}
+        </Form>
+      </section>
     </div>
   );
 }
