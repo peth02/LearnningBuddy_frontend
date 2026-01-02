@@ -4,11 +4,15 @@ import { SearchBar } from "@/components/Searchbar";
 import { useEffect, useState } from "react";
 import { getPokemon } from "@/services/pokemon";
 import { CreateCourseForm } from "@/components/Forms";
+import { PaginationTemp } from "@/components/Pagination";
+import { useSearchParams } from "next/navigation";
 
 export default function MyCreatedCourses() {
   const [search, setSearch] = useState<string>("");
   const [data, setData] = useState([]);
   const [createCourse, setCreateCourse] = useState(false);
+  const searchParams = useSearchParams();
+  const page = Number(searchParams.get("page")) || 1;
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
@@ -17,6 +21,7 @@ export default function MyCreatedCourses() {
   const handleCreateCourse = () => {
     setCreateCourse((prev)=>(!prev))
   }
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -54,6 +59,7 @@ export default function MyCreatedCourses() {
           <CreateCourseForm stageChange={handleCreateCourse}/>
         )
       }
+      <PaginationTemp page={page} pageSize={9} totalCount={100}/>
     </div>
   );
 }
