@@ -15,6 +15,7 @@ export default function MyCreatedCourses() {
   const page = Number(searchParams.get("page")) || 1;
 
   console.log("page :", page)
+
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
     console.log(search);

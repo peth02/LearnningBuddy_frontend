@@ -104,15 +104,20 @@ export function CreateCourseForm(props: any) {
         className="fixed inset-0 bg-black/50 z-40"
         onClick={props.stageChange}
       />
-      <section className="bg-white border-1 rounded-lg bg-white border-1 rounded-lg fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50">
-        <div onClick={props.stageChange}>close</div>
+      <section className="bg-white border-1 rounded-lg bg-white border-1 rounded-lg fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 p-5">
+        <button
+          onClick={props.stageChange}
+          className="absolute top-2 right-5 text-gray-400 cursor-pointer"
+        >
+          x
+        </button>
         <Form
           action={() => {
             console.log("submit name:", name, "desc :", desc, "file :", file);
           }}
         >
           {stage == 1 && (
-            <div>
+            <div className="flex flex-col">
               <div>Name Your Course</div>
               <p>Give your Course a descriptive name and description</p>
               <input
@@ -136,7 +141,7 @@ export function CreateCourseForm(props: any) {
               <button
                 type="button"
                 onClick={handleNext}
-                className="bg-blue-500 text-white font-bold p-2 rounded-lg cursor-pointer hover:bg-blue-600"
+                className="w-[100px] ml-auto bg-blue-500 text-white font-bold p-2 rounded-lg cursor-pointer hover:bg-blue-600"
               >
                 Continue
               </button>
