@@ -61,7 +61,9 @@ export default function MyCreatedCourses() {
           <CreateCourseForm stageChange={handleCreateCourse}/>
         )
       }
-      <PaginationTemp page={page} pageSize={9} totalCount={100}/>
+      <div className="justify-items-center">
+        <PaginationTemp page={page} pageSize={9} totalCount={100}/>
+      </div>
     </div>
   );
 }

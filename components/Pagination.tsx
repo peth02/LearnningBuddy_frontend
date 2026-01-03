@@ -164,17 +164,17 @@ export function PaginationTemp({ page, pageSize, totalCount }: PaginationProps) 
     const pages = getPages()
     // console.log(pages)
     return (
-        <nav className="flex gap-10 w-[120px]">
-            <Link href={createPageURL(1)} className={page==1?"text-red-500":"text-black-500"}>First</Link>
-            <Link href={createPageURL(page-1)} className={page==1?"text-red-500":"text-black-500"}>Prev</Link>
+        <nav className="flex gap-10 w-auto">
+            <Link href={createPageURL(1)} className={page==1?"text-gray-400 pointer-events-none":"underline hover:font-bold"}>First</Link>
+            <Link href={createPageURL(page-1)} className={page==1?"text-gray-400 pointer-events-none":"underline hover:font-bold"}>Prev</Link>
             { pages.map((item, index)=> {
                 if (item == "..."){
                     return <span key={index}>...</span>
                 }
-                return <Link key={index} href={createPageURL(item)} className={item==page?"text-red-500":"text-black-500"}>{item}</Link>
+                return <Link key={index} href={createPageURL(item)} className={item==page?"text-red-500 pointer-events-none":"hover:font-bold"}>{item}</Link>
             })}
-            <Link href={createPageURL(page+1)} className={page==totalPages?"text-red-500":"text-black-500"}>Next</Link>
-            <Link href={createPageURL(totalPages)} className={page==totalPages?"text-red-500":"text-black-500"}>Last</Link>
+            <Link href={createPageURL(page+1)} className={page==totalPages?"text-gray-400 pointer-events-none":"underline hover:font-bold"}>Next</Link>
+            <Link href={createPageURL(totalPages)} className={page==totalPages?"text-gray-400 pointer-events-none":"underline hover:font-bold"}>Last</Link>
         </nav>
     );
 }

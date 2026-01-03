@@ -40,6 +40,14 @@ export function EditCourseForm(props: any) {
           placeholder="Description"
           className="border-1"
         />
+        <label>
+          <input 
+            name="isPublic"
+            type="checkbox"
+            defaultChecked={true}
+          />
+          <span>Public</span>
+        </label>
         <div className="flex gap-10">
           <button
             type="submit"
