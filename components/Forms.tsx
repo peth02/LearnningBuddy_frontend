@@ -41,11 +41,7 @@ export function EditCourseForm(props: any) {
           className="border-1"
         />
         <label>
-          <input 
-            name="isPublic"
-            type="checkbox"
-            defaultChecked={true}
-          />
+          <input name="isPublic" type="checkbox" defaultChecked={true} />
           <span>Public</span>
         </label>
         <div className="flex gap-10">
@@ -112,65 +108,113 @@ export function CreateCourseForm(props: any) {
         className="fixed inset-0 bg-black/50 z-40"
         onClick={props.stageChange}
       />
-      <section className="bg-white border-1 rounded-lg bg-white border-1 rounded-lg fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 p-5">
-        <button
-          onClick={props.stageChange}
-          className="absolute top-2 right-5 text-gray-400 cursor-pointer"
-        >
-          x
-        </button>
+      <section className="bg-white border-1 rounded-lg bg-white border-1 rounded-lg fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50">
         <Form
           action={() => {
             console.log("submit name:", name, "desc :", desc, "file :", file);
           }}
         >
           {stage == 1 && (
-            <div className="flex flex-col">
-              <div>Name Your Course</div>
-              <p>Give your Course a descriptive name and description</p>
-              <input
-                type="text"
-                name="name"
-                placeholder="Name"
-                value={name}
-                required={true}
-                onChange={(e) => setName(e.target.value)}
-                className="border-1"
-              />
-              <input
-                type="text"
-                name="description"
-                placeholder="Description"
-                value={desc}
-                required={true}
-                onChange={(e) => setDesc(e.target.value)}
-                className="border-1"
-              />
-              <button
-                type="button"
-                onClick={handleNext}
-                className="w-[100px] ml-auto bg-blue-500 text-white font-bold p-2 rounded-lg cursor-pointer hover:bg-blue-600"
-              >
-                Continue
-              </button>
+            <div>
+              <div className="flex justify-between m-5">
+                <div>Name Your Course</div>
+                <button
+                  onClick={props.stageChange}
+                  className="text-gray-400 cursor-pointer hover:underline"
+                >
+                  x
+                </button>
+              </div>
+              <hr />
+              <div className="flex flex-col gap-5 m-5">
+                <p>Give your Course a descriptive name and description</p>
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Name"
+                  value={name}
+                  required={true}
+                  onChange={(e) => setName(e.target.value)}
+                  className="border-1"
+                />
+                <input
+                  type="text"
+                  name="description"
+                  placeholder="Description"
+                  value={desc}
+                  required={true}
+                  onChange={(e) => setDesc(e.target.value)}
+                  className="border-1"
+                />
+              </div>
+              <hr />
+              <div className="flex m-5">
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  className="w-[100px] ml-auto bg-blue-500 text-white font-bold p-2 rounded-lg cursor-pointer hover:bg-blue-600"
+                >
+                  Continue
+                </button>
+              </div>
             </div>
           )}
           {stage == 2 && (
             <div>
-              <div>submit</div>
-              <input
-                type="file"
-                accept=".pdf"
-                required={true}
-                onChange={handleFile}
-              />
-              <button onClick={handleBack}>Back</button>
-              <button
-                type="submit"
-                className="bg-blue-500 text-white font-bold p-2 rounded-lg cursor-pointer hover:bg-blue-600"
-              >
-                Continue
-              </button>
+              <div className="flex justify-between m-5">
+                <div>Upload file</div>
+                <button
+                  onClick={props.stageChange}
+                  className="text-gray-400 cursor-pointer hover:underline"
+                >
+                  x
+                </button>
+              </div>
+              <hr />
+              <div className="m-5">
+                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors">
+                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                    <svg
+                      className="w-8 h-8 mb-4 text-gray-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                      ></path>
+                    </svg>
+                    <p className="text-sm text-gray-500">
+                      <span className="font-semibold">Click to upload</span> or
+                      drag and drop
+                    </p>
+                    <p className="text-xs text-gray-400">PDF only (MAX. 5MB)</p>
+                  </div>
+                  <input
+                    type="file"
+                    className="hidden"
+                    accept=".pdf"
+                    required
+                    onChange={handleFile}
+                  />
+                </label>
+                <div className="mt-3">upload status</div>
+              </div>
+              <hr />
+              <div className="flex justify-between m-5">
+                <button onClick={handleBack} className="cursor-pointer">
+                  Back
+                </button>
+                <button
+                  type="submit"
+                  className="bg-blue-500 text-white font-bold p-2 rounded-lg cursor-pointer hover:bg-blue-600"
+                >
+                  Continue
+                </button>
+              </div>
             </div>
           )}
         </Form>
