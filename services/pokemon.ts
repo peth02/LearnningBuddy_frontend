@@ -1,5 +1,5 @@
-export async function getPokemon() {
-    const request = new Request("https://pokeapi.co/api/v2/ability/?limit=9&offset=0", {
+export async function getPokemon(page:number) {
+    const request = new Request(`https://pokeapi.co/api/v2/ability/?limit=9&offset=${(page-1)*9}`, {
         method: "GET"
     });
     const response = await fetch(request)

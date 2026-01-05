@@ -49,7 +49,7 @@ export default function Course() {
               content === "flashcard" ? "text-blue-500 font-bold border-b-2 border-blue" : ""
             }`}
           >
-            Flashcard
+            Flashcards
           </a>
           <a
             onClick={() => {
