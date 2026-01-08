@@ -108,7 +108,7 @@ export function CreateCourseForm(props: any) {
         className="fixed inset-0 bg-black/50 z-40"
         onClick={props.stageChange}
       />
-      <section className="bg-white border-1 rounded-lg bg-white border-1 rounded-lg fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50">
+      <section className="bg-white border-1 rounded-lg fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50">
         <Form
           action={() => {
             console.log("submit name:", name, "desc :", desc, "file :", file);
@@ -213,6 +213,206 @@ export function CreateCourseForm(props: any) {
                   className="bg-blue-500 text-white font-bold p-2 rounded-lg cursor-pointer hover:bg-blue-600"
                 >
                   Continue
+                </button>
+              </div>
+            </div>
+          )}
+        </Form>
+      </section>
+    </div>
+  );
+}
+
+export function CreateQuizForm(props: any) {
+  type Status = "idle" | "loading" | "error";
+
+  const [name, setName] = useState<string>("");
+  const [topics, setTopics] = useState<string[]>([
+    "Topic 1",
+    "Topic 2",
+    "Topic 3",
+    "Topic 4",
+    "Topic 5",
+    "Topic 6",
+  ]);
+  const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
+  const [stage, setStage] = useState(1);
+  const [status, setStatus] = useState<Status>("idle");
+
+const handleToggleTopic = (topic: string) => {
+    let newSelection: string[];
+
+    if (selectedTopics.includes(topic)) {
+      // Remove topic
+      newSelection = selectedTopics.filter((t) => t !== topic);
+    } else {
+      // Add topic
+      newSelection = [...selectedTopics, topic];
+    }
+    // Sort based on the index in the original 'topics' array
+    newSelection.sort((a, b) => topics.indexOf(a) - topics.indexOf(b));
+    
+    setSelectedTopics(newSelection);
+  };
+
+  const handleNext = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const form = e.currentTarget.closest("form");
+    if (form) {
+      if (form.checkValidity()) {
+        setStage((prev) => prev + 1);
+      } else {
+        form.reportValidity();
+      }
+    }
+  };
+  const handleBack = () => {
+    setStage((prev) => prev - 1);
+  };
+  const handleAddTopic = (e: any) => {
+    e.target.style();
+  };
+  const handleClearTopics = () => {
+    setSelectedTopics([]);
+  }
+  const handleAddQuestion = () => {};
+  return (
+    <div>
+      <div
+        className="fixed inset-0 bg-black/50 z-40"
+        onClick={props.stageChange}
+      />
+      <section className="bg-white border-1 rounded-lg fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50">
+        <Form action={() => console.log("create quiz")}>
+          {stage == 1 && (
+            <div>
+              <div className="flex justify-between m-5">
+                <div>Name Your Quiz</div>
+                <button
+                  onClick={props.stageChange}
+                  className="text-gray-400 cursor-pointer hover:underline"
+                >
+                  x
+                </button>
+              </div>
+              <hr />
+              <div className="flex flex-col gap-5 m-5">
+                <p>
+                  Give your quiz a descriptive name to help you identify it
+                  later.
+                </p>
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="e.g., Midterm Practice Quiz"
+                  value={name}
+                  required={true}
+                  onChange={(e) => setName(e.target.value)}
+                  className="border-1"
+                />
+              </div>
+              <hr />
+              <div className="flex m-5">
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  className="w-[100px] ml-auto bg-blue-500 text-white font-bold p-2 rounded-lg cursor-pointer hover:bg-blue-600"
+                >
+                  Continue
+                </button>
+              </div>
+            </div>
+          )}
+          {stage == 2 && (
+            <div className="flex flex-col">
+              <div className="flex justify-between m-5">
+                <div>
+                  Configure Quiz
+                  <br />
+                  <span>Set questions per topic with specific formats</span>
+                </div>
+                <button
+                  onClick={props.stageChange}
+                  className="text-gray-400 cursor-pointer hover:underline"
+                >
+                  x
+                </button>
+              </div>
+              <hr />
+              <section className="m-5 max-h-[50vh] overflow-auto">
+                <div className="flex">
+                  <p>Select topic</p>
+                  <button onClick={handleClearTopics} className="ml-auto mr-5 cursor-pointer">clear</button>
+                </div>
+                <div className="flex flex-wrap gap-3 mt-3">
+                  {/* map topics */}
+                  {topics.map((topic, index) => {
+                    const isSelected = selectedTopics.includes(topic);
+                    return (
+                      <div
+                        key={index}
+                        onClick={() => handleToggleTopic(topic)}
+                        className={`p-2 border rounded-lg cursor-pointer transition-colors duration-200 
+                                  ${
+                                    isSelected
+                                      ? "bg-blue-500 text-white border-blue-600" // Style เมื่อถูกเลือก
+                                      : "bg-white text-gray-700 hover:bg-gray-100" // Style ปกติ
+                                  }`}
+                      >
+                        <span>{topic}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="flex flex-col">
+                  {selectedTopics.map((topic, index) => {
+                    return (
+                      <div
+                        key={index}
+                        className="mx-5 my-2 border-1 rounded-lg overflow-hidden"
+                      >
+                        <div
+                          onClick={() => console.log("click")}
+                          className="bg-gray-200 p-5"
+                        >
+                          <span>{topic}</span>
+                          <span>(0 question)</span>
+                        </div>
+                        {/* easy */}
+                        <div className="flex- flex-col m-5 p-5 bg-green-200 border-1 border-green-400 rounded-lg">
+                          <div className="flex justify-between">
+                            <p>Easy</p>
+                            <button>+ Add</button>
+                          </div>
+                        </div>
+                        {/* normal */}
+                        <div className="flex- flex-col m-5 p-5 bg-orange-200 border-1 border-orange-400 rounded-lg">
+                          <div className="flex justify-between">
+                            <p>Normal</p>
+                            <button>+ Add</button>
+                          </div>
+                        </div>
+                        {/* hard */}
+                        <div className="flex- flex-col m-5 p-5 bg-red-200 border-1 border-red-400 rounded-lg">
+                          <div className="flex justify-between">
+                            <p>Hard</p>
+                            <button>+ Add</button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
+              <hr />
+              <div className="flex justify-between m-5">
+                <button onClick={handleBack} className="cursor-pointer">
+                  Back
+                </button>
+                <button
+                  type="submit"
+                  className="bg-blue-500 text-white font-bold p-2 rounded-lg cursor-pointer hover:bg-blue-600"
+                >
+                  Generate Draft
                 </button>
               </div>
             </div>

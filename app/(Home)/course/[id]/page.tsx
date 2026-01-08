@@ -12,6 +12,9 @@ export default function Course() {
   const HandleEdit = () => {
     setEditCourse((prev) => !prev);
   };
+  const handleCreateQuiz = () => {
+    setCreateQuiz((prev) => !prev);
+  };
   return (
     <div className="flex flex-col min-h-screen gap-7 py-10 px-20 bg-gray-100">
       <section className="bg-white rounded-lg shadow-sm p-10">
@@ -91,9 +94,12 @@ export default function Course() {
             <div className="p-10">
               <div className="place-content-end">
                 {/*  only creator can see */}
-                <button className="mb-5 mr-auto min-w-[100px] bg-blue-500 text-white font-bold p-2 rounded-lg text-center cursor-pointer hover:bg-blue-600">
+                <button onClick={handleCreateQuiz} className="mb-5 mr-auto min-w-[100px] bg-blue-500 text-white font-bold p-2 rounded-lg text-center cursor-pointer hover:bg-blue-600">
                   + Create Quiz
                 </button>
+                { createQuiz && (
+                  <CreateQuizForm stageChange={handleCreateQuiz}/>
+                )}
               </div>
               <div className="grid grid-cols-2 gap-5">
                 <Quizzes />
