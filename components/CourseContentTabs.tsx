@@ -1,5 +1,8 @@
 import { TopicProps } from "@/types/Props";
 
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+
 export function Topics() {
   return (
     <section className="bg-white rounded-lg border-2 border-gray-300 px-10 py-7 min-h-[100px]">
@@ -96,6 +99,11 @@ export function Flashcards() {
 }
 
 export function Quizzes() {
+  const router = useRouter();
+  const path = usePathname();
+  const handleEditRedirect = () => {
+    router.push(path+"/quiz/1");
+  }
   return (
     <section className="bg-white rounded-lg border-2 border-gray-300 px-10 py-7 min-h-[100px]">
       <div className="flex gap-5">
@@ -106,7 +114,7 @@ export function Quizzes() {
           <div>topic : 1 2 3</div>
         </div>
         <div className="ml-auto">
-          <div>edit</div>
+          <button onClick={handleEditRedirect}>edit</button>
         </div>
       </div>
     </section>
