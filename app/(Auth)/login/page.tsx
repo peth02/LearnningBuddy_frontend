@@ -1,13 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { loginAction } from "@/lib/action";
 
 export default function Login() {
-
-  const handleLogin = () => {
-
-  }
-  
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50">
       <main className="flex rounded-lg w-full max-w-3xl flex-col items-center p-16 bg-white items-start">
@@ -17,10 +13,11 @@ export default function Login() {
             Login Page
           </h1>
         </div>
-        <form onSubmit={() => console.log("hello")}>
+        <form action={loginAction}>
           <div className="flex flex-col">
-            <label>name</label>
+            <label>Name</label>
             <input
+              name="name"
               type="text"
               aria-label="name"
               placeholder="Name"
@@ -28,11 +25,12 @@ export default function Login() {
               required
               className=""
             />
-            <label>email</label>
+            <label>Password</label>
             <input
-              type="email"
-              aria-label="email"
-              placeholder="Email"
+              name="password"
+              type="text"
+              aria-label="password"
+              placeholder="Password"
               required
               className=""
             />
