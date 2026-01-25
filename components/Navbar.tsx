@@ -29,13 +29,9 @@ export function HomeNavbar() {
     fetchUser();
   }, []);
 
-  function handleLogin() {
-    loginAction();
-    location.reload();
-  }
   function handleLogout() {
-    logoutAction();
     setUser(null);
+    logoutAction();
     redirect("/home");
   }
 
@@ -66,7 +62,6 @@ export function HomeNavbar() {
           {!user ? (
             <div className="flex flex-col mt-6 gap-6">
               <Link href={"/login"} className="bg-blue-500 text-white font-bold p-2 rounded-lg text-center">Login</Link>
-              <button onClick={handleLogin} className="bg-blue-500 text-white font-bold p-2 rounded-lg cursor-pointer hover:bg-blue-600">Login</button>
             </div>
           ) : (
             <div className="flex flex-col mt-6 gap-6">

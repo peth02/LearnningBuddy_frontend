@@ -4,7 +4,7 @@ import { cookies } from 'next/headers'
 
 // 1. Specify protected and public routes
 const protectedRoutes = ['/my_learning', '/my_created_courses']
-const publicRoutes = ['/login', '/signup', '/home', '/']
+const publicRoutes = ['/login', '/register', '/signup', '/home', '/']
  
 export default async function proxy(req: NextRequest) {
   // 2. Check if the current route is protected or public
