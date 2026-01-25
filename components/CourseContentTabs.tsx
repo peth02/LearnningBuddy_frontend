@@ -102,7 +102,7 @@ export function Quizzes() {
   const router = useRouter();
   const path = usePathname();
   const handleEditRedirect = () => {
-    router.push(path+"/quiz/1");
+    router.push(path+"/quiz/1/edit");
   }
   return (
     <section className="bg-white rounded-lg border-2 border-gray-300 px-10 py-7 min-h-[100px]">
