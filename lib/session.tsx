@@ -10,10 +10,10 @@ type SessionPayload = {
   expiresAt: Date;
 };
 
-const secretKey = process.env.SESSION_SECRET;
+const secretKey = process.env.NEXT_PUBLIC_SESSION_SECRET;
 const encodedKey = new TextEncoder().encode(secretKey);
 if (!secretKey) {
-  throw new Error("SESSION_SECRET is not set correctly in env");
+  throw new Error("NEXT_PUBLIC_SESSION_SECRET is not set correctly in env");
 }
 
 export async function encrypt(payload: SessionPayload) {
@@ -67,4 +67,14 @@ export async function getUser() {
 
   const payload = await decrypt(session);
   return payload;
+}
+
+export async function getToken() {
+  const cookieStore = await cookies();
+  const session = cookieStore.get("session")?.value;
+
+  if (!session) return null;
+
+  const payload = await decrypt(session);
+  return payload?.userToken;
 }

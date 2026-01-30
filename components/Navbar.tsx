@@ -39,7 +39,7 @@ export function HomeNavbar() {
     <nav className="min-w-[250px] h-screen px-4 py-10 sticky top-0">
       <div className="flex flex-col h-full">
         <div>
-          <p>Myapp Learning Platform</p>
+          <h1 className="text-xl text-center bold">Learning buddy</h1>
           <hr className="my-6" />
         </div>
         <div className="flex flex-col gap-3">

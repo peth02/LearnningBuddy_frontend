@@ -1,6 +1,9 @@
 import { redirect } from "next/navigation";
 import Form from "next/form";
 import React, { ChangeEvent, useState } from "react";
+import { getToken } from "@/lib/session";
+
+const baseURL = process.env.NEXT_PUBLIC_BE_BASE_API;
 
 export function EditCourseForm(props: any) {
   const EditCourseHandler = () => {
@@ -99,8 +102,43 @@ export function CreateCourseForm(props: any) {
       setFile(e.target.files[0]);
     }
   };
-  const handleSubmit = () => {
-    const form = new FormData();
+  const handleSubmit = async () => {
+    const url = `${baseURL}/courses/preview`;
+    console.log("sending ", name, desc, file, "to ", url)
+
+    const token = await getToken();
+    console.log("user", token);
+
+    try {
+      // create form data
+      const sendData = new FormData();
+      if (file) {
+        sendData.append("title", name)
+        sendData.append("description", desc)
+        sendData.append("file", file)
+      }
+      if (!token || token === "undefined") {
+      alert("Please log in again.");
+      return;
+      }
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        },
+        body: sendData
+      })
+      if (res.ok) {
+        console.log("Upload success");
+        const data = await res.json();
+        console.log("Server response:", data);
+      } else {
+        const errorText = await res.text();
+        console.error("Upload failed:", errorText);
+      }
+    } catch (error) {
+      console.error("Error creating course", error);
+    }
   };
   return (
     <div>
@@ -110,9 +148,7 @@ export function CreateCourseForm(props: any) {
       />
       <section className="bg-white border-1 rounded-lg fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50">
         <Form
-          action={() => {
-            console.log("submit name:", name, "desc :", desc, "file :", file);
-          }}
+          action={handleSubmit}
         >
           {stage == 1 && (
             <div>
@@ -128,6 +164,7 @@ export function CreateCourseForm(props: any) {
               <hr />
               <div className="flex flex-col gap-5 m-5">
                 <p>Give your Course a descriptive name and description</p>
+                <label>Name</label>
                 <input
                   type="text"
                   name="name"
@@ -135,16 +172,16 @@ export function CreateCourseForm(props: any) {
                   value={name}
                   required={true}
                   onChange={(e) => setName(e.target.value)}
-                  className="border-1"
+                  className="flex h-11 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 />
+                <label>Description</label>
                 <input
                   type="text"
                   name="description"
                   placeholder="Description"
                   value={desc}
-                  required={true}
                   onChange={(e) => setDesc(e.target.value)}
-                  className="border-1"
+                  className="flex h-11 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 />
               </div>
               <hr />
@@ -195,6 +232,7 @@ export function CreateCourseForm(props: any) {
                   </div>
                   <input
                     type="file"
+                    name="file"
                     className="hidden"
                     accept=".pdf"
                     required
@@ -212,7 +250,7 @@ export function CreateCourseForm(props: any) {
                   type="submit"
                   className="bg-blue-500 text-white font-bold p-2 rounded-lg cursor-pointer hover:bg-blue-600"
                 >
-                  Continue
+                  Submit
                 </button>
               </div>
             </div>

@@ -3,7 +3,7 @@
 import { createSession, deleteSession} from "@/lib/session";
 import { redirect } from "next/navigation";
 
-const baseURL = process.env.BE_BASE_API;
+const baseURL = process.env.NEXT_PUBLIC_BE_BASE_API;
 
 export async function loginAction(formData: FormData) {
 
