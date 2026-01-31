@@ -1,25 +1,36 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/navigation";
 import { useCourseStore, Topic } from "@/lib/courseStore";
+import { useStore } from "@/hooks/useStore";
 
 export default function Preview() {
   const router = useRouter();
-  
+
   // เรียก Actions จาก Store
-  const { course, addTopic, removeTopic, updateCourseInfo } = useCourseStore();
+  const course = useStore(useCourseStore, (state) => state.course);
+  const { addTopic, removeTopic, updateCourseInfo } = useCourseStore();
 
   // State สำหรับ Form (Title/Description)
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
 
   // 1. Load ข้อมูลจาก Store เมื่อเข้าหน้าเว็บ
+  // เพิ่ม State เพื่อเช็คว่าโหลดข้อมูลจาก LocalStorage เสร็จหรือยัง
+  const [isReady, setIsReady] = useState(false);
+
   useEffect(() => {
-    if (!course) {
-      router.push("/create"); // ถ้าไม่มีข้อมูล ให้กลับไปหน้าสร้าง
-    } else {
-      setTitle(course.title);
-      setDesc(course.description);
+    // ตรวจสอบว่า useStore ดึงข้อมูลเสร็จหรือยัง (ไม่ใช่ undefined)
+    if (course !== undefined) {
+      if (course === null) {
+        // ถ้าโหลดเสร็จแล้วแต่ข้อมูลยังเป็น null จริงๆ ให้ Redirect
+        router.push("/my_created_courses");
+      } else {
+        // ถ้ามีข้อมูล ให้ตั้งค่า State และบอกว่าพร้อมแสดงผล
+        setTitle(course.title);
+        setDesc(course.description);
+        setIsReady(true);
+      }
     }
   }, [course, router]);
 
@@ -32,16 +43,17 @@ export default function Preview() {
   const handleAddTopic = () => {
     // หา ID สูงสุดปัจจุบัน + 1 (หรือเริ่มที่ 1)
     const currentTopics = course?.topics || [];
-    const maxId = currentTopics.length > 0 
-      ? Math.max(...currentTopics.map(t => t.order_index)) 
-      : 0;
-    
+    const maxId =
+      currentTopics.length > 0
+        ? Math.max(...currentTopics.map((t) => t.order_index))
+        : 0;
+
     const newTopic: Topic = {
       order_index: maxId + 1,
       title: "New Topic",
       description: "Description",
       raw_text: "",
-      summary_note: ""
+      summary_note: "",
     };
 
     addTopic(newTopic);
@@ -61,20 +73,28 @@ export default function Preview() {
   };
 
   const handleCancel = () => {
-    router.push(`/my_created_courses`)
-  }
+    router.push(`/my_created_courses`);
+  };
   // 6. ฟังก์ชันปุ่ม Final Create (Footer)
   const handleFinalCreate = () => {
     // ตรงนี้คือจุดที่คุณจะยิง API ไป Backend
     console.log("Ready to send to API:", course);
-    alert(`Course "${course?.title}" Created with ${course?.topics.length} topics!`);
+    alert(
+      `Course "${course?.title}" Created with ${course?.topics.length} topics!`,
+    );
   };
 
-  if (!course) return null; // ป้องกัน Render ก่อน Redirect
-
+  if (!isReady || !course) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
   return (
-    <div className="flex flex-col min-h-screen gap-7 bg-gray-100 pb-24"> {/* pb-24 เพื่อกันเนื้อหาโดน Footer บัง */}
-      
+    <div className="flex flex-col min-h-screen gap-7 bg-gray-100 pb-24">
+      {" "}
+      {/* pb-24 เพื่อกันเนื้อหาโดน Footer บัง */}
       {/* Section 1: Course Info Form */}
       <section className="bg-white rounded-lg shadow-sm p-10 mx-20 my-10">
         <div className="flex flex-col gap-4">
@@ -98,7 +118,6 @@ export default function Preview() {
           </div>
         </div>
       </section>
-
       {/* Section 2: Topics List */}
       <section className="bg-white rounded-lg shadow-sm mx-20 ">
         <div className="p-10">
@@ -113,9 +132,11 @@ export default function Preview() {
 
           <div className="flex flex-col gap-4 max-w-[1400px]">
             {course.topics.length === 0 && (
-                <div className="text-center text-gray-400 py-10">No topics yet. Click Add Topic to start.</div>
+              <div className="text-center text-gray-400 py-10">
+                No topics yet. Click Add Topic to start.
+              </div>
             )}
-            
+
             {course.topics.map((topic, index) => (
               <section
                 key={topic.order_index}
@@ -125,11 +146,13 @@ export default function Preview() {
               >
                 <div className="flex gap-5 items-start">
                   <div className="font-bold text-gray-400 text-xl shrink-0 group-hover:text-blue-500">
-                    #{index+1}
+                    #{index + 1}
                   </div>
-                  
+
                   <div className="flex flex-col flex-1 min-w-0 gap-1">
-                    <div className="font-bold text-lg text-gray-800">{topic.title}</div>
+                    <div className="font-bold text-lg text-gray-800">
+                      {topic.title}
+                    </div>
                     <div className="break-words text-gray-600 line-clamp-2">
                       {topic.description}
                     </div>
@@ -137,12 +160,26 @@ export default function Preview() {
 
                   <div className="ml-auto shrink-0 flex gap-2 items-center">
                     {/* ปุ่ม Delete */}
-                    <button 
-                        onClick={(e) => handleDelTopic(e, topic.order_index)}
-                        className="text-gray-400 hover:text-red-500 p-2 rounded-full hover:bg-red-50 transition"
-                        title="Delete Topic"
+                    <button
+                      onClick={(e) => handleDelTopic(e, topic.order_index)}
+                      className="text-gray-400 hover:text-red-500 p-2 rounded-full hover:bg-red-50 transition"
+                      title="Delete Topic"
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M3 6h18" />
+                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                      </svg>
                     </button>
                   </div>
                 </div>
@@ -151,17 +188,15 @@ export default function Preview() {
           </div>
         </div>
       </section>
-
       {/* Section 3: Bottom Bar */}
       <section className="fixed bottom-0 w-full bg-white shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] h-20 z-50 border-t border-gray-200 px-10 flex items-center">
         <div className="max-w-screen-xl mx-auto w-full flex items-center justify-end gap-10">
           <div className="text-gray-500 font-medium">
-             Total Topics: <span className="text-black font-bold">{course.topics.length}</span>
+            Total Topics:{" "}
+            <span className="text-black font-bold">{course.topics.length}</span>
           </div>
-          <button onClick={handleCancel}>
-            cancel
-          </button>
-          <button 
+          <button onClick={handleCancel}>cancel</button>
+          <button
             onClick={handleFinalCreate}
             className="bg-green-600 text-white px-8 py-3 rounded-lg font-bold shadow hover:bg-green-700 transition"
           >

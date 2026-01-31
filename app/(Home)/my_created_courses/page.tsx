@@ -3,7 +3,7 @@ import CoursesCard from "@/components/CoursesCard";
 import { SearchBar } from "@/components/Searchbar";
 import { useEffect, useState } from "react";
 import { getPokemon } from "@/services/pokemon";
-import { CreateCourseForm } from "@/components/Forms";
+import { CreatePreviewCourseForm } from "@/components/Forms";
 import { PaginationTemp } from "@/components/Pagination";
 import { useSearchParams } from "next/navigation";
 
@@ -14,11 +14,11 @@ export default function MyCreatedCourses() {
   const searchParams = useSearchParams();
   const page = Number(searchParams.get("page")) || 1;
 
-  console.log("page :", page)
+  // console.log("page :", page)
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
-    console.log(search);
+    // console.log(search);
   };
   const handleCreateCourse = () => {
     setCreateCourse((prev)=>(!prev))
@@ -58,7 +58,7 @@ export default function MyCreatedCourses() {
       </div>
       {
         createCourse && (
-          <CreateCourseForm stageChange={handleCreateCourse}/>
+          <CreatePreviewCourseForm stageChange={handleCreateCourse}/>
         )
       }
       <div className="justify-items-center">

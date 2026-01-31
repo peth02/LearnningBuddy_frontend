@@ -75,12 +75,18 @@ export function EditCourseForm(props: any) {
   );
 }
 
-export function CreateCourseForm(props: any) {
+export function CreatePreviewCourseForm(props: any) {
   const [stage, setStage] = useState(1);
   const [name, setName] = useState<string>("");
   const [desc, setDesc] = useState<string>("");
   const [file, setFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  // 1. เพิ่ม State สำหรับสถานะต่างๆ
+  const [isLoading, setIsLoading] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<
+    "idle" | "success" | "error"
+  >("idle");
+  const [statusMsg, setStatusMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const setCourse = useCourseStore((state) => state.setCourse);
   const router = useRouter();
@@ -149,17 +155,14 @@ export function CreateCourseForm(props: any) {
       validateAndSetFile(e.target.files[0]);
     }
   };
-  const handleSaveCourse = (course: Course) => {
-    setCourse(course);
-    router.push("/preview");
-  };
 
   const handleSubmit = async () => {
+    setIsLoading(true);
+    setSubmitStatus("idle");
     const url = `${baseURL}/courses/preview`;
     console.log("sending ", name, desc, file, "to ", url);
     const token = await getToken();
     console.log("user", token);
-
     try {
       // create form data
       const sendData = new FormData();
@@ -170,6 +173,7 @@ export function CreateCourseForm(props: any) {
       }
       if (!token || token === "undefined") {
         alert("Please log in again.");
+        router.push("/login");
         return;
       }
       const res = await fetch(url, {
@@ -180,16 +184,20 @@ export function CreateCourseForm(props: any) {
         body: sendData,
       });
       if (res.ok) {
-        console.log("Upload success");
         const data = await res.json();
         console.log("Server response:", data);
-        handleSaveCourse(data);
+        setSubmitStatus("success");
+        setStatusMsg("Course created successfully!");
+        setCourse(data);
       } else {
         const errorText = await res.text();
         console.error("Upload failed:", errorText);
       }
-    } catch (error) {
-      console.error("Error creating course", error);
+    } catch (error: any) {
+      setSubmitStatus("error");
+      setStatusMsg(error.message || "An unexpected error occurred");
+    } finally {
+      setIsLoading(false);
     }
   };
   return (
@@ -394,9 +402,46 @@ export function CreateCourseForm(props: any) {
             </div>
           )}
         </Form>
-        {stage == 3 && (
-          <div>
-            <div>stage3</div>
+        {/* Loading & Result Overlay */}
+        {(isLoading || submitStatus !== "idle") && (
+          <div className="fixed inset-0 bg-white/80 backdrop-blur-sm z-[60] flex flex-col items-center justify-center p-6 text-center">
+            {isLoading && (
+              <div className="flex flex-col items-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+                <p className="text-lg font-medium text-gray-700">
+                  Uploading your course...
+                </p>
+              </div>
+            )}
+
+            {!isLoading && submitStatus === "success" && (
+              <div className="max-w-sm bg-white p-8 rounded-2xl shadow-xl border border-green-100">
+                <h3 className="text-xl font-bold text-gray-800 mb-2">
+                  Success!
+                </h3>
+                <p className="text-gray-600 mb-6">{statusMsg}</p>
+                <button
+                  onClick={() => router.push("/my_created_courses/preview")}
+                  className="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors"
+                >
+                  View Preview Course
+                </button>
+              </div>
+            )}
+
+            {!isLoading && submitStatus === "error" && (
+              <div className="max-w-sm bg-white p-8 rounded-2xl shadow-xl border border-red-100">
+                <div className="text-red-500 text-5xl mb-4">Error Icon</div>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">Oops!</h3>
+                <p className="text-gray-600 mb-6">{statusMsg}</p>
+                <button
+                  onClick={() => setSubmitStatus("idle")}
+                  className="w-full bg-gray-100 text-gray-700 py-3 rounded-xl font-semibold hover:bg-gray-200 transition-colors"
+                >
+                  Try Again
+                </button>
+              </div>
+            )}
           </div>
         )}
       </section>
