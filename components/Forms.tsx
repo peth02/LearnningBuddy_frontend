@@ -75,15 +75,20 @@ export function EditCourseForm(props: any) {
 }
 
 export function CreateCourseForm(props: any) {
-  type Status = "idle" | "loading" | "error";
-
   const [stage, setStage] = useState(1);
   const [name, setName] = useState<string>("");
   const [desc, setDesc] = useState<string>("");
   const [file, setFile] = useState<File | null>(null);
-  const [status, setStatus] = useState<Status>("idle");
-  const [uploadProgress, SetUploadProgress] = useState();
+  const [isDragging, setIsDragging] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return "0 Bytes";
+    const k = 1024;
+    const sizes = ["Bytes", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+  };
   const handleNext = (e: React.MouseEvent<HTMLButtonElement>) => {
     const form = e.currentTarget.closest("form");
     if (form) {
@@ -97,15 +102,54 @@ export function CreateCourseForm(props: any) {
   const handleBack = () => {
     setStage((prev) => prev - 1);
   };
-  const handleFile = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setFile(e.target.files[0]);
+
+  const validateAndSetFile = (fileInput: File) => {
+    setErrorMsg(null);
+    const maxFileSize = 5 * 1024 * 1024; // 5MB
+
+    if (fileInput.type !== "application/pdf") {
+      setErrorMsg("Invalid file type. Please upload a PDF.");
+      return;
+    }
+
+    if (fileInput.size > maxFileSize) {
+      setErrorMsg("File is too large. Max size is 5MB.");
+      setFile(null)
+      return;
+    }
+
+    setFile(fileInput);
+    setErrorMsg(null);
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      validateAndSetFile(e.dataTransfer.files[0]);
     }
   };
+
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      validateAndSetFile(e.target.files[0]);
+    }
+  };
+
   const handleSubmit = async () => {
     const url = `${baseURL}/courses/preview`;
-    console.log("sending ", name, desc, file, "to ", url)
-
+    console.log("sending ", name, desc, file, "to ", url);
     const token = await getToken();
     console.log("user", token);
 
@@ -113,21 +157,21 @@ export function CreateCourseForm(props: any) {
       // create form data
       const sendData = new FormData();
       if (file) {
-        sendData.append("title", name)
-        sendData.append("description", desc)
-        sendData.append("file", file)
+        sendData.append("title", name);
+        sendData.append("description", desc);
+        sendData.append("file", file);
       }
       if (!token || token === "undefined") {
-      alert("Please log in again.");
-      return;
+        alert("Please log in again.");
+        return;
       }
       const res = await fetch(url, {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: sendData
-      })
+        body: sendData,
+      });
       if (res.ok) {
         console.log("Upload success");
         const data = await res.json();
@@ -147,9 +191,7 @@ export function CreateCourseForm(props: any) {
         onClick={props.stageChange}
       />
       <section className="bg-white border-1 rounded-lg fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50">
-        <Form
-          action={handleSubmit}
-        >
+        <Form action={handleSubmit}>
           {stage == 1 && (
             <div>
               <div className="flex justify-between m-5">
@@ -208,11 +250,112 @@ export function CreateCourseForm(props: any) {
                 </button>
               </div>
               <hr />
-              <div className="m-5">
-                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors">
-                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
+              <div className="m-5 flex flex-col gap-4">
+                <label
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                  // ปรับ style ตาม state isDragging (ถ้าลากอยู่ให้ขอบเป็นสีน้ำเงินเข้มและพื้นหลังเข้มขึ้น)
+                  className={`flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-xl cursor-pointer transition-colors
+                    ${
+                      isDragging
+                        ? "border-blue-500 bg-blue-100"
+                        : "border-blue-200 bg-blue-50/30 hover:bg-blue-50"
+                    }`}
+                >
+                  <div className="flex flex-col items-center justify-center pt-5 pb-6 min-w-[500px]">
+                    <div
+                      className={`p-3 rounded-full mb-3 ${isDragging ? "bg-blue-200" : "bg-blue-100"}`}
+                    >
+                      <svg
+                        className={`w-6 h-6 ${isDragging ? "text-blue-700" : "text-blue-500"}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                        ></path>
+                      </svg>
+                    </div>
+                    <p className="text-sm text-gray-600">
+                      <span className="font-semibold text-blue-600">
+                        Click to upload
+                      </span>{" "}
+                      or drag and drop
+                    </p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      PDF only (MAX. 5MB)
+                    </p>
+                  </div>
+                  <input
+                    type="file"
+                    name="file"
+                    className="hidden"
+                    accept=".pdf"
+                    required
+                    onChange={handleFileChange}
+                  />
+                </label>
+                {file && (
+                  <div className="flex items-center justify-between p-3 bg-blue-50 border border-blue-100 rounded-lg mt-5">
+                    <div className="flex items-center gap-3 overflow-hidden">
+                      {/* File Icon */}
+                      <div className="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                        <svg
+                          className="w-6 h-6 text-white"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                          />
+                        </svg>
+                      </div>
+
+                      {/* File Info */}
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-sm font-medium text-gray-700 truncate max-w-[500px]">
+                          {file.name}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          {formatFileSize(file.size)} •{" "}
+                          <span className="text-blue-600 font-medium">
+                            Ready
+                          </span>
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Checkmark / Action */}
+                    <div className="flex-shrink-0 text-blue-500 bg-white p-1 rounded-full shadow-sm">
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                )}
+                {errorMsg && (
+                  <div className="flex items-center gap-2 text-red-500 text-sm">
                     <svg
-                      className="w-8 h-8 mb-4 text-gray-500"
+                      className="w-4 h-4"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -221,25 +364,12 @@ export function CreateCourseForm(props: any) {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth="2"
-                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                      ></path>
+                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
                     </svg>
-                    <p className="text-sm text-gray-500">
-                      <span className="font-semibold">Click to upload</span> or
-                      drag and drop
-                    </p>
-                    <p className="text-xs text-gray-400">PDF only (MAX. 5MB)</p>
+                    <span>{errorMsg}</span>
                   </div>
-                  <input
-                    type="file"
-                    name="file"
-                    className="hidden"
-                    accept=".pdf"
-                    required
-                    onChange={handleFile}
-                  />
-                </label>
-                <div className="mt-3">upload status</div>
+                )}
               </div>
               <hr />
               <div className="flex justify-between m-5">
@@ -256,6 +386,11 @@ export function CreateCourseForm(props: any) {
             </div>
           )}
         </Form>
+        {stage == 3 && (
+          <div>
+            <div>stage3</div>
+          </div>
+        )}
       </section>
     </div>
   );
@@ -277,7 +412,7 @@ export function CreateQuizForm(props: any) {
   const [stage, setStage] = useState(1);
   const [status, setStatus] = useState<Status>("idle");
 
-const handleToggleTopic = (topic: string) => {
+  const handleToggleTopic = (topic: string) => {
     let newSelection: string[];
 
     if (selectedTopics.includes(topic)) {
@@ -289,7 +424,7 @@ const handleToggleTopic = (topic: string) => {
     }
     // Sort based on the index in the original 'topics' array
     newSelection.sort((a, b) => topics.indexOf(a) - topics.indexOf(b));
-    
+
     setSelectedTopics(newSelection);
   };
 
@@ -311,7 +446,7 @@ const handleToggleTopic = (topic: string) => {
   };
   const handleClearTopics = () => {
     setSelectedTopics([]);
-  }
+  };
   const handleAddQuestion = () => {};
   return (
     <div>
@@ -379,7 +514,12 @@ const handleToggleTopic = (topic: string) => {
               <section className="m-5 max-h-[50vh] overflow-auto">
                 <div className="flex">
                   <p>Select topic</p>
-                  <button onClick={handleClearTopics} className="ml-auto mr-5 cursor-pointer">clear</button>
+                  <button
+                    onClick={handleClearTopics}
+                    className="ml-auto mr-5 cursor-pointer"
+                  >
+                    clear
+                  </button>
                 </div>
                 <div className="flex flex-wrap gap-3 mt-3">
                   {/* map topics */}
