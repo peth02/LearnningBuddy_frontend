@@ -1,7 +1,8 @@
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import Form from "next/form";
 import React, { ChangeEvent, useState } from "react";
 import { getToken } from "@/lib/session";
+import { useCourseStore, Course } from "@/lib/courseStore";
 
 const baseURL = process.env.NEXT_PUBLIC_BE_BASE_API;
 
@@ -81,6 +82,8 @@ export function CreateCourseForm(props: any) {
   const [file, setFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const setCourse = useCourseStore((state) => state.setCourse);
+  const router = useRouter();
 
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return "0 Bytes";
@@ -114,7 +117,7 @@ export function CreateCourseForm(props: any) {
 
     if (fileInput.size > maxFileSize) {
       setErrorMsg("File is too large. Max size is 5MB.");
-      setFile(null)
+      setFile(null);
       return;
     }
 
@@ -146,6 +149,10 @@ export function CreateCourseForm(props: any) {
       validateAndSetFile(e.target.files[0]);
     }
   };
+  const handleSaveCourse = (course: Course) => {
+    setCourse(course);
+    router.push("/preview");
+  };
 
   const handleSubmit = async () => {
     const url = `${baseURL}/courses/preview`;
@@ -176,6 +183,7 @@ export function CreateCourseForm(props: any) {
         console.log("Upload success");
         const data = await res.json();
         console.log("Server response:", data);
+        handleSaveCourse(data);
       } else {
         const errorText = await res.text();
         console.error("Upload failed:", errorText);
