@@ -84,7 +84,7 @@ export function CreatePreviewCourseForm(props: any) {
   // 1. เพิ่ม State สำหรับสถานะต่างๆ
   const [isLoading, setIsLoading] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<
-    "idle" | "success" | "error"
+    "idle" | "submitting" | "success" | "error"
   >("idle");
   const [statusMsg, setStatusMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -157,8 +157,10 @@ export function CreatePreviewCourseForm(props: any) {
   };
 
   const handleSubmit = async () => {
+    setSubmitStatus("submitting");
     setIsLoading(true);
-    setSubmitStatus("idle");
+    
+    await new Promise((resolve) => setTimeout(resolve, 50));
     const url = `${baseURL}/courses/preview`;
     console.log("sending ", name, desc, file, "to ", url);
     const token = await getToken();
@@ -403,9 +405,10 @@ export function CreatePreviewCourseForm(props: any) {
           )}
         </Form>
         {/* Loading & Result Overlay */}
-        {(isLoading || submitStatus !== "idle") && (
+        {submitStatus !== "idle" && (
           <div className="fixed inset-0 bg-white/80 backdrop-blur-sm z-[60] flex flex-col items-center justify-center p-6 text-center">
-            {isLoading && (
+            {/* 1. แสดงตอนกำลังส่งข้อมูล (Submitting) */}
+            {submitStatus === "submitting" && (
               <div className="flex flex-col items-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
                 <p className="text-lg font-medium text-gray-700">
@@ -414,8 +417,25 @@ export function CreatePreviewCourseForm(props: any) {
               </div>
             )}
 
-            {!isLoading && submitStatus === "success" && (
+            {/* 2. แสดงเมื่อสำเร็จ (Success) */}
+            {submitStatus === "success" && (
               <div className="max-w-sm bg-white p-8 rounded-2xl shadow-xl border border-green-100">
+                <div className="flex justify-center mb-4 text-green-500">
+                  {/* Success Icon */}
+                  <svg
+                    className="w-16 h-16"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
                 <h3 className="text-xl font-bold text-gray-800 mb-2">
                   Success!
                 </h3>
@@ -429,9 +449,25 @@ export function CreatePreviewCourseForm(props: any) {
               </div>
             )}
 
-            {!isLoading && submitStatus === "error" && (
+            {/* 3. แสดงเมื่อเกิดข้อผิดพลาด (Error) */}
+            {submitStatus === "error" && (
               <div className="max-w-sm bg-white p-8 rounded-2xl shadow-xl border border-red-100">
-                <div className="text-red-500 text-5xl mb-4">Error Icon</div>
+                <div className="flex justify-center mb-4 text-red-500">
+                  {/* Error Icon */}
+                  <svg
+                    className="w-16 h-16"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
                 <h3 className="text-xl font-bold text-gray-800 mb-2">Oops!</h3>
                 <p className="text-gray-600 mb-6">{statusMsg}</p>
                 <button

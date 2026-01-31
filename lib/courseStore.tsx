@@ -31,33 +31,6 @@ interface CourseStore {
   getTopicById: (id: number) => Topic | undefined;
 }
 
-const mockData: Course = {
-  title: "Advanced Software Engineering",
-  description: "Deep dive into object-oriented principles and design patterns.",
-  topics: [
-    {
-      order_index: 1,
-      title: "Creating and Destroying Objects",
-      description:
-        "Principles of objalskdfj;alksdfj;alkdsfj;alksdjf;laksdjf;lajs;dlfkja;sdlkfja;lalskdfj;alksdfj;alkdsfj;alksdjf;laksdjf;lajs;dlfkja;sdlkfja;lalskdfj;alksdfj;alkdsfj;alksdjf;laksdjf;lajs;dlfkja;sdlkfja;lalskdfj;alksdfj;alkdsfj;alksdjf;laksdjf;lajs;dlfkja;sdlkfja;lalskdfj;alksdfj;alkdsfj;alksdjf;laksdjf;lajs;dlfkja;sdlkfja;lalskdfj;alksdfj;alkdsfj;alksdjf;laksdjf;lajs;dlfkja;sdlkfja;lalskdfj;alksdfj;alkdsfj;alksdjf;laksdjf;lajs;dlfkja;sdlkfja;lalskdfj;alksdfj;alkdsfj;alksdjf;laksdjf;lajs;dlfkja;sdlkfja;lalskdfj;alksdfj;alkdsfj;alksdjf;laksdjf;lajs;dlfkja;sdlkfja;lalskdfj;alksdfj;alkdsfj;alksdjf;laksdjf;lajs;dlfkja;sdlkfja;lalskdfj;alksdfj;alkdsfj;alksdjf;laksdjf;lajs;dlfkja;sdlkfja;l  ect creation and destruction.adsfojadsflkjasld;kfja;lkdsjf;lakdsjfa;lkdsjf..",
-      raw_text:
-        "THIS chapter concerns..alskdfj;alksdfj;alkdsfj;alksdjf;laksdjf;lajs;dlfkja;sdlkfja;lalskdfj;alksdfj;alkdsfj;alksdjf;laksdjf;lajs;dlfkja;sdlkfja;l.",
-      summary_note:
-        "- **Object Creation Principles**.alskdfj;alksdfj;alkdsfj;alksdjf;laksdjf;lajs;dlfkja;sdlkfja;lalskdfj;alksdfj;alkdsfj;alksdjf;laksdjf;lajs;dlfkja;sdlkfja;lalskdfj;alksdfj;alkdsfj;alksdjf;laksdjf;lajs;dlfkja;sdlkfja;lalskdfj;alksdfj;alkdsfj;alksdjf;laksdjf;lajs;dlfkja;sdlkfja;l..",
-    },
-    {
-      order_index: 2,
-      title: "Methods Common to All Objects",
-      description:
-        "Overriding equals, hashCode, toString.alkdsfja;lkdsfja;lkdsjfa;lkdjf;lakdjfa;lkdsjfalkds;fj..",
-      raw_text:
-        ".alskdfj;alksdfj;alkdsfj;alksdjf;laksdjf;lajs;dlfkja;sdlkfja;ldskfj..",
-      summary_note:
-        ".alskdfj;alksdfj;alkdsfj;alksdjf;laksdjf;lajs;dlfkja;sdlkfja;lalskdfj;alksdfj;alkdsfj;alksdjf;laksdjf;lajs;dlfkja;sdlkfja;lalskdfj;alksdfj;alkdsfj;alksdjf;laksdjf;lajs;dlfkja;sdlkfja;l..",
-    },
-  ],
-};
-
 // export const useCourseStore = create<CourseStore>((set, get) => ({
 
 //   course: mockData,
