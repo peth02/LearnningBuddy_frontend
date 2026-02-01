@@ -18,3 +18,20 @@ export async function getCourses() {
     console.log(res)
     return await res.json();
 }
+
+export async function getCourseByID(id:any) {
+    const token = await getToken();
+    const url = `${baseURL}/courses/${id}`
+    const request = new Request(url, {
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ${token}`
+        }
+    });
+    const res = await fetch(request);
+    if (!res.ok) {
+        throw new Error("Fail to fetch");
+    }
+    console.log(res)
+    return await res.json();
+}

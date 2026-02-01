@@ -1,4 +1,4 @@
-export function Topics(items: any) {
+export function Topics() {
   return (
     <section className="bg-white rounded-lg border-2 border-gray-300 px-10 py-7 min-h-[100px]">
       <div className="flex gap-5">

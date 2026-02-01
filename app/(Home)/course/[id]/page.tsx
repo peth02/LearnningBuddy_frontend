@@ -1,13 +1,23 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Topics, Flashcards, Quizzes } from "@/components/CourseContentTabs";
 import { CreateQuizForm, EditCourseForm } from "@/components/Forms";
+import { getCourseByID } from "@/services/course";
+import { useParams, useSearchParams } from "next/navigation";
+import { Course } from "@/types/Course";
 
-export default function Course() {
-  const data = ["1", "2"];
+export default function CourseId() {
+  const [data, setData] = useState<Course>();
   const [content, setContent] = useState("topic");
   const [editCourse, setEditCourse] = useState(false);
   const [createQuiz, setCreateQuiz] = useState(false);
+
+  const params = useParams();
+  const id = params.id;
+
+  const handleUpdateMeta = (field: keyof Course, value: any) => {
+    setData((prev) => (prev ? { ...prev, [field]: value }: prev));
+  };
 
   const HandleEdit = () => {
     setEditCourse((prev) => !prev);
@@ -15,15 +25,33 @@ export default function Course() {
   const handleCreateQuiz = () => {
     setCreateQuiz((prev) => !prev);
   };
+  useEffect(() => {
+    if (!id) {
+      return;
+    }
+    const fetchData = async () => {
+      try {
+        const response = await getCourseByID(id);
+        console.log("Data loaded:", response);
+        setData(response);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchData();
+  }, [id]);
+
   return (
     <div className="flex flex-col min-h-screen gap-7 py-10 px-20 bg-gray-100">
       <section className="bg-white rounded-lg shadow-sm p-10">
-        {!editCourse ? (
+        {!editCourse && data ? (
           <div className="flex">
             <div>
-              <div>head</div>
-              <div>description</div>
-              <div>courses progress</div>
+              <h2 className="text-xl font-bold">{data.title}</h2>
+              <div>Description</div>
+              <div>{data.description}</div>
+              {/* <div></div> */}
             </div>
             <a
               onClick={HandleEdit}
@@ -33,7 +61,14 @@ export default function Course() {
             </a>
           </div>
         ) : (
-          <EditCourseForm stateChange={HandleEdit} />
+          editCourse &&
+          data && (
+            <EditCourseForm
+              data={data}
+              setDataForm={handleUpdateMeta}
+              stateChange={HandleEdit}
+            />
+          )
         )}
         {/* enroll */}
       </section>
@@ -94,11 +129,14 @@ export default function Course() {
             <div className="p-10">
               <div className="place-content-end">
                 {/*  only creator can see */}
-                <button onClick={handleCreateQuiz} className="mb-5 mr-auto min-w-[100px] bg-blue-500 text-white font-bold p-2 rounded-lg text-center cursor-pointer hover:bg-blue-600">
+                <button
+                  onClick={handleCreateQuiz}
+                  className="mb-5 mr-auto min-w-[100px] bg-blue-500 text-white font-bold p-2 rounded-lg text-center cursor-pointer hover:bg-blue-600"
+                >
                   + Create Quiz
                 </button>
-                { createQuiz && (
-                  <CreateQuizForm stageChange={handleCreateQuiz}/>
+                {createQuiz && (
+                  <CreateQuizForm stageChange={handleCreateQuiz} />
                 )}
               </div>
               <div className="grid grid-cols-2 gap-5">
@@ -113,9 +151,7 @@ export default function Course() {
                   + Add Topic
                 </button>
               </div>
-              <div className="flex flex-col gap-4">
-                <Topics />
-              </div>
+              <div className="flex flex-col gap-4">{/* <Topics /> */}</div>
             </div>
           ) : null}
           {/* <Topics items={data}/> */}

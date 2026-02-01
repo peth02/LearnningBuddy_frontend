@@ -2,16 +2,55 @@ import { redirect, useRouter } from "next/navigation";
 import Form from "next/form";
 import React, { ChangeEvent, useState } from "react";
 import { getToken } from "@/lib/session";
-import { useCourseStore, Course } from "@/lib/courseStore";
+import { useCourseStore } from "@/lib/courseStore";
+import { EditCourseFormProps } from "@/types/Form";
+import router from "next/router";
 
 const baseURL = process.env.NEXT_PUBLIC_BE_BASE_API;
 
-export function EditCourseForm(props: any) {
-  const EditCourseHandler = () => {
-    alert("Successfully edit course");
-    console.log("edit Course");
-    props.stateChange();
-    // location.reload()
+export function EditCourseForm({
+  data,
+  setDataForm,
+  stateChange,
+}: EditCourseFormProps) {
+  const EditCourseHandler = async (formData: FormData) => {
+    const url = `${baseURL}/courses/${data.course_id}`;
+    const token = await getToken();
+    try {
+
+      const sendData = {
+        title: formData.get("name")?.toString() || data.title,
+        description:
+          formData.get("description")?.toString() || data.description,
+        is_published: formData.get("isPublic") === "on",
+      };
+
+      if (!token || token === "undefined") {
+        alert("Please log in again.");
+        router.push("/login");
+        return;
+      }
+      const res = await fetch(url, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-type": "Application/json",
+        },
+        body: JSON.stringify(sendData),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        console.log("Server response:", data);
+        alert("Successfully edit course");
+        console.log("edit Course");
+        stateChange();
+      } else {
+        const errorText = await res.text();
+        console.error("Upload failed:", errorText);
+      }
+    } catch (error: any) {
+      console.log("error", error);
+    }
   };
   const DeleteCourseHandler = () => {
     const remove = confirm("do you want to delete this course");
@@ -30,22 +69,29 @@ export function EditCourseForm(props: any) {
         <input
           name="name"
           type="text"
-          required={true}
-          defaultValue={"1"}
+          required
+          defaultValue={data?.title}
           placeholder="Name"
+          onChange={(e) => setDataForm("title", e.target.value)}
           className="border-1"
         />
 
         <input
           name="description"
           type="text"
-          required={true}
-          defaultValue={"stesilatf"}
+          required
+          defaultValue={data?.description}
+          onChange={(e) => setDataForm("description", e.target.value)}
           placeholder="Description"
           className="border-1"
         />
         <label>
-          <input name="isPublic" type="checkbox" defaultChecked={true} />
+          <input
+            name="isPublic"
+            type="checkbox"
+            defaultChecked={data?.is_published}
+            onChange={(e) => setDataForm("is_published", e.target.value)}
+          />
           <span>Public</span>
         </label>
         <div className="flex gap-10">
@@ -64,7 +110,7 @@ export function EditCourseForm(props: any) {
           </button>
           <button
             type="button"
-            onClick={props.stateChange}
+            onClick={stateChange}
             className="bg-white text-black p-2 border-2 border-gray-400 rounded-lg cursor-pointer hover:bg-gray-100"
           >
             Cancle
@@ -159,7 +205,7 @@ export function CreatePreviewCourseForm(props: any) {
   const handleSubmit = async () => {
     setSubmitStatus("submitting");
     setIsLoading(true);
-    
+
     await new Promise((resolve) => setTimeout(resolve, 50));
     const url = `${baseURL}/courses/preview`;
     console.log("sending ", name, desc, file, "to ", url);
