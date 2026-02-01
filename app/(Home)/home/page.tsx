@@ -3,10 +3,12 @@ import CoursesCard from "@/components/CoursesCard";
 import { SearchBar } from "@/components/Searchbar";
 import { useEffect, useState } from "react";
 import { getPokemon } from "@/services/pokemon";
+import { getCourses } from "@/services/course";
+import { CourseMetaData } from "@/types/Course";
 
 export default function Home() {
   const [search, setSearch] = useState<string>("");
-  const [data, setData] = useState([]);
+  const [datas, setDatas] = useState([]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
@@ -16,9 +18,9 @@ export default function Home() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await getPokemon();
-        console.log("Data loaded:", response.results);
-        setData(response.results);
+        const response = await getCourses();
+        console.log("Data loaded:", response);
+        setDatas(response);
       } catch (error) {
         console.error(error);
       }
@@ -37,8 +39,8 @@ export default function Home() {
       />
       <div className="grid grid-cols-3 grid-flow-2 gap-4">
         {
-          data.map((value:any, index)=> (
-            <CoursesCard key={index} creator={value.name} description={value.url}/>
+          datas.map((data:CourseMetaData, index)=> (
+            <CoursesCard key={index} id={data.id} title={data.title} description={data.description} is_published={data.is_published} totalTopics={data.totalTopics}/>
           ))
         }
       </div>

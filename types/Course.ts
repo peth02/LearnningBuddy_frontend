@@ -3,3 +3,11 @@ export interface Course {
     description: string,
     url: string,
 }
+
+export interface CourseMetaData {
+  id: string;
+  title: string;
+  description: string;
+  is_published: boolean;
+  totalTopics: number;
+}
