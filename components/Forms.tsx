@@ -13,11 +13,12 @@ export function EditCourseForm({
   setDataForm,
   stateChange,
 }: EditCourseFormProps) {
+  const router = useRouter();
+
   const EditCourseHandler = async (formData: FormData) => {
     const url = `${baseURL}/courses/${data.course_id}`;
     const token = await getToken();
     try {
-
       const sendData = {
         title: formData.get("name")?.toString() || data.title,
         description:
@@ -52,11 +53,38 @@ export function EditCourseForm({
       console.log("error", error);
     }
   };
-  const DeleteCourseHandler = () => {
+
+  const DeleteCourseHandler = async () => {
     const remove = confirm("do you want to delete this course");
     if (remove) {
-      console.log("delete Course");
-      // redirect("/my_created_courses");
+      console.log("deleting Course");
+      const url = `${baseURL}/courses/${data.course_id}`;
+      const token = await getToken();
+      try {
+        if (!token || token === "undefined") {
+          alert("Please log in again.");
+          router.push("/login");
+          return;
+        }
+        const res = await fetch(url, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-type": "Application/json",
+          },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          console.log("Server response:", data);
+          alert("Successfully delet course");
+          router.push("/home");
+        } else {
+          const errorText = await res.text();
+          console.error("Delete failed:", errorText);
+        }
+      } catch (error: any) {
+        console.log("error", error);
+      }
     } else {
       console.log("phewww almost delete a course");
     }
@@ -64,8 +92,9 @@ export function EditCourseForm({
 
   return (
     <section>
-      <div>Edit course</div>
+      <h2 className="text-xl">Edit course</h2>
       <Form action={EditCourseHandler} className="flex flex-col mt-5 gap-5">
+        <label>Title</label>
         <input
           name="name"
           type="text"
@@ -73,9 +102,9 @@ export function EditCourseForm({
           defaultValue={data?.title}
           placeholder="Name"
           onChange={(e) => setDataForm("title", e.target.value)}
-          className="border-1"
+          className="flex h-11 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
         />
-
+        <label>Description</label>
         <input
           name="description"
           type="text"
@@ -83,7 +112,7 @@ export function EditCourseForm({
           defaultValue={data?.description}
           onChange={(e) => setDataForm("description", e.target.value)}
           placeholder="Description"
-          className="border-1"
+          className="flex h-11 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
         />
         <label>
           <input
@@ -91,8 +120,9 @@ export function EditCourseForm({
             type="checkbox"
             defaultChecked={data?.is_published}
             onChange={(e) => setDataForm("is_published", e.target.value)}
+            className="rounded border-gray-300 accent-blue-600 cursor-pointer"
           />
-          <span>Public</span>
+          <span> Public this course</span>
         </label>
         <div className="flex gap-10">
           <button

@@ -51,9 +51,9 @@ export default function MyCreatedCourses() {
       />
       <div className="grid grid-cols-3 grid-flow-2 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {
-          data.map((value:any, index)=> (
-            <CoursesCard key={index} creator={value.name} description={value.url}/>
-          ))
+          // data.map((value:any, index)=> (
+          //   <CoursesCard key={index} creator={value.name} description={value.url}/>
+          // ))
         }
       </div>
       {
@@ -61,9 +61,9 @@ export default function MyCreatedCourses() {
           <CreatePreviewCourseForm stageChange={handleCreateCourse}/>
         )
       }
-      <div className="justify-items-center">
+      {/* <div className="justify-items-center">
         <PaginationTemp page={page} pageSize={9} totalCount={100}/>
-      </div>
+      </div> */}
     </div>
   );
 }

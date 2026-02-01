@@ -16,7 +16,7 @@ export default function MyLearning() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await getPokemon();
+        const response = await getPokemon(1);
         console.log("Data loaded:", response.results);
         setData(response.results);
       } catch (error) {
@@ -36,11 +36,11 @@ export default function MyLearning() {
         setSearch={setSearch}
       />
       <div className="grid grid-cols-3 grid-flow-2 gap-4">
-        {
+        {/* {
           data.map((value:any, index)=> (
             <CoursesCard key={index} creator={value.name} description={value.url}/>
           ))
-        }
+        } */}
       </div>
     </div>
   );
