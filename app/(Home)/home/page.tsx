@@ -2,7 +2,6 @@
 import CoursesCard from "@/components/CoursesCard";
 import { SearchBar } from "@/components/Searchbar";
 import { useEffect, useState } from "react";
-import { getPokemon } from "@/services/pokemon";
 import { getCourses } from "@/services/course";
 import { CourseMetaData } from "@/types/Course";
 
@@ -12,13 +11,13 @@ export default function Home() {
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
-    console.log(search);
   };
-
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await getCourses();
+        let params = `?search=${search}`
+        const response = await getCourses(params);
         console.log("Data loaded:", response);
         setDatas(response);
       } catch (error) {
@@ -27,7 +26,7 @@ export default function Home() {
     };
 
     fetchData();
-  }, []);
+  }, [search]);
 
   return (
     <div className="flex flex-col min-h-screen gap-7 py-10 px-20 bg-gray-100">
@@ -38,11 +37,16 @@ export default function Home() {
         setSearch={setSearch}
       />
       <div className="grid grid-cols-3 grid-flow-2 gap-4">
-        {
-          datas.map((data:CourseMetaData, index)=> (
-            <CoursesCard key={index} id={data.id} title={data.title} description={data.description} is_published={data.is_published} totalTopics={data.totalTopics}/>
-          ))
-        }
+        {datas.map((data: CourseMetaData, index) => (
+          <CoursesCard
+            key={index}
+            id={data.id}
+            title={data.title}
+            description={data.description}
+            is_published={data.is_published}
+            totalTopics={data.totalTopics}
+          />
+        ))}
       </div>
     </div>
   );

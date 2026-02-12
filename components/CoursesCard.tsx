@@ -32,7 +32,7 @@ export default function CoursesCard({
         href={`/course/${id}`}
         className="bg-blue-500 text-white font-bold p-2 rounded-lg text-center hover:bg-blue-600"
       >
-        Manage
+        View
       </Link>
     </div>
   );
