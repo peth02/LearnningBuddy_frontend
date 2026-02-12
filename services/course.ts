@@ -23,9 +23,9 @@ export async function getCourses(params?: any) {
   return await res.json();
 }
 
-export async function getMyCreatedCourses() {
+export async function getMyCreatedCourses(params?: any) {
   const token = await getToken();
-  const url = `${baseURL}/courses/my`;
+  const url = `${baseURL}/courses/my${params}`;
   if (!token) {
     console.warn("Login is required");
     return [];
@@ -44,9 +44,9 @@ export async function getMyCreatedCourses() {
   return await res.json();
 }
 
-export async function getMyEnrolledCourses() {
+export async function getMyEnrolledCourses(params?: any) {
   const token = await getToken();
-  const url = `${baseURL}/courses/enrolled`;
+  const url = `${baseURL}/courses/enrolled${params}`;
   if (!token) {
     console.warn("Login is required");
     return [];

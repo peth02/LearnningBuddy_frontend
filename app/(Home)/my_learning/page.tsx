@@ -1,31 +1,33 @@
 "use client";
 import CoursesCard from "@/components/CoursesCard";
 import { SearchBar } from "@/components/Searchbar";
+import { getMyCreatedCourses, getMyEnrolledCourses } from "@/services/course";
+import { CourseMetaData } from "@/types/Course";
 import { useEffect, useState } from "react";
-import { getPokemon } from "@/services/pokemon";
 
 export default function MyLearning() {
   const [search, setSearch] = useState<string>("");
-  const [data, setData] = useState([]);
+  const [datas, setDatas] = useState([]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
-    console.log(search);
   };
-
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await getPokemon(1);
-        console.log("Data loaded:", response.results);
-        setData(response.results);
+        let params = `?search=${search}`
+        const response = await getMyEnrolledCourses(params);
+        console.log("Data loaded:", response);
+        setDatas(response);
       } catch (error) {
         console.error(error);
       }
     };
 
     fetchData();
-  }, []);
+  }, [search]);
+
 
   return (
     <div className="flex flex-col min-h-screen gap-7 py-10 px-20 bg-gray-100">
@@ -36,11 +38,16 @@ export default function MyLearning() {
         setSearch={setSearch}
       />
       <div className="grid grid-cols-3 grid-flow-2 gap-4">
-        {/* {
-          data.map((value:any, index)=> (
-            <CoursesCard key={index} creator={value.name} description={value.url}/>
-          ))
-        } */}
+        {datas.map((data: CourseMetaData, index) => (
+          <CoursesCard
+            key={index}
+            id={data.id}
+            title={data.title}
+            description={data.description}
+            is_published={data.is_published}
+            totalTopics={data.totalTopics}
+          />
+        ))}
       </div>
     </div>
   );

@@ -6,19 +6,18 @@ import { getPokemon } from "@/services/pokemon";
 import { CreatePreviewCourseForm } from "@/components/Forms";
 import { PaginationTemp } from "@/components/Pagination";
 import { useSearchParams } from "next/navigation";
+import { CourseMetaData } from "@/types/Course";
+import { getMyCreatedCourses } from "@/services/course";
 
 export default function MyCreatedCourses() {
   const [search, setSearch] = useState<string>("");
-  const [data, setData] = useState([]);
+  const [datas, setDatas] = useState([]);
   const [createCourse, setCreateCourse] = useState(false);
   const searchParams = useSearchParams();
   const page = Number(searchParams.get("page")) || 1;
 
-  // console.log("page :", page)
-
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
-    // console.log(search);
   };
   const handleCreateCourse = () => {
     setCreateCourse((prev)=>(!prev))
@@ -27,16 +26,17 @@ export default function MyCreatedCourses() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await getPokemon(page);
-        console.log("Data loaded:", response.results);
-        setData(response.results);
+        let params = `?search=${search}`
+        const response = await getMyCreatedCourses(params);
+        console.log("Data loaded:", response);
+        setDatas(response);
       } catch (error) {
         console.error(error);
       }
     };
 
     fetchData();
-  }, [page]);
+  }, [search]);
 
   return (
     <div className="flex flex-col min-h-screen gap-7 py-10 px-20 bg-gray-100">
@@ -50,11 +50,16 @@ export default function MyCreatedCourses() {
         setSearch={setSearch}
       />
       <div className="grid grid-cols-3 grid-flow-2 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {
-          // data.map((value:any, index)=> (
-          //   <CoursesCard key={index} creator={value.name} description={value.url}/>
-          // ))
-        }
+        {datas.map((data: CourseMetaData, index) => (
+          <CoursesCard
+            key={index}
+            id={data.id}
+            title={data.title}
+            description={data.description}
+            is_published={data.is_published}
+            totalTopics={data.totalTopics}
+          />
+        ))}
       </div>
       {
         createCourse && (
