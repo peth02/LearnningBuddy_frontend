@@ -27,7 +27,7 @@ export async function loginAction(formData: FormData) {
 
     if (res.ok && name) {
       const data = await res.json();
-      await createSession("1", name, data.token);
+      await createSession(name, data.token);
       success = true;
     } else {
       console.log("status :", res.status)

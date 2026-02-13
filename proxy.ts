@@ -17,7 +17,7 @@ export default async function proxy(req: NextRequest) {
   const session = await decrypt(cookie)
  
   // 4. Redirect to /login if the user is not authenticated
-  if (isProtectedRoute && !session?.userId) {
+  if (isProtectedRoute && !session?.userName) {
     console.log("Unauthorized redirect to /home")
     return NextResponse.redirect(new URL('/home', req.nextUrl))
   }
@@ -25,7 +25,7 @@ export default async function proxy(req: NextRequest) {
   // 5. Redirect to /dashboard if the user is authenticated
   if (
     isPublicRoute &&
-    session?.userId &&
+    session?.userName &&
     !req.nextUrl.pathname.startsWith('/home')
   ) {
     return NextResponse.redirect(new URL('/home', req.nextUrl))
