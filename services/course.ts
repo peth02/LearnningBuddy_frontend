@@ -65,9 +65,9 @@ export async function getMyEnrolledCourses(params?: any) {
   return await res.json();
 }
 
-export async function getCourseByID(id: any) {
+export async function getCourseByID(course_id: any) {
   const token = await getToken();
-  const url = `${baseURL}/courses/${id}`;
+  const url = `${baseURL}/courses/${course_id}`;
   if (!token) {
     console.warn("Login is required");
     return [];
@@ -81,6 +81,27 @@ export async function getCourseByID(id: any) {
   const res = await fetch(request);
   if (!res.ok) {
     throw new Error("Fail to fetch");
+  }
+  console.log(res);
+  return await res.json();
+}
+
+export async function enrollCourse(course_id: any) {
+  const token = await getToken();
+  const url = `${baseURL}/courses/${course_id}/enroll`;
+  if (!token) {
+    console.warn("Login is required");
+    return [];
+  }
+  const request = new Request(url, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  const res = await fetch(request);
+  if (!res.ok) {
+    throw new Error("Fail to enroll");
   }
   console.log(res);
   return await res.json();

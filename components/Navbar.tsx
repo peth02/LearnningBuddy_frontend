@@ -29,10 +29,10 @@ export function HomeNavbar() {
     fetchUser();
   }, []);
 
-  function handleLogout() {
+  async function handleLogout() {
     setUser(null);
-    logoutAction();
-    redirect("/home");
+    await logoutAction();
+    location.reload();
   }
 
   return (
@@ -58,15 +58,25 @@ export function HomeNavbar() {
           ))}
         </div>
         <div className="flex flex-col mt-auto">
-          <hr/>
+          <hr />
           {!user ? (
             <div className="flex flex-col mt-6 gap-6">
-              <Link href={"/login"} className="bg-blue-500 text-white font-bold p-2 rounded-lg text-center">Login</Link>
+              <Link
+                href={"/login"}
+                className="bg-blue-500 text-white font-bold p-2 rounded-lg text-center cursor-pointer hover:bg-blue-600"
+              >
+                Login
+              </Link>
             </div>
           ) : (
             <div className="flex flex-col mt-6 gap-6">
               <div>Welcome, {user.userName}</div>
-              <button onClick={handleLogout} className="bg-red-500 text-white font-bold p-2 rounded-lg cursor-pointer hover:bg-red-600">Logout</button>
+              <button
+                onClick={handleLogout}
+                className="bg-red-500 text-white font-bold p-2 rounded-lg cursor-pointer hover:bg-red-600"
+              >
+                Logout
+              </button>
             </div>
           )}
         </div>

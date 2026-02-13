@@ -1,7 +1,7 @@
 "use client";
 import CoursesCard from "@/components/CoursesCard";
 import { SearchBar } from "@/components/Searchbar";
-import { getMyCreatedCourses, getMyEnrolledCourses } from "@/services/course";
+import { getMyEnrolledCourses } from "@/services/course";
 import { CourseMetaData } from "@/types/Course";
 import { useEffect, useState } from "react";
 

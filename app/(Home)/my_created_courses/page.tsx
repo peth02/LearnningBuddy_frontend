@@ -2,7 +2,6 @@
 import CoursesCard from "@/components/CoursesCard";
 import { SearchBar } from "@/components/Searchbar";
 import { useEffect, useState } from "react";
-import { getPokemon } from "@/services/pokemon";
 import { CreatePreviewCourseForm } from "@/components/Forms";
 import { PaginationTemp } from "@/components/Pagination";
 import { useSearchParams } from "next/navigation";
