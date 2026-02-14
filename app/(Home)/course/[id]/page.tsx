@@ -1,9 +1,14 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Topics, Flashcards, Quizzes } from "@/components/CourseContentTabs";
+import {
+  Topics,
+  Flashcards,
+  Quizzes,
+  Topics2,
+} from "@/components/CourseContentTabs";
 import { CreateQuizForm, EditCourseForm } from "@/components/Forms";
 import { enrollCourse, getCourseByID } from "@/services/course";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Course } from "@/types/Course";
 
 export default function CourseId() {
@@ -12,6 +17,7 @@ export default function CourseId() {
   const [editCourse, setEditCourse] = useState(false);
   const [createQuiz, setCreateQuiz] = useState(false);
 
+  const router = useRouter();
   const params = useParams();
   const id = params.id;
 
@@ -30,8 +36,16 @@ export default function CourseId() {
       location.reload();
     }
   };
-  const HandleEdit = () => {
+  const handleEdit = () => {
     setEditCourse((prev) => !prev);
+  };
+  const handleAddTopic = () => {};
+  const handleDelTopic = (topic_id: string) => {
+    console.log("del topic", topic_id);
+    
+  };
+  const handleNavigateToTopic = (topic_id: string) => {
+    router.push(`/course/${id}/topic/${topic_id}`); // เปลี่ยน path ตามที่คุณตั้งไว้
   };
   const handleCreateQuiz = () => {
     setCreateQuiz((prev) => !prev);
@@ -92,7 +106,7 @@ export default function CourseId() {
             </div>
             {data.is_owner ? (
               <a
-                onClick={HandleEdit}
+                onClick={handleEdit}
                 className="ml-auto cursor-pointer h-fit text-gray-600 underline"
               >
                 Edit
@@ -105,7 +119,7 @@ export default function CourseId() {
             <EditCourseForm
               data={data}
               setDataForm={handleUpdateMeta}
-              stateChange={HandleEdit}
+              stateChange={handleEdit}
             />
           )
         )}
@@ -151,6 +165,7 @@ export default function CourseId() {
         </nav>
         {/* <hr className="mb-3 bg-gray-300 h-[1px] border-none"/> */}
         <div>
+          {/* content */}
           {content == "flashcard" ? (
             <div className="p-10">
               <div className="place-content-end">
@@ -196,6 +211,17 @@ export default function CourseId() {
                   </button>
                 ) : null}
               </div>
+              {data?.topics.map((topic, index) => (
+                <div key={index} className="mt-5">
+                  <Topics2
+                    handleNavigate={() => handleNavigateToTopic(topic.topicId)}
+                    handleDel={() => handleDelTopic(topic.topicId)}
+                    index={index}
+                    topic={topic}
+                    isOwner={data.is_owner}
+                  ></Topics2>
+                </div>
+              ))}
               <div className="flex flex-col gap-4">{/* <Topics /> */}</div>
             </div>
           ) : null}

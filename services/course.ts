@@ -106,3 +106,24 @@ export async function enrollCourse(course_id: any) {
   console.log(res);
   return await res.json();
 }
+
+export async function delTopic(topic_id: any) {
+  const token = await getToken();
+  const url = `${baseURL}/courses/${topic_id}/enroll`;
+  if (!token) {
+    console.warn("Login is required");
+    return [];
+  }
+  const request = new Request(url, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  const res = await fetch(request);
+  if (!res.ok) {
+    throw new Error("Fail to enroll");
+  }
+  console.log(res);
+  return await res.json();
+}

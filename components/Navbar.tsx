@@ -3,12 +3,12 @@ import Link from "next/link";
 import { logoutAction } from "@/lib/action";
 import { getUser } from "@/lib/session";
 import { useEffect, useState } from "react";
-import { usePathname, redirect } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 export function HomeNavbar() {
   const [user, setUser] = useState<any>(null);
   const path = usePathname();
-
+  const router = useRouter();
   let pages;
   if (user) {
     pages = new Map([
@@ -32,7 +32,7 @@ export function HomeNavbar() {
   async function handleLogout() {
     setUser(null);
     await logoutAction();
-    location.reload();
+    router.push("/home");
   }
 
   return (
