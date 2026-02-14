@@ -6,9 +6,9 @@ export default function CoursesCard(
   creator?: boolean,
 ) {
   return (
-    <div className="flex flex-col max-w-full py-7 px-5 gap-4 bg-white rounded-lg border-2 border-gray-300 text-wrap">
+    <div className="flex flex-col max-w-full h-fit py-7 px-5 gap-4 bg-white rounded-lg border-2 border-gray-300 text-wrap">
       <div className="flex justify-between">
-        <h4 className="text-l font-bold uppercase">{title}</h4>
+        <h4 className="text-l font-bold uppercase break-all mr-5">{title}</h4>
         {is_published ? (
           <div className="text-green-500 bg-green-200 px-2 py-1 rounded-lg font-bold text-sm h-fit w-fit">
             Public
@@ -19,10 +19,9 @@ export default function CoursesCard(
           </div>
         )}
       </div>
-      <p className="break-all">{description}</p>
+      <p className="break-all mr-5">{description}</p>
       <div className="flex justify-between text-gray-500">
         <div>{totalTopics} topics</div>
-        {/* <div>total quizzes</div> */}
       </div>
       
       {is_published ? (

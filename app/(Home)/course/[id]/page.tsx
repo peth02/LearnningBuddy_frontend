@@ -83,7 +83,7 @@ export default function CourseId() {
       }
     }
   };
-  
+
   const handleNavigateToTopic = (topic_id: string) => {
     router.push(`/course/${id}/topic/${topic_id}`); // เปลี่ยน path ตามที่คุณตั้งไว้
   };
@@ -119,7 +119,7 @@ export default function CourseId() {
           {!editCourse && data ? (
             <div className="flex grow-0 w-full">
               <div className=" text-m text-wrap w-full">
-                <h2 className="text-xl font-bold uppercase">{data.title}</h2>
+                <h2 className="text-xl font-bold uppercase break-all mr-20">{data.title}</h2>
                 {data.is_published ? (
                   <div className="mt-2 text-green-500 bg-green-200 px-2 py-1 rounded-lg font-bold text-sm h-fit w-fit">
                     Public
@@ -131,7 +131,7 @@ export default function CourseId() {
                 )}
                 <div className="mt-7">
                   <h3 className="font-semibold">Description :</h3>
-                  <div className="text-gray-800 break-all">
+                  <div className="text-gray-800 break-all mr-20">
                     {data.description}
                   </div>
                 </div>
