@@ -1,4 +1,5 @@
 import { getToken } from "@/lib/session";
+import { Course } from "@/types/Course";
 
 const baseURL = process.env.NEXT_PUBLIC_BE_BASE_API;
 
@@ -86,6 +87,43 @@ export async function getCourseByID(course_id: any) {
   return await res.json();
 }
 
+export async function createCourse(course: any) {
+  console.log("Ready to send to API:", course);
+  const url = `${baseURL}/courses`;
+  const token = await getToken();
+  try {
+    // create form data
+    if (course) {
+      const sendData = {
+        title: course.title,
+        description: course.description,
+        is_published: true,
+        topics: course.topics, // ส่งเป็น Array ได้เลยไม่ต้อง stringify
+      };
+      if (!token) {
+        console.warn("Login is required");
+        return [];
+      }
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(sendData),
+      });
+      if (!res.ok) {
+        const errorData = await res.json();
+        console.error("Error:", errorData);
+        return null;
+      }
+      return await res.json();
+    }
+  } catch (error) {
+    alert("An unexpected error occurred");
+    return [];
+  }
+}
 export async function enrollCourse(course_id: any) {
   const token = await getToken();
   const url = `${baseURL}/courses/${course_id}/enroll`;

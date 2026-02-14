@@ -50,7 +50,7 @@ export function Topics2({
           {/* ปุ่ม Delete */}
           {isOwner ? (
             <button
-              onClick={() => handleDel(topic.topicId)}
+              onClick={(e) => handleDel(e, topic.topicId)}
               className="text-gray-400 hover:text-red-500 p-2 rounded-full hover:bg-red-50 transition"
               title="Delete Topic"
             >

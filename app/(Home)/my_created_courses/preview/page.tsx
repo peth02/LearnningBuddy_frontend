@@ -4,12 +4,13 @@ import { useRouter } from "next/navigation";
 import { useCourseStore, Topic } from "@/lib/courseStore";
 import { useStore } from "@/hooks/useStore";
 import { getToken } from "@/lib/session";
+import { createCourse } from "@/services/course";
 
 const baseURL = process.env.NEXT_PUBLIC_BE_BASE_API;
 
 export default function Preview() {
   const router = useRouter();
-  
+
   // เรียก Actions จาก Store
   const course = useStore(useCourseStore, (state) => state.course);
   const { addTopic, removeTopic, updateCourseInfo } = useCourseStore();
@@ -80,46 +81,12 @@ export default function Preview() {
   };
   // 6. ฟังก์ชันปุ่ม Final Create (Footer)
   const handleFinalCreate = async () => {
-    // ตรงนี้คือจุดที่คุณจะยิง API ไป Backend
-    console.log("Ready to send to API:", course);
-    const url = `${baseURL}/courses`;
-    const token = await getToken();
-    console.log("user", token);
-    try {
-      // create form data
-      
-      if(course) {
-        const sendData = {
-          title: course.title,
-          description: course.description,
-          is_published: true,
-          topics: course.topics // ส่งเป็น Array ได้เลยไม่ต้อง stringify
-        };
-        if (!token || token === "undefined") {
-          alert("Please log in again.");
-          router.push("/login");
-          return;
-        }
-        const res = await fetch(url, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(sendData),
-        });
-        if (res.ok) {
-          const data = await res.json();
-          console.log("Server response:", data);
-          alert("successfully create course")
-          router.push("/my_created_courses")
-        } else {
-          const errorText = await res.text();
-          console.error("error :", errorText);
-        }
-      }
-    } catch (error: any) {
-      alert("An unexpected error occurred")
+
+    const res = await createCourse(course);
+    if (res) {
+      console.log("Server response:", res);
+      alert("successfully create course");
+      router.push("/my_created_courses");
     }
   };
 

@@ -13,7 +13,9 @@ import { Course } from "@/types/Course";
 
 export default function CourseId() {
   const [data, setData] = useState<Course>();
-  const [content, setContent] = useState("topic");
+  const [content, setContent] = useState<"topic" | "flashcard" | "quiz">(
+    "topic",
+  );
   const [editCourse, setEditCourse] = useState(false);
   const [createQuiz, setCreateQuiz] = useState(false);
 
@@ -40,9 +42,20 @@ export default function CourseId() {
     setEditCourse((prev) => !prev);
   };
   const handleAddTopic = () => {};
-  const handleDelTopic = (topic_id: string) => {
-    console.log("del topic", topic_id);
-    
+  const handleDelTopic = (e: React.MouseEvent, topic_id: string) => {
+    e.stopPropagation(); // กันไม่ให้ไป trigger onClick ของการ์ด
+    if (!window.confirm("Are you sure you want to delete this topic?")) return;
+
+    console.log("Deleting topic ID:", topic_id);
+
+    // อัปเดต State ทันทีเพื่อให้รายการหายไปจากหน้าจอ
+    setData((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        topics: prev.topics.filter((t) => t.topicId !== topic_id),
+      };
+    });
   };
   const handleNavigateToTopic = (topic_id: string) => {
     router.push(`/course/${id}/topic/${topic_id}`); // เปลี่ยน path ตามที่คุณตั้งไว้
@@ -215,7 +228,7 @@ export default function CourseId() {
                 <div key={index} className="mt-5">
                   <Topics2
                     handleNavigate={() => handleNavigateToTopic(topic.topicId)}
-                    handleDel={() => handleDelTopic(topic.topicId)}
+                    handleDel={(e) => handleDelTopic(e, topic.topicId)}
                     index={index}
                     topic={topic}
                     isOwner={data.is_owner}
