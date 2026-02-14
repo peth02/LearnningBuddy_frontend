@@ -1,5 +1,5 @@
 import { getToken } from "@/lib/session";
-import { Course } from "@/types/Course";
+import { Course, Topic2 } from "@/types/Course";
 
 const baseURL = process.env.NEXT_PUBLIC_BE_BASE_API;
 
@@ -87,6 +87,27 @@ export async function getCourseByID(course_id: any) {
   return await res.json();
 }
 
+export async function getCourseTopics(course_id: any) {
+  const token = await getToken();
+  const url = `${baseURL}/courses/${course_id}/content`;
+  if (!token) {
+    console.warn("Login is required");
+    return [];
+  }
+  const request = new Request(url, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  const res = await fetch(request);
+  if (!res.ok) {
+    throw new Error("Fail to fetch");
+  }
+  console.log(res);
+  return await res.json();
+}
+
 export async function createCourse(course: any) {
   console.log("Ready to send to API:", course);
   const url = `${baseURL}/courses`;
@@ -145,23 +166,39 @@ export async function enrollCourse(course_id: any) {
   return await res.json();
 }
 
-export async function delTopic(topic_id: any) {
+export async function updateCourseTopic(course_id: any, topic: Topic2[]) {
   const token = await getToken();
-  const url = `${baseURL}/courses/${topic_id}/enroll`;
+  const url = `${baseURL}/courses/${course_id}/content`;
+  const sendData = {
+    course_id: course_id,
+    topics: topic,
+  };
+
   if (!token) {
     console.warn("Login is required");
-    return [];
+    return null;
   }
-  const request = new Request(url, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  const res = await fetch(request);
-  if (!res.ok) {
-    throw new Error("Fail to enroll");
+
+  try {
+    const res = await fetch(url, {
+      method: "PUT",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(sendData),
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(errorData.message || "Fail to update course's topic");
+    }
+
+    console.log("Update success:", res.status);
+    return await res.json();
+
+  } catch (error: any) {
+    console.error("Error in updateCourseTopic:", error.message);
+    throw error; 
   }
-  console.log(res);
-  return await res.json();
 }

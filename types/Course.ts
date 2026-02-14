@@ -11,6 +11,15 @@ export interface Topic {
   description: string;
   orderIndex: string;
 }
+
+export interface Topic2 {
+  id: string;
+  order_index: string;
+  description: string;
+  raw_text: string;
+  summary_note: string;
+  title: string;
+}
 export interface Course {
   course_id: string;
   created_at: Date;
