@@ -85,7 +85,7 @@ export default function CourseId() {
   };
 
   const handleNavigateToTopic = (topic_id: string) => {
-    router.push(`/course/${id}/topic/${topic_id}`); // เปลี่ยน path ตามที่คุณตั้งไว้
+    router.push(`/course/${id}/topic?topic=${topic_id}`); // เปลี่ยน path ตามที่คุณตั้งไว้
   };
 
   const handleCreateQuiz = () => {
