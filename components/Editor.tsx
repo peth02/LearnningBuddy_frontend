@@ -1,5 +1,5 @@
 "use client";
-import { useCreateBlockNote } from "@blocknote/react";
+import { SuggestionMenuController, useCreateBlockNote, getDefaultReactSlashMenuItems } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/mantine";
 import { useEffect } from "react";
 // @ts-ignore
@@ -13,10 +13,13 @@ interface EditorProps {
   isEdible: boolean;
 }
 
-export default function Editor({ initialContent, onChange, isEdible }: EditorProps) {
+export default function Editor({
+  initialContent,
+  onChange,
+  isEdible,
+}: EditorProps) {
   const editor = useCreateBlockNote();
 
-  // โหลด Markdown เข้าสู่ Editor ครั้งแรกครั้งเดียว
   useEffect(() => {
     async function loadInitial() {
       if (initialContent) {
@@ -25,11 +28,11 @@ export default function Editor({ initialContent, onChange, isEdible }: EditorPro
       }
     }
     loadInitial();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editor]); // ไม่ใส่ initialContent ในนี้เพื่อป้องกัน Loop
+  }, [editor]);
 
   return (
     <BlockNoteView
+      className=" border border-gray-300 rounded-md focus:ring-2"
       editor={editor}
       theme="light"
       editable={isEdible}
@@ -38,6 +41,18 @@ export default function Editor({ initialContent, onChange, isEdible }: EditorPro
         const markdown = await editor.blocksToMarkdownLossy(editor.document);
         onChange(markdown);
       }}
-    />
+    >
+      <SuggestionMenuController
+        triggerCharacter="/"
+        getItems={async (query) =>
+          getDefaultReactSlashMenuItems(editor)
+            .filter((item) => item.group !== "Media")
+            .filter((item) =>
+              item.title.toLowerCase().includes(query.toLowerCase()) ||
+              item.aliases?.some((alias) => alias.toLowerCase().includes(query.toLowerCase()))
+            )
+        }
+      />
+    </BlockNoteView>
   );
 }
