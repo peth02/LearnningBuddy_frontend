@@ -83,5 +83,4 @@ export async function registerAction(formData: FormData) {
 
 export async function logoutAction() {
   await deleteSession();
-  redirect("/home");
 }

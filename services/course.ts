@@ -1,5 +1,6 @@
 import { getToken } from "@/lib/session";
 import { Course, Topic2 } from "@/types/Course";
+import { UpdateCourseTopicsProps } from "@/types/Form"
 
 const baseURL = process.env.NEXT_PUBLIC_BE_BASE_API;
 
@@ -166,7 +167,7 @@ export async function enrollCourse(course_id: any) {
   return await res.json();
 }
 
-export async function updateCourseTopic(course_id: any, topic: Topic2[]) {
+export async function updateCourseTopic(course_id: any, topic: Topic2[] | UpdateCourseTopicsProps[]) {
   const token = await getToken();
   const url = `${baseURL}/courses/${course_id}/content`;
   const sendData = {

@@ -7,3 +7,10 @@ export interface TopicProps {
   topic: Topic;
   isOwner: boolean;
 }
+
+export interface CourseNavItemProps {
+  index: string;
+  label: string;
+  showDelete: boolean;
+  onDelete: (idx: number) => void;
+}

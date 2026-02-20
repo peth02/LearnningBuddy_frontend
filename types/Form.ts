@@ -5,3 +5,12 @@ export interface EditCourseFormProps {
   setDataForm: (field: keyof Course, value: any) => void;
   stateChange: () => void;
 }
+
+export interface UpdateCourseTopicsProps {
+  id?: string;
+  order_index: string;
+  description: string;
+  raw_text: string;
+  summary_note: string;
+  title: string;
+}

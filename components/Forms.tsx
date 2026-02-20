@@ -233,6 +233,7 @@ export function CreatePreviewCourseForm(props: any) {
   };
 
   const handleSubmit = async () => {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     setSubmitStatus("submitting");
     setIsLoading(true);
 
@@ -268,6 +269,7 @@ export function CreatePreviewCourseForm(props: any) {
         setStatusMsg("Course created successfully!");
         setCourse(data);
       } else {
+        setSubmitStatus("error");
         const errorText = await res.text();
         console.error("Upload failed:", errorText);
       }
@@ -480,22 +482,28 @@ export function CreatePreviewCourseForm(props: any) {
             </div>
           )}
         </Form>
-        {/* Loading & Result Overlay */}
+        {/* Loading & Result Overlay */}  
         {submitStatus !== "idle" && (
-          <div className="fixed inset-0 bg-white/80 backdrop-blur-sm z-[60] flex flex-col items-center justify-center p-6 text-center">
+          <div className="fixed w-full h-full inset-0 bg-white rounded-lg z-[60] flex flex-col items-center justify-center p-6 text-center">
             {/* 1. แสดงตอนกำลังส่งข้อมูล (Submitting) */}
             {submitStatus === "submitting" && (
-              <div className="flex flex-col items-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
-                <p className="text-lg font-medium text-gray-700">
-                  Uploading your course...
-                </p>
+              <div className="flex flex-col items-center justify-center p-20 gap-4">
+                <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin"></div>
+
+                <div className="text-center">
+                  <h3 className="text-lg font-semibold text-gray-700">
+                    Creating your course...
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    Please wait while we process your PDF file.
+                  </p>
+                </div>
               </div>
             )}
 
             {/* 2. แสดงเมื่อสำเร็จ (Success) */}
             {submitStatus === "success" && (
-              <div className="max-w-sm bg-white p-8 rounded-2xl shadow-xl border border-green-100">
+              <div className="w-full h-full bg-white flex flex-col justify-center">
                 <div className="flex justify-center mb-4 text-green-500">
                   {/* Success Icon */}
                   <svg
@@ -527,7 +535,7 @@ export function CreatePreviewCourseForm(props: any) {
 
             {/* 3. แสดงเมื่อเกิดข้อผิดพลาด (Error) */}
             {submitStatus === "error" && (
-              <div className="max-w-sm bg-white p-8 rounded-2xl shadow-xl border border-red-100">
+              <div className="w-full h-full bg-white ">
                 <div className="flex justify-center mb-4 text-red-500">
                   {/* Error Icon */}
                   <svg
