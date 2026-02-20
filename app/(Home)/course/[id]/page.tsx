@@ -38,9 +38,9 @@ export default function CourseId() {
     setData((prev) => (prev ? { ...prev, [field]: value } : prev));
   };
 
-  const handleEnrollCourse = () => {
-    const res = enrollCourse(id);
-    if (data) {
+  const handleEnrollCourse = async () => {
+    const res = await enrollCourse(id);
+    if (res && data) {
       data.is_enrolled = true;
       location.reload();
     }
@@ -170,7 +170,7 @@ export default function CourseId() {
             )
           )}
         </section>
-        <section className="bg-white rounded-lg shadow-sm min-h-screen">
+        <section className="bg-white rounded-lg shadow-sm min-h-fit">
           <nav className="flex border-b-1 border-gray-300">
             <a
               onClick={() => {
@@ -251,11 +251,11 @@ export default function CourseId() {
               <div className="p-10">
                 <div className="place-content-end">
                   {/*  only creator can see */}
-                  {data?.is_owner ? (
+                  {/* {data?.is_owner ? (
                     <button className="mb-5 mr-auto min-w-[100px] bg-blue-500 text-white font-bold p-2 rounded-lg text-center cursor-pointer hover:bg-blue-600">
                       + Add Topic
                     </button>
-                  ) : null}
+                  ) : null} */}
                 </div>
                 {data?.topics
                   // 1. กรองเอาเฉพาะตัวที่ ID ไม่อยู่ในลิสต์ delTopic
@@ -264,7 +264,7 @@ export default function CourseId() {
                     <div key={topic.topicId || index} className="mt-5">
                       <Topics2
                         handleNavigate={() =>
-                          handleNavigateToTopic(topic.topicId)
+                          handleNavigateToTopic((index+1).toString())
                         }
                         handleDel={(e) => handleDelTopics(e, topic.topicId)}
                         index={index}
