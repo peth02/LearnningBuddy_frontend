@@ -32,11 +32,11 @@ export default function MyLearning() {
   return (
     <div className="flex flex-col min-h-screen gap-7 py-10 px-20 bg-gray-100">
       <h3 className="text-3xl font-bold">My Learning</h3>
-      <SearchBar
+      {/* <SearchBar
         search={search}
         handleSearch={handleSearch}
         setSearch={setSearch}
-      />
+      /> */}
       <div className="grid grid-cols-3 grid-flow-2 gap-4">
         {datas.map((data: CourseMetaData, index) => (
           <CoursesCard

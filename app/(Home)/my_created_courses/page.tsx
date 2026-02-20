@@ -43,11 +43,11 @@ export default function MyCreatedCourses() {
         <h3 className="text-3xl font-bold">My Created Courses</h3>
         <button onClick={handleCreateCourse} className="ml-auto bg-blue-500 text-white font-bold p-2 rounded-lg cursor-pointer hover:bg-blue-600">+ Add Course</button>
       </div>
-      <SearchBar
+      {/* <SearchBar
         search={search}
         handleSearch={handleSearch}
         setSearch={setSearch}
-      />
+      /> */}
       <div className="grid grid-cols-3 grid-flow-2 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {datas.map((data: CourseMetaData, index) => (
           <CoursesCard
