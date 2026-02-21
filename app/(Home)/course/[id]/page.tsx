@@ -280,16 +280,17 @@ export default function CourseId() {
         </section>
       </div>
       {delTopic.length != 0 ? (
-        <div className="flex justify-end px-20 gap-10">
+        <div className="mt-auto flex justify-end items-center px-20 py-5 gap-10 bg-white">
           <div>Delete {delTopic.length} topics</div>
           <button
+            className="rounded-lg border bg-white px-4 py-2.5 text-sm font-medium text-zinc-900 transition-colors hover:bg-zinc-50 cursor-pointer"
             onClick={() => {
               setDelTopic([]);
             }}
           >
             Cancle
           </button>
-          <button onClick={handleUpdateTopics}>Confirm</button>
+          <button className="bg-blue-500 text-white font-bold px-4 py-2.5 rounded-lg text-center cursor-pointer" onClick={handleUpdateTopics}>Confirm</button>
         </div>
       ) : null}
     </div>

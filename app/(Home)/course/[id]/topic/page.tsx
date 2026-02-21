@@ -16,6 +16,7 @@ export default function topicId() {
   const [topics, setTopics] = useState<Topic2[]>();
   const [editTopics, setEditTopics] = useState<UpdateCourseTopicsProps[]>([]);
   const [isEdit, setIsEdit] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   const router = useRouter();
   const params = useParams();
@@ -70,7 +71,7 @@ export default function topicId() {
       title: `New Topic ${newIndex}`,
       order_index: newIndex.toString(),
       description: "",
-      raw_text: "",
+      raw_text: `New Topic raw text ${newIndex}`,
       summary_note: `## new topic ${newIndex}`,
     };
 
@@ -114,7 +115,7 @@ export default function topicId() {
   };
   const handleUpdateSubmit = async () => {
     const res = await updateCourseTopic(id, editTopics);
-    if(res) {
+    if (res) {
       window.alert(res.message);
       setIsEdit(false);
     }
@@ -146,19 +147,19 @@ export default function topicId() {
 
     fetchDataCourse();
     fetchDataTopic();
-    console.log(data)
-    console.log(topics)
+    // console.log(data)
+    // console.log(topics)
   }, [id]);
 
   return (
-    <div className="flex flex-col min-h-screen  gap-7 py-10  bg-gray-100">
-      <div className="px-20">
+    <div className="flex flex-col min-h-screen bg-gray-100">
+      <div className="px-20 py-10">
         <section className="bg-white rounded-lg shadow-sm p-10">
           {data ? (
             <div className="flex-col grow-0 w-full">
               <button
                 onClick={() => router.push(`/course/${id}`)}
-                className="text-gray-500 hover:text-blue-600 mb-4 flex items-center gap-2 text-sm font-semibold transition"
+                className="text-gray-500 hover:text-blue-600 mb-4 flex items-center gap-2 text-sm font-semibold transition cursor-pointer"
               >
                 ← Back to Course
               </button>
@@ -177,8 +178,8 @@ export default function topicId() {
           ) : null}
         </section>
         <section className="flex flex-1 mt-10 gap-10">
-          <nav className="flex flex-col w-fit h-fit bg-white rounded-lg shadow-sm py-10 px-5">
-            <h3 className="font-semibold">Topics</h3>
+          <nav className="flex flex-col h-fit mx-auto bg-white rounded-lg shadow-sm py-10 px-5 max-h-200 overflow-y-auto overflow-x-hidden custom-scrollbar">
+            <h3 className="font-semibold w-[400px]">Topics</h3>
             {data &&
               editTopics?.map((topic, index) => (
                 <CourseTopicsNav
@@ -191,7 +192,7 @@ export default function topicId() {
               ))}
             {data?.is_owner && (
               <button
-                className="bg-blue-500 text-white font-bold px-4 py-2.5 rounded-lg text-center cursor-pointer"
+                className="bg-blue-500 text-white font-bold px-4 py-2.5 w-[300] rounded-lg text-center cursor-pointer"
                 onClick={handleAddTopic}
               >
                 + Add topic
@@ -219,8 +220,49 @@ export default function topicId() {
                       handleTopicUpdate("description", e.target.value)
                     }
                     className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none h-24"
-                    placeholder="Enter topic description..."
+                    placeholder="Enter topic description"
                   />
+                </div>
+                <label className="font-semibold mb-5">Summary Note</label>
+                {editTopics.length > 0 && (
+                  <Editor
+                    key={currentTopicIndex}
+                    initialContent={currentTopic?.summary_note}
+                    onChange={handleEditorChange}
+                    isEdible={data?.is_owner || false}
+                  />
+                )}
+                {/* raw text */}
+                <div className="w-full">
+                  <div
+                    className="flex items-center cursor-pointer select-none group"
+                    onClick={() => setIsOpen(!isOpen)}
+                  >
+                    <label className="font-semibold mr-2 cursor-pointer">
+                      Raw text
+                    </label>
+
+                    {/* CSS-only Arrow */}
+                    <span
+                      className={`transform transition-transform duration-200 ${isOpen ? "rotate-180" : "rotate-0"}`}
+                    >
+                      ▼
+                    </span>
+                  </div>
+
+                  {/* Content Div */}
+                  <div
+                    className={`overflow-hidden transition-all duration-300 ${isOpen ? "opacity-100 mt-4" : "max-h-0 opacity-0"}`}
+                  >
+                    <textarea
+                      defaultValue={currentTopic?.raw_text}
+                      onChange={(e) =>
+                        handleTopicUpdate("raw_text", e.target.value)
+                      }
+                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none h-40"
+                      placeholder="Enter topic raw text"
+                    />
+                  </div>
                 </div>
               </>
             ) : (
@@ -231,22 +273,51 @@ export default function topicId() {
                 <h4 className="text-l text-gray-800 break-all my-5">
                   {currentTopic?.description}
                 </h4>
+                <label className="font-semibold mb-5">Summary Note</label>
+                {editTopics.length > 0 && (
+                  <Editor
+                    key={currentTopicIndex}
+                    initialContent={currentTopic?.summary_note}
+                    onChange={handleEditorChange}
+                    isEdible={data?.is_owner || false}
+                  />
+                )}
+                {/* raw text */}
+                <div className="w-full">
+                  <div
+                    className="flex items-center cursor-pointer select-none group"
+                    onClick={() => setIsOpen(!isOpen)}
+                  >
+                    <label className="font-semibold mr-2 cursor-pointer">
+                      Raw text
+                    </label>
+
+                    {/* CSS-only Arrow */}
+                    <span
+                      className={`transform transition-transform duration-200 ${isOpen ? "rotate-180" : "rotate-0"}`}
+                    >
+                      ▼
+                    </span>
+                  </div>
+
+                  {/* Content Div */}
+                  <div
+                    className={`overflow-hidden transition-all duration-300 ${isOpen ? "opacity-100 mt-4" : "max-h-0 opacity-0"}`}
+                  >
+                    <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                      <p className="text-gray-600 text-sm">
+                        ${currentTopic?.raw_text}
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </>
-            )}
-            <label className=" font-semibold mb-5">Summary Note</label>
-            {editTopics.length > 0 && (
-              <Editor
-                key={currentTopicIndex}
-                initialContent={currentTopic?.summary_note}
-                onChange={handleEditorChange}
-                isEdible={data?.is_owner || false}
-              />
             )}
           </div>
         </section>
       </div>
       {data?.is_owner && isEdit && (
-        <div className="flex justify-end items-center px-20 py-5 gap-10 bg-white">
+        <div className="mt-auto flex justify-end items-center px-20 py-5 gap-10 bg-white">
           <div>Save Change?</div>
           <button
             className="rounded-lg border bg-white px-4 py-2.5 text-sm font-medium text-zinc-900 transition-colors hover:bg-zinc-50 cursor-pointer"

@@ -32,7 +32,7 @@ export default function Editor({
 
   return (
     <BlockNoteView
-      className=" border border-gray-300 rounded-md focus:ring-2"
+      className=" border border-gray-300 rounded-md focus:ring-2 min-h-100 max-h-200 overflow-y-auto"
       editor={editor}
       theme="light"
       editable={isEdible}
