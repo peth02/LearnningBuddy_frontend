@@ -3,7 +3,7 @@ import Form from "next/form";
 import React, { ChangeEvent, useState } from "react";
 import { getToken } from "@/lib/session";
 import { useCourseStore } from "@/lib/courseStore";
-import { EditCourseFormProps } from "@/types/Form";
+import { EditCourseFormProps, EditQuizFormProps } from "@/types/Form";
 import router from "next/router";
 
 const baseURL = process.env.NEXT_PUBLIC_BE_BASE_API;
@@ -43,6 +43,9 @@ export function EditCourseForm({
         const data = await res.json();
         console.log("Server response:", data);
         alert("Successfully edit course");
+        setDataForm("title", sendData.title);
+        setDataForm("description", sendData.description);
+        setDataForm("is_published", sendData.is_published);
         console.log("edit Course");
         stateChange();
       } else {
@@ -101,7 +104,6 @@ export function EditCourseForm({
           required
           defaultValue={data?.title}
           placeholder="Name"
-          onChange={(e) => setDataForm("title", e.target.value)}
           className="flex h-11 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
         />
         <label>Description</label>
@@ -110,7 +112,6 @@ export function EditCourseForm({
           type="text"
           required
           defaultValue={data?.description}
-          onChange={(e) => setDataForm("description", e.target.value)}
           placeholder="Description"
           className="flex h-11 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
         />
@@ -119,7 +120,6 @@ export function EditCourseForm({
             name="isPublic"
             type="checkbox"
             defaultChecked={data?.is_published}
-            onChange={(e) => setDataForm("is_published", e.target.value)}
             className="rounded border-gray-300 accent-blue-600 cursor-pointer"
           />
           <span> Public this course</span>
@@ -143,7 +143,7 @@ export function EditCourseForm({
             onClick={stateChange}
             className="bg-white text-black p-2 border-2 border-gray-400 rounded-lg cursor-pointer hover:bg-gray-100"
           >
-            Cancle
+            Cancel
           </button>
         </div>
       </Form>
@@ -482,7 +482,7 @@ export function CreatePreviewCourseForm(props: any) {
             </div>
           )}
         </Form>
-        {/* Loading & Result Overlay */}  
+        {/* Loading & Result Overlay */}
         {submitStatus !== "idle" && (
           <div className="fixed w-full h-full inset-0 bg-white rounded-lg z-[60] flex flex-col items-center justify-center p-6 text-center">
             {/* 1. แสดงตอนกำลังส่งข้อมูล (Submitting) */}
@@ -771,5 +771,146 @@ export function CreateQuizForm(props: any) {
         </Form>
       </section>
     </div>
+  );
+}
+
+export function EditQuizMetaForm({
+  quiz,
+  setDataForm,
+  stateChange,
+}: EditQuizFormProps) {
+  const handleUpdateQuiz = async (formData: FormData) => {
+    const url = `${baseURL}/quizzes/${quiz.quiz_id}`;
+    const token = await getToken();
+
+    const sendData = {
+      title: formData.get("title")?.toString() || quiz.title,
+      solution_visibility:
+        formData.get("visibility")?.toString() || quiz.solution_visibility,
+      is_published: formData.get("isPublic") === "on",
+    };
+
+    try {
+      if (!token) return alert("Please log in again.");
+
+      const res = await fetch(url, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-type": "Application/json",
+        },
+        body: JSON.stringify(sendData),
+      });
+
+      if (res.ok) {
+        const updatedData = await res.json();
+        alert("Quiz updated successfully");
+        setDataForm("title", sendData.title)
+        setDataForm("is_published", sendData.is_published)
+        setDataForm("solution_visibility", sendData.solution_visibility)
+        stateChange();
+      }
+    } catch (error) {
+      console.error("Update failed", error);
+    }
+  };
+  const DeleteQuizHandler = async () => {
+    const remove = confirm("do you want to delete this quiz");
+    if (remove) {
+      console.log("deleting Quiz");
+      const url = `${baseURL}/quizzes/${quiz.quiz_id}`;
+      const token = await getToken();
+      try {
+        if (!token || token === "undefined") {
+          alert("Please log in again.");
+          router.push("/login");
+          return;
+        }
+        const res = await fetch(url, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-type": "Application/json",
+          },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          console.log("Server response:", data);
+          alert("Successfully delet quiz");
+          router.push(`/course/${quiz.course_id}`);
+        } else {
+          const errorText = await res.text();
+          console.error("Delete failed:", errorText);
+        }
+      } catch (error: any) {
+        console.log("error", error);
+      }
+    } else {
+      console.log("phewww almost delete a quiz");
+    }
+  };
+  return (
+    <section>
+      <h2 className="text-xl font-bold">Edit Quiz Details</h2>
+      <Form action={handleUpdateQuiz} className="flex flex-col mt-5 gap-5">
+        <div>
+          <label className="block text-sm font-semibold mb-1">Quiz Title</label>
+          <input
+            name="title"
+            type="text"
+            required
+            defaultValue={quiz.title}
+            className="flex h-11 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-semibold mb-1">
+            Solution Visibility
+          </label>
+          <select
+            name="visibility"
+            defaultValue={quiz.solution_visibility}
+            className="flex h-11 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="ALWAYS">ALWAYS (Show solutions after quiz)</option>
+            <option value="NEVER">NEVER (Hide solutions)</option>
+          </select>
+        </div>
+
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input
+            name="isPublic"
+            type="checkbox"
+            defaultChecked={quiz.is_published}
+            className="rounded border-gray-300 accent-blue-600 w-4 h-4"
+          />
+          <span className="text-sm font-medium">Publish this quiz</span>
+        </label>
+
+        <div className="flex gap-4 mt-2">
+          <button
+            type="submit"
+            className="bg-blue-500 text-white px-6 py-2 rounded-lg font-bold hover:bg-blue-600 transition cursor-pointer"
+          >
+            Confirm
+          </button>
+          {/* <button
+            type="button"
+            onClick={DeleteQuizHandler}
+            className="bg-red-500 text-white p-2 rounded-lg cursor-pointer hover:bg-red-600"
+          >
+            Delete
+          </button> */}
+          <button
+            type="button"
+            onClick={stateChange}
+            className="bg-white text-gray-700 px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition cursor-pointer"
+          >
+            Cancel
+          </button>
+        </div>
+      </Form>
+    </section>
   );
 }

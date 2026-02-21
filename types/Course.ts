@@ -44,3 +44,33 @@ export interface Quiz {
   title: string;
   updated_at: Date;
 }
+
+export interface Quiz2 {
+  // Quiz from get quiz by quiz_id
+  quiz_id: string;
+  course_id: string;
+  title: string;
+  is_published: boolean;
+  solution_visibility: "ALWAYS" | "NEVER";
+  questions: Question[];
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface Question {
+  id?: string;
+  topic_id: string;
+  question_text: string;
+  question_type:
+    | "NORMAL_MULTIPLE"
+    | "STATEMENT_VERIFICATION"
+    | "STATEMENT_COUNTING";
+  difficulty: "EASY" | "MEDIUM" | "HARD";
+  explanation: string;
+  choices: Choice[];
+}
+export interface Choice {
+  id?: string;
+  choice_text: string;
+  is_correct: boolean;
+}
