@@ -287,6 +287,7 @@ export default function CourseId() {
                   {data && quizzes && quizzes?.length > 0 ? (
                     quizzes.map((quiz, index) => (
                       <Quizzes
+                        key={index}
                         handleNavigateTo={handleNavigateToQuiz}
                         handleNavigateEdit={handleNavigateToEditQuiz}
                         index={index}

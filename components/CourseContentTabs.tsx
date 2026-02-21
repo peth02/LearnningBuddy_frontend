@@ -109,7 +109,6 @@ export function Quizzes({
 }: QuizProps) {
   return (
     <section
-      key={index}
       // คลิกที่การ์ดแล้วไปหน้า Topic Detail
       onClick={() => handleNavigateTo(quiz.quiz_id)}
       className="bg-white rounded-lg border-2 border-gray-200 px-10 py-7 min-h-[100px] hover:border-blue-400 hover:shadow-md transition cursor-pointer group"
