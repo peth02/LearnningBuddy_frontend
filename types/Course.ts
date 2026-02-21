@@ -6,6 +6,7 @@ export interface CourseMetaData {
   totalTopics: number;
 }
 export interface Topic {
+  // Topic for getting course using get url/courses/{course_id}
   topicId: string;
   title: string;
   description: string;
@@ -13,6 +14,7 @@ export interface Topic {
 }
 
 export interface Topic2 {
+  // Topic for getting topic by topic_id
   id: string;
   order_index: string;
   description: string;
@@ -29,5 +31,16 @@ export interface Course {
   is_published: boolean;
   title: string;
   topics: Topic[];
+  updated_at: Date;
+}
+
+export interface Quiz {
+  // Quiz from get quizzes
+  created_at: Date;
+  is_published: boolean;
+  question_count: number;
+  quiz_id: string;
+  solution_visibility: "ALWAYS" | "NEVER";
+  title: string;
   updated_at: Date;
 }

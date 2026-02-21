@@ -1,4 +1,4 @@
-import { TopicProps } from "@/types/Props";
+import { QuizProps, TopicProps } from "@/types/Props";
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -98,23 +98,35 @@ export function Flashcards() {
   );
 }
 
-export function Quizzes() {
-  const router = useRouter();
-  const path = usePathname();
-  const handleEditRedirect = () => {
-    router.push(path+"/quiz/1/edit");
-  }
+export function Quizzes({handleNavigateTo, handleNavigateEdit, index, quiz, isOwner}: QuizProps) {
   return (
-    <section className="bg-white rounded-lg border-2 border-gray-300 px-10 py-7 min-h-[100px]">
-      <div className="flex gap-5">
-        <div>1</div>
-        <div className="flex flex-col">
-          <div>Quiz name</div>
-          <div>n topics</div>
-          <div>topic : 1 2 3</div>
+    <section
+      key={quiz.quiz_id}
+      // คลิกที่การ์ดแล้วไปหน้า Topic Detail
+      onClick={() => handleNavigateTo(quiz.quiz_id)}
+      className="bg-white rounded-lg border-2 border-gray-200 px-10 py-7 min-h-[100px] hover:border-blue-400 hover:shadow-md transition cursor-pointer group"
+    >
+      <div className="flex gap-5 items-start">
+        <div className="font-bold text-gray-400 text-xl shrink-0 group-hover:text-blue-500">
+          #{index + 1}
         </div>
-        <div className="ml-auto">
-          <button onClick={handleEditRedirect}>edit</button>
+
+        <div className="flex flex-col flex-1 min-w-0 gap-1">
+          <div className="font-bold text-lg text-gray-800">{quiz.title}</div>
+          <div className="break-words text-gray-600 line-clamp-2">
+            solution
+          </div>
+          {/* <div className="break-words text-gray-600 line-clamp-2">
+            created at: {quiz.created_at}
+          </div>
+          <div className="break-words text-gray-600 line-clamp-2">
+            updated at: {quiz.updated_at}
+          </div> */}
+        </div>
+
+        <div className="ml-auto shrink-0 flex gap-2 items-center">
+          {/* ปุ่ม Edit */}
+          Edit
         </div>
       </div>
     </section>
