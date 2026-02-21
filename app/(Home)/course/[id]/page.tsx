@@ -177,12 +177,26 @@ export default function CourseId() {
                 ) : null}
               </div>
               {data.is_owner ? (
-                <a
+                <button
                   onClick={handleEdit}
-                  className="ml-auto cursor-pointer h-fit text-gray-600 underline"
+                  className="flex items-start gap-2 text-gray-600 cursor-pointer hover:underline"
                 >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                    <path d="m15 5 4 4" />
+                  </svg>
                   Edit
-                </a>
+                </button>
               ) : null}
             </div>
           ) : (
@@ -270,8 +284,8 @@ export default function CourseId() {
                   )}
                 </div>
                 <div className="grid grid-cols-2 gap-5">
-                  {data &&
-                    quizzes?.map((quiz, index) => (
+                  {data && quizzes && quizzes?.length > 0 ? (
+                    quizzes.map((quiz, index) => (
                       <Quizzes
                         handleNavigateTo={handleNavigateToQuiz}
                         handleNavigateEdit={handleNavigateToEditQuiz}
@@ -279,7 +293,15 @@ export default function CourseId() {
                         quiz={quiz}
                         isOwner={data.is_owner}
                       />
-                    ))}
+                    ))
+                  ) : (
+                    <div className="col-span-2 flex flex-col items-center justify-center py-20 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
+                      <div className="text-gray-400 text-5xl mb-4">📝</div>
+                      <div className="text-gray-500 font-medium text-lg">
+                        No quizzes available yet.
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             ) : content == "topic" ? (
