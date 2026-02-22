@@ -31,6 +31,7 @@ export async function getQuizzesByCourseId(course_id: any) {
 }
 
 export async function getQuizByQuizId(quiz_id: any) {
+  // get quiz detail for edit
   const token = await getToken();
   const url = `${baseURL}/quizzes/${quiz_id}`;
   if (!token) {
@@ -83,6 +84,65 @@ export async function updateCourseQuizById(quiz_id: any, questions: Question[]) 
     return await res.json();
   } catch (error: any) {
     console.error("Error in getQuizByQuizId:", error.message);
+    throw error;
+  }
+}
+
+export async function getStartQuizById(quiz_id: any) {
+  // get quiz without answer
+  const token = await getToken();
+  const url = `${baseURL}/quizzes/${quiz_id}/attempt`;
+  if (!token) {
+    console.warn("Login is required");
+    return [];
+  }
+  try {
+    const res = await fetch(url, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(errorData.message || `Fail to get quiz ${quiz_id}`);
+    }
+    console.log(res);
+    return await res.json();
+  } catch (error: any) {
+    console.error("Error in getQuizByQuizId:", error.message);
+    throw error;
+  }
+}
+
+export async function submitQuizAttempt(quiz_id: any, answer: { question_id: string; choice_id: string }[]) {
+    // submit quiz to get feedback
+  const token = await getToken();
+  const url = `${baseURL}/quizzes/${quiz_id}/attempt`;
+  if (!token) {
+    console.warn("Login is required");
+    return [];
+  }
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        answers: answer
+      })
+    });
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(errorData.message || `Fail to submit quiz ${quiz_id} attempt`);
+    }
+    console.log(res);
+    return await res.json();
+  } catch (error: any) {
+    console.error("Error in submitQuizAttempt:", error.message);
     throw error;
   }
 }
