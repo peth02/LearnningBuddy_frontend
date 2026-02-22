@@ -19,7 +19,7 @@ import { getQuizzesByCourseId } from "@/services/quiz";
 
 export default function CourseId() {
   const [data, setData] = useState<Course>();
-  const [topics, setTopics] = useState<Topic2[]>();
+  const [topics, setTopics] = useState<Topic2[]>([]);
   const [quizzes, setQuizzes] = useState<Quiz[]>();
   const [content, setContent] = useState<"topic" | "flashcard" | "quiz">(
     "topic",
@@ -280,7 +280,7 @@ export default function CourseId() {
                   ) : null}
 
                   {createQuiz && (
-                    <CreateQuizForm stageChange={handleCreateQuiz} />
+                    <CreateQuizForm stageChange={handleCreateQuiz} topics={topics}/>
                   )}
                 </div>
                 <div className="grid grid-cols-2 gap-5">

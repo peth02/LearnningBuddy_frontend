@@ -1,10 +1,16 @@
-import { redirect, useRouter } from "next/navigation";
+import { redirect, useParams, useRouter } from "next/navigation";
 import Form from "next/form";
 import React, { ChangeEvent, useState } from "react";
 import { getToken } from "@/lib/session";
 import { useCourseStore } from "@/lib/courseStore";
-import { EditCourseFormProps, EditQuizFormProps } from "@/types/Form";
+import {
+  EditCourseFormProps,
+  EditQuizFormProps,
+  CreatePreviewQuizFormProps,
+} from "@/types/Form";
 import router from "next/router";
+import { Topic2 } from "@/types/Course";
+import { createQuizPreview } from "@/services/quiz";
 
 const baseURL = process.env.NEXT_PUBLIC_BE_BASE_API;
 
@@ -569,106 +575,236 @@ export function CreatePreviewCourseForm(props: any) {
   );
 }
 
-export function CreateQuizForm(props: any) {
-  type Status = "idle" | "loading" | "error";
+export function CreateQuizForm({
+  stageChange,
+  topics,
+}: CreatePreviewQuizFormProps) {
+  const [selectedTopics, setSelectedTopics] = useState<Topic2[]>([]);
 
-  const [name, setName] = useState<string>("");
-  const [topics, setTopics] = useState<string[]>([
-    "Topic 1",
-    "Topic 2",
-    "Topic 3",
-    "Topic 4",
-    "Topic 5",
-    "Topic 6",
-  ]);
-  const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
-  const [stage, setStage] = useState(1);
-  const [status, setStatus] = useState<Status>("idle");
+  const params = useParams();
+  const router = useRouter();
 
-  const handleToggleTopic = (topic: string) => {
-    let newSelection: string[];
+  const course_id = params.id;
 
-    if (selectedTopics.includes(topic)) {
-      // Remove topic
-      newSelection = selectedTopics.filter((t) => t !== topic);
+  const handleToggleTopic = (topic: Topic2) => {
+    let newSelection: Topic2[];
+    const tId = parseInt(topic.id);
+
+    if (selectedTopics.some((t) => t.id === topic.id)) {
+      // 1. ลบออกจากรายการหัวข้อที่เลือก (Visual List)
+      newSelection = selectedTopics.filter((t) => t.id !== topic.id);
+
+      // 2. ลบข้อมูล Config ของหัวข้อนี้ออกจาก topicConfigs ทันที
+      setTopicConfigs((prev) => prev.filter((t) => t.topic_id !== tId));
     } else {
-      // Add topic
+      // เพิ่มหัวข้อใหม่
       newSelection = [...selectedTopics, topic];
+      // (Optionally: คุณอาจจะยังไม่ต้องเพิ่มลงใน topicConfigs จนกว่าจะกด + Add ครั้งแรกก็ได้ครับ)
     }
-    // Sort based on the index in the original 'topics' array
-    newSelection.sort((a, b) => topics.indexOf(a) - topics.indexOf(b));
+
+    newSelection.sort((a, b) => {
+      const indexA = topics.findIndex((t) => t.id === a.id);
+      const indexB = topics.findIndex((t) => t.id === b.id);
+      return indexA - indexB;
+    });
 
     setSelectedTopics(newSelection);
   };
 
-  const handleNext = (e: React.MouseEvent<HTMLButtonElement>) => {
-    const form = e.currentTarget.closest("form");
-    if (form) {
-      if (form.checkValidity()) {
-        setStage((prev) => prev + 1);
-      } else {
-        form.reportValidity();
+  const handleClearTopics = () => {
+    // ล้างข้อมูลทั้ง 2 ส่วนให้เป็น Array ว่างทั้งหมด
+    setSelectedTopics([]);
+    setTopicConfigs([]);
+  };
+
+  // 1. กำหนด Interface ตามโครงสร้างที่ต้องการ
+  interface QuizTypeConfig {
+    type: "NORMAL_MULTIPLE" | "STATEMENT_VERIFICATION" | "STATEMENT_COUNTING";
+    number: number;
+  }
+
+  interface DifficultyConfig {
+    difficulty: "EASY" | "MEDIUM" | "HARD";
+    quiz_type_config: QuizTypeConfig[];
+  }
+
+  interface TopicQuizConfig {
+    topic_id: number;
+    quiz_config: DifficultyConfig[];
+  }
+
+  // 2. ปรับ State ใน Component
+  const [topicConfigs, setTopicConfigs] = useState<TopicQuizConfig[]>([]);
+  // ฟังก์ชันสำหรับ Add แถวใหม่
+  const handleAddConfig = (
+    topicId: string,
+    difficulty: "EASY" | "MEDIUM" | "HARD",
+  ) => {
+    const tId = parseInt(topicId);
+
+    // ✅ แก้ไขที่ 1: ระบุประเภทให้ชัดเจน (Type Assertion)
+    const defaultNewRow: QuizTypeConfig = {
+      type: "NORMAL_MULTIPLE",
+      number: 1,
+    };
+
+    setTopicConfigs((prev) => {
+      const existingTopicIndex = prev.findIndex((t) => t.topic_id === tId);
+
+      if (existingTopicIndex === -1) {
+        return [
+          ...prev,
+          {
+            topic_id: tId,
+            quiz_config: [{ difficulty, quiz_type_config: [defaultNewRow] }],
+          },
+        ];
       }
+
+      const newTopicConfigs = [...prev];
+      const targetTopic = { ...newTopicConfigs[existingTopicIndex] };
+
+      // ค้นหาระดับความยาก
+      const difficultyIndex = targetTopic.quiz_config.findIndex(
+        (d) => d.difficulty === difficulty,
+      );
+
+      if (difficultyIndex === -1) {
+        // ✅ แก้ไขที่ 2: ใช้ค่าที่ระบุ Type แล้ว
+        targetTopic.quiz_config = [
+          ...targetTopic.quiz_config,
+          { difficulty, quiz_type_config: [defaultNewRow] },
+        ];
+      } else {
+        const targetDiff = { ...targetTopic.quiz_config[difficultyIndex] };
+        // ✅ แก้ไขที่ 3: ใช้การกระจายอาเรย์แบบ Immutable พร้อมค่าที่ระบุ Type แล้ว
+        targetDiff.quiz_type_config = [
+          ...targetDiff.quiz_type_config,
+          defaultNewRow,
+        ];
+
+        const newQuizConfig = [...targetTopic.quiz_config];
+        newQuizConfig[difficultyIndex] = targetDiff;
+        targetTopic.quiz_config = newQuizConfig;
+      }
+
+      newTopicConfigs[existingTopicIndex] = targetTopic;
+      return newTopicConfigs;
+    });
+  };
+
+  // ฟังก์ชันสำหรับ Update ค่า (Count หรือ Type)
+  const handleUpdateConfig = (
+    topicId: string,
+    difficulty: "EASY" | "MEDIUM" | "HARD",
+    index: number,
+    field: "number" | "type",
+    value: any,
+  ) => {
+    const tId = parseInt(topicId);
+    setTopicConfigs((prev) => {
+      const topic = prev.find((t) => t.topic_id === tId);
+      const diff = topic?.quiz_config.find((d) => d.difficulty === difficulty);
+      if (diff) {
+        diff.quiz_type_config[index] = {
+          ...diff.quiz_type_config[index],
+          [field]: field === "number" ? parseInt(value) || 0 : value,
+        };
+      }
+      return [...prev];
+    });
+  };
+  // 3. ฟังก์ชันสำหรับลบแถว (ปรับปรุงใหม่ให้รองรับ Array Structure)
+  const handleRemoveConfig = (
+    topicId: string,
+    difficulty: "EASY" | "MEDIUM" | "HARD",
+    index: number,
+  ) => {
+    const tId = parseInt(topicId); // แปลง id เป็นตัวเลขเพื่อให้ตรงกับ TopicQuizConfig
+
+    setTopicConfigs((prev) => {
+      // ใช้ .map เพื่อสร้างอาเรย์ใหม่โดยไม่กระทบค่าเดิม (Immutability)
+      return prev.map((topic) => {
+        if (topic.topic_id !== tId) return topic;
+
+        // ค้นหาและอัปเดตระดับความยากที่ต้องการลบแถว
+        const updatedQuizConfig = topic.quiz_config.map((diffConfig) => {
+          if (diffConfig.difficulty !== difficulty) return diffConfig;
+
+          // ลบแถวตาม index ที่ระบุ พร้อมกำหนด Type ให้พารามิเตอร์เพื่อแก้ Error 'any'
+          return {
+            ...diffConfig,
+            quiz_type_config: diffConfig.quiz_type_config.filter(
+              (_: QuizTypeConfig, i: number) => i !== index,
+            ),
+          };
+        });
+
+        return {
+          ...topic,
+          quiz_config: updatedQuizConfig,
+        };
+      });
+    });
+  };
+  const handleSubmit = async () => {
+    // 1. นำข้อมูลจาก State มาทำการ Grouping ใหม่
+    const processedPayload: TopicQuizConfig[] = topicConfigs.map((topic) => {
+      return {
+        ...topic,
+        quiz_config: topic.quiz_config.map((diffConfig) => {
+          // ใช้ Object เพื่อเก็บยอดรวมแยกตามประเภท (Type Mapping)
+          const groupedTypes: { [key: string]: number } = {};
+
+          diffConfig.quiz_type_config.forEach((config) => {
+            if (groupedTypes[config.type]) {
+              groupedTypes[config.type] += config.number; // รวมจำนวนข้อถ้าประเภทซ้ำกัน
+            } else {
+              groupedTypes[config.type] = config.number;
+            }
+          });
+
+          // แปลงกลับเป็น Array ของ QuizTypeConfig ตามรูปแบบเดิม
+          const mergedQuizTypeConfig: QuizTypeConfig[] = Object.entries(
+            groupedTypes,
+          ).map(([type, number]) => ({
+            type: type as
+              | "NORMAL_MULTIPLE"
+              | "STATEMENT_VERIFICATION"
+              | "STATEMENT_COUNTING",
+            number,
+          }));
+
+          return {
+            ...diffConfig,
+            quiz_type_config: mergedQuizTypeConfig,
+          };
+        }),
+      };
+    });
+
+    // 2. แสดงผลลัพธ์ข้อมูลที่รวมแล้ว
+    console.log("Combined Payload for API:", processedPayload);
+
+    // 3. Logic การยิง API (ตัวอย่าง)
+    try {
+      const res = await createQuizPreview(processedPayload);
+      if (res.ok) {
+        stageChange();
+        console.log("response", res)
+        // alert("Generating Quiz");
+        router.push(`/course/${course_id}/quiz/preview?job=${res.jobId}`)
+      }
+    } catch (error) {
+      console.error("Failed to generate draft", error);
     }
   };
-  const handleBack = () => {
-    setStage((prev) => prev - 1);
-  };
-  const handleAddTopic = (e: any) => {
-    e.target.style();
-  };
-  const handleClearTopics = () => {
-    setSelectedTopics([]);
-  };
-  const handleAddQuestion = () => {};
   return (
     <div>
-      <div
-        className="fixed inset-0 bg-black/50 z-40"
-        onClick={props.stageChange}
-      />
+      <div className="fixed inset-0 bg-black/50 z-40" onClick={stageChange} />
       <section className="bg-white border-1 rounded-lg fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50">
-        <Form action={() => console.log("create quiz")}>
-          {stage == 1 && (
-            <div>
-              <div className="flex justify-between m-5">
-                <div>Name Your Quiz</div>
-                <button
-                  onClick={props.stageChange}
-                  className="text-gray-400 cursor-pointer hover:underline"
-                >
-                  x
-                </button>
-              </div>
-              <hr />
-              <div className="flex flex-col gap-5 m-5">
-                <p>
-                  Give your quiz a descriptive name to help you identify it
-                  later.
-                </p>
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="e.g., Midterm Practice Quiz"
-                  value={name}
-                  required={true}
-                  onChange={(e) => setName(e.target.value)}
-                  className="border-1"
-                />
-              </div>
-              <hr />
-              <div className="flex m-5">
-                <button
-                  type="button"
-                  onClick={handleNext}
-                  className="w-[100px] ml-auto bg-blue-500 text-white font-bold p-2 rounded-lg cursor-pointer hover:bg-blue-600"
-                >
-                  Continue
-                </button>
-              </div>
-            </div>
-          )}
-          {stage == 2 && (
+        <Form action={handleSubmit}>
+
             <div className="flex flex-col">
               <div className="flex justify-between m-5">
                 <div>
@@ -677,7 +813,7 @@ export function CreateQuizForm(props: any) {
                   <span>Set questions per topic with specific formats</span>
                 </div>
                 <button
-                  onClick={props.stageChange}
+                  onClick={stageChange}
                   className="text-gray-400 cursor-pointer hover:underline"
                 >
                   x
@@ -696,7 +832,7 @@ export function CreateQuizForm(props: any) {
                 </div>
                 <div className="flex flex-wrap gap-3 mt-3">
                   {/* map topics */}
-                  {topics.map((topic, index) => {
+                  {topics?.map((topic, index) => {
                     const isSelected = selectedTopics.includes(topic);
                     return (
                       <div
@@ -709,7 +845,7 @@ export function CreateQuizForm(props: any) {
                                       : "bg-white text-gray-700 hover:bg-gray-100" // Style ปกติ
                                   }`}
                       >
-                        <span>{topic}</span>
+                        <span>{topic.title}</span>
                       </div>
                     );
                   })}
@@ -725,28 +861,281 @@ export function CreateQuizForm(props: any) {
                           onClick={() => console.log("click")}
                           className="bg-gray-200 p-5"
                         >
-                          <span>{topic}</span>
+                          <span>{topic.title}</span>
                           <span>(0 question)</span>
                         </div>
-                        {/* easy */}
-                        <div className="flex- flex-col m-5 p-5 bg-green-200 border-1 border-green-400 rounded-lg">
-                          <div className="flex justify-between">
-                            <p>Easy</p>
-                            <button>+ Add</button>
+                        {/* ตัวอย่างส่วนของ Easy Section */}
+                        <div className="flex flex-col m-5 p-5 bg-green-50 border border-green-200 rounded-xl">
+                          <div className="flex justify-between items-center mb-4">
+                            <p className="text-green-800 font-bold">
+                              Easy (
+                              {topicConfigs
+                                .find((t) => t.topic_id === parseInt(topic.id))
+                                ?.quiz_config.find(
+                                  (d) => d.difficulty === "EASY",
+                                )
+                                ?.quiz_type_config.reduce(
+                                  (acc: number, curr: QuizTypeConfig) =>
+                                    acc + curr.number,
+                                  0,
+                                ) || 0}{" "}
+                              questions)
+                            </p>
+                            <button
+                              type="button"
+                              onClick={() => handleAddConfig(topic.id, "EASY")}
+                              className="bg-[#00B14F] hover:bg-[#009642] text-white px-3 py-1.5 rounded-md text-xs font-bold transition-colors"
+                            >
+                              + Add
+                            </button>
+                          </div>
+
+                          {/* แสดงรายการที่ถูกเพิ่มเข้ามา */}
+                          <div className="space-y-2">
+                            {topicConfigs
+                              .find((t) => t.topic_id === parseInt(topic.id))
+                              ?.quiz_config.find((d) => d.difficulty === "EASY")
+                              ?.quiz_type_config.map((config, idx) => (
+                                <div
+                                  key={idx}
+                                  className="flex items-center gap-3 bg-white p-3 rounded-lg border border-gray-100 shadow-sm animate-in fade-in zoom-in duration-200"
+                                >
+                                  <input
+                                    type="number"
+                                    min="0"
+                                    value={config.number}
+                                    className="w-12 border rounded p-1 text-center font-bold"
+                                    onChange={(e) =>
+                                      handleUpdateConfig(
+                                        topic.id,
+                                        "EASY",
+                                        idx,
+                                        "number",
+                                        e.target.value,
+                                      )
+                                    }
+                                  />
+                                  <span className="text-gray-400 text-sm">
+                                    questions
+                                  </span>
+                                  <select
+                                    value={config.type}
+                                    className="flex-1 border rounded p-1 text-sm bg-gray-50 outline-none"
+                                    onChange={(e) =>
+                                      handleUpdateConfig(
+                                        topic.id,
+                                        "EASY",
+                                        idx,
+                                        "type",
+                                        e.target.value as any,
+                                      )
+                                    }
+                                  >
+                                    <option value="NORMAL_MULTIPLE">
+                                      Standard Multiple Choice
+                                    </option>
+                                    <option value="STATEMENT_VERIFICATION">
+                                      Statement Verification
+                                    </option>
+                                    <option value="STATEMENT_COUNTING">
+                                      Statement Counting
+                                    </option>
+                                  </select>
+                                  <button
+                                    onClick={() =>
+                                      handleRemoveConfig(topic.id, "EASY", idx)
+                                    }
+                                    className="text-red-500 text-sm font-semibold hover:text-red-700 px-2"
+                                  >
+                                    Remove
+                                  </button>
+                                </div>
+                              ))}
                           </div>
                         </div>
-                        {/* normal */}
-                        <div className="flex- flex-col m-5 p-5 bg-orange-200 border-1 border-orange-400 rounded-lg">
-                          <div className="flex justify-between">
-                            <p>Normal</p>
-                            <button>+ Add</button>
+                        {/* 🟡 Medium Section */}
+                        <div className="flex flex-col m-5 p-5 bg-yellow-50 border border-yellow-200 rounded-xl">
+                          <div className="flex justify-between items-center mb-4">
+                            <p className="text-yellow-800 font-bold">
+                              Medium (
+                              {topicConfigs
+                                .find((t) => t.topic_id === parseInt(topic.id))
+                                ?.quiz_config.find(
+                                  (d) => d.difficulty === "MEDIUM",
+                                )
+                                ?.quiz_type_config.reduce(
+                                  (acc: number, curr: QuizTypeConfig) =>
+                                    acc + curr.number,
+                                  0,
+                                ) || 0}{" "}
+                              questions)
+                            </p>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handleAddConfig(topic.id, "MEDIUM")
+                              }
+                              className="bg-[#D4A017] hover:bg-[#B8860B] text-white px-3 py-1.5 rounded-md text-xs font-bold transition-colors"
+                            >
+                              + Add
+                            </button>
+                          </div>
+
+                          <div className="space-y-2">
+                            {topicConfigs
+                              .find((t) => t.topic_id === parseInt(topic.id))
+                              ?.quiz_config.find(
+                                (d) => d.difficulty === "MEDIUM",
+                              )
+                              ?.quiz_type_config.map((config, idx) => (
+                                <div
+                                  key={idx}
+                                  className="flex items-center gap-3 bg-white p-3 rounded-lg border border-gray-100 shadow-sm animate-in fade-in zoom-in duration-200"
+                                >
+                                  <input
+                                    type="number"
+                                    min="0"
+                                    value={config.number}
+                                    className="w-12 border rounded p-1 text-center font-bold"
+                                    onChange={(e) =>
+                                      handleUpdateConfig(
+                                        topic.id,
+                                        "MEDIUM",
+                                        idx,
+                                        "number",
+                                        e.target.value,
+                                      )
+                                    }
+                                  />
+                                  <span className="text-gray-400 text-sm">
+                                    questions
+                                  </span>
+                                  <select
+                                    value={config.type}
+                                    className="flex-1 border rounded p-1 text-sm bg-gray-50 outline-none"
+                                    onChange={(e) =>
+                                      handleUpdateConfig(
+                                        topic.id,
+                                        "MEDIUM",
+                                        idx,
+                                        "type",
+                                        e.target.value as any,
+                                      )
+                                    }
+                                  >
+                                    <option value="NORMAL_MULTIPLE">
+                                      Standard Multiple Choice
+                                    </option>
+                                    <option value="STATEMENT_VERIFICATION">
+                                      Statement Verification
+                                    </option>
+                                    <option value="STATEMENT_COUNTING">
+                                      Statement Counting
+                                    </option>
+                                  </select>
+                                  <button
+                                    onClick={() =>
+                                      handleRemoveConfig(
+                                        topic.id,
+                                        "MEDIUM",
+                                        idx,
+                                      )
+                                    }
+                                    className="text-red-500 text-sm font-semibold hover:text-red-700 px-2"
+                                  >
+                                    Remove
+                                  </button>
+                                </div>
+                              ))}
                           </div>
                         </div>
-                        {/* hard */}
-                        <div className="flex- flex-col m-5 p-5 bg-red-200 border-1 border-red-400 rounded-lg">
-                          <div className="flex justify-between">
-                            <p>Hard</p>
-                            <button>+ Add</button>
+
+                        {/* 🔴 Hard Section */}
+                        <div className="flex flex-col m-5 p-5 bg-red-50 border border-red-200 rounded-xl">
+                          <div className="flex justify-between items-center mb-4">
+                            <p className="text-red-800 font-bold">
+                              Hard (
+                              {topicConfigs
+                                .find((t) => t.topic_id === parseInt(topic.id))
+                                ?.quiz_config.find(
+                                  (d) => d.difficulty === "HARD",
+                                )
+                                ?.quiz_type_config.reduce(
+                                  (acc: number, curr: QuizTypeConfig) =>
+                                    acc + curr.number,
+                                  0,
+                                ) || 0}{" "}
+                              questions)
+                            </p>
+                            <button
+                              type="button"
+                              onClick={() => handleAddConfig(topic.id, "HARD")}
+                              className="bg-[#E50000] hover:bg-[#C40000] text-white px-3 py-1.5 rounded-md text-xs font-bold transition-colors"
+                            >
+                              + Add
+                            </button>
+                          </div>
+
+                          <div className="space-y-2">
+                            {topicConfigs
+                              .find((t) => t.topic_id === parseInt(topic.id))
+                              ?.quiz_config.find((d) => d.difficulty === "HARD")
+                              ?.quiz_type_config.map((config, idx) => (
+                                <div
+                                  key={idx}
+                                  className="flex items-center gap-3 bg-white p-3 rounded-lg border border-gray-100 shadow-sm animate-in fade-in zoom-in duration-200"
+                                >
+                                  <input
+                                    type="number"
+                                    min="0"
+                                    value={config.number}
+                                    className="w-12 border rounded p-1 text-center font-bold"
+                                    onChange={(e) =>
+                                      handleUpdateConfig(
+                                        topic.id,
+                                        "HARD",
+                                        idx,
+                                        "number",
+                                        e.target.value,
+                                      )
+                                    }
+                                  />
+                                  <span className="text-gray-400 text-sm">
+                                    questions
+                                  </span>
+                                  <select
+                                    value={config.type}
+                                    className="flex-1 border rounded p-1 text-sm bg-gray-50 outline-none"
+                                    onChange={(e) =>
+                                      handleUpdateConfig(
+                                        topic.id,
+                                        "HARD",
+                                        idx,
+                                        "type",
+                                        e.target.value as any,
+                                      )
+                                    }
+                                  >
+                                    <option value="NORMAL_MULTIPLE">
+                                      Standard Multiple Choice
+                                    </option>
+                                    <option value="STATEMENT_VERIFICATION">
+                                      Statement Verification
+                                    </option>
+                                    <option value="STATEMENT_COUNTING">
+                                      Statement Counting
+                                    </option>
+                                  </select>
+                                  <button
+                                    onClick={() =>
+                                      handleRemoveConfig(topic.id, "HARD", idx)
+                                    }
+                                    className="text-red-500 text-sm font-semibold hover:text-red-700 px-2"
+                                  >
+                                    Remove
+                                  </button>
+                                </div>
+                              ))}
                           </div>
                         </div>
                       </div>
@@ -756,9 +1145,6 @@ export function CreateQuizForm(props: any) {
               </section>
               <hr />
               <div className="flex justify-between m-5">
-                <button onClick={handleBack} className="cursor-pointer">
-                  Back
-                </button>
                 <button
                   type="submit"
                   className="bg-blue-500 text-white font-bold p-2 rounded-lg cursor-pointer hover:bg-blue-600"
@@ -767,7 +1153,6 @@ export function CreateQuizForm(props: any) {
                 </button>
               </div>
             </div>
-          )}
         </Form>
       </section>
     </div>
@@ -805,9 +1190,9 @@ export function EditQuizMetaForm({
       if (res.ok) {
         const updatedData = await res.json();
         alert("Quiz updated successfully");
-        setDataForm("title", sendData.title)
-        setDataForm("is_published", sendData.is_published)
-        setDataForm("solution_visibility", sendData.solution_visibility)
+        setDataForm("title", sendData.title);
+        setDataForm("is_published", sendData.is_published);
+        setDataForm("solution_visibility", sendData.solution_visibility);
         stateChange();
       }
     } catch (error) {

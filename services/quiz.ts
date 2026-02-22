@@ -57,8 +57,40 @@ export async function getQuizByQuizId(quiz_id: any) {
     throw error;
   }
 }
+export async function createQuizPreview(quizConfig: any) {
+  const token = await getToken();
+  const url = `${baseURL}/quizzes/preview/jobs`;
+  if (!token) {
+    console.warn("Login is required");
+    return [];
+  }
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        quiz_topics: quizConfig,
+      }),
+    });
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(errorData.message || `Fail to create preview quiz`);
+    }
+    console.log(res);
+    return await res.json();
+  } catch (error: any) {
+    console.error("Error in createQuizPreview:", error.message);
+    throw error;
+  }
+}
 
-export async function updateCourseQuizById(quiz_id: any, questions: Question[]) {
+export async function updateCourseQuizById(
+  quiz_id: any,
+  questions: Question[],
+) {
   const token = await getToken();
   const url = `${baseURL}/quizzes/${quiz_id}`;
   if (!token) {
@@ -73,7 +105,7 @@ export async function updateCourseQuizById(quiz_id: any, questions: Question[]) 
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        questions: questions
+        questions: questions,
       }),
     });
     if (!res.ok) {
@@ -116,8 +148,11 @@ export async function getStartQuizById(quiz_id: any) {
   }
 }
 
-export async function submitQuizAttempt(quiz_id: any, answer: { question_id: string; choice_id: string }[]) {
-    // submit quiz to get feedback
+export async function submitQuizAttempt(
+  quiz_id: any,
+  answer: { question_id: string; choice_id: string }[],
+) {
+  // submit quiz to get feedback
   const token = await getToken();
   const url = `${baseURL}/quizzes/${quiz_id}/attempt`;
   if (!token) {
@@ -132,12 +167,14 @@ export async function submitQuizAttempt(quiz_id: any, answer: { question_id: str
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        answers: answer
-      })
+        answers: answer,
+      }),
     });
     if (!res.ok) {
       const errorData = await res.json().catch(() => ({}));
-      throw new Error(errorData.message || `Fail to submit quiz ${quiz_id} attempt`);
+      throw new Error(
+        errorData.message || `Fail to submit quiz ${quiz_id} attempt`,
+      );
     }
     console.log(res);
     return await res.json();
