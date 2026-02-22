@@ -37,7 +37,7 @@ export function HomeNavbar() {
   }
 
   return (
-    <nav className="min-w-[250px] h-screen px-4 py-10 sticky top-0">
+    <nav className="min-w-[280px] h-screen px-4 py-10 sticky top-0 bg-white border-r border-gray-300 shadow-[4px_0_24px_rgba(0,0,0,0.02)] transition-all">
       <div className="flex flex-col h-full">
         <div>
           <h1 className="text-xl text-center bold">Learning buddy</h1>

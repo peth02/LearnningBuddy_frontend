@@ -33,11 +33,6 @@ export default function EditQuiz() {
   const handleUpdateMeta = (field: keyof Quiz2, value: any) => {
     setQuiz((prev) => (prev ? { ...prev, [field]: value } : prev));
   };
-  // --- Handlers สำหรับแก้ไขตัว Quiz (Title, etc.) ---
-  const handleQuizUpdate = (field: keyof Quiz2, value: any) => {
-    setIsEdit(true);
-    setEditQuiz((prev) => (prev ? { ...prev, [field]: value } : prev));
-  };
 
   // --- Handlers สำหรับแก้ไขคำถามภายใน Quiz ---
   const handleQuestionUpdate = (field: keyof Question, value: any) => {
@@ -570,13 +565,6 @@ export default function EditQuiz() {
           </button>
         </div>
       )}
-      <button
-        onClick={() => {
-          console.log(editQuestions);
-        }}
-      >
-        click
-      </button>
     </div>
   );
 }
