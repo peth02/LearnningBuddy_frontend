@@ -192,7 +192,7 @@ export default function topicId() {
               ))}
             {data?.is_owner && (
               <button
-                className="bg-blue-500 text-white font-bold px-4 py-2.5 w-[300] rounded-lg text-center cursor-pointer"
+                className="bg-blue-500 text-white font-bold px-4 py-2.5 max-w-[300] rounded-lg text-center cursor-pointer"
                 onClick={handleAddTopic}
               >
                 + Add topic

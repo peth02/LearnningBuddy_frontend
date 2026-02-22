@@ -14,11 +14,13 @@ import {
   updateCourseTopic,
 } from "@/services/course";
 import { useParams, useRouter } from "next/navigation";
-import { Course, Topic2 } from "@/types/Course";
+import { Course, Quiz, Topic2 } from "@/types/Course";
+import { getQuizzesByCourseId } from "@/services/quiz";
 
 export default function CourseId() {
   const [data, setData] = useState<Course>();
-  const [topics, setTopics] = useState<Topic2[]>();
+  const [topics, setTopics] = useState<Topic2[]>([]);
+  const [quizzes, setQuizzes] = useState<Quiz[]>();
   const [content, setContent] = useState<"topic" | "flashcard" | "quiz">(
     "topic",
   );
@@ -78,7 +80,7 @@ export default function CourseId() {
         }
         setDelTopic([]);
       } catch (error) {
-        console.error("Failed to update server:", error);
+        console.error("Failed to update:", error);
         alert("Update failed, please try again.");
       }
     }
@@ -87,10 +89,16 @@ export default function CourseId() {
   const handleNavigateToTopic = (topic_id: string) => {
     router.push(`/course/${id}/topic?topic=${topic_id}`); // เปลี่ยน path ตามที่คุณตั้งไว้
   };
-
+  const handleNavigateToQuiz = (quiz_id: string) => {
+    router.push(`/course/${id}/quiz/${quiz_id}`);
+  };
+  const handleNavigateToEditQuiz = (quiz_id: string) => {
+    router.push(`/course/${id}/quiz/${quiz_id}/edit`);
+  };
   const handleCreateQuiz = () => {
     setCreateQuiz((prev) => !prev);
   };
+
   useEffect(() => {
     if (!id) {
       return;
@@ -108,9 +116,25 @@ export default function CourseId() {
         console.error(error);
       }
     };
-
     fetchData();
   }, [id]);
+  useEffect(() => {
+    if (!id) {
+      return;
+    }
+    if (content === "quiz" && !quizzes) {
+      const fetchQuizzes = async () => {
+        try {
+          const res = await getQuizzesByCourseId(id);
+          setQuizzes(res);
+          console.log("quiz", res);
+        } catch (error) {
+          console.error("Error loading quizzes:", error);
+        }
+      };
+      fetchQuizzes();
+    }
+  }, [content]);
 
   return (
     <div>
@@ -119,7 +143,9 @@ export default function CourseId() {
           {!editCourse && data ? (
             <div className="flex grow-0 w-full">
               <div className=" text-m text-wrap w-full">
-                <h2 className="text-xl font-bold uppercase break-all mr-20">{data.title}</h2>
+                <h2 className="text-xl font-bold uppercase break-all mr-20">
+                  {data.title}
+                </h2>
                 {data.is_published ? (
                   <div className="mt-2 text-green-500 bg-green-200 px-2 py-1 rounded-lg font-bold text-sm h-fit w-fit">
                     Public
@@ -151,12 +177,26 @@ export default function CourseId() {
                 ) : null}
               </div>
               {data.is_owner ? (
-                <a
+                <button
                   onClick={handleEdit}
-                  className="ml-auto cursor-pointer h-fit text-gray-600 underline"
+                  className="flex items-start gap-2 text-gray-600 cursor-pointer hover:underline"
                 >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                    <path d="m15 5 4 4" />
+                  </svg>
                   Edit
-                </a>
+                </button>
               ) : null}
             </div>
           ) : (
@@ -240,11 +280,29 @@ export default function CourseId() {
                   ) : null}
 
                   {createQuiz && (
-                    <CreateQuizForm stageChange={handleCreateQuiz} />
+                    <CreateQuizForm stageChange={handleCreateQuiz} topics={topics}/>
                   )}
                 </div>
                 <div className="grid grid-cols-2 gap-5">
-                  <Quizzes />
+                  {data && quizzes && quizzes?.length > 0 ? (
+                    quizzes.map((quiz, index) => (
+                      <Quizzes
+                        key={index}
+                        handleNavigateTo={handleNavigateToQuiz}
+                        handleNavigateEdit={handleNavigateToEditQuiz}
+                        index={index}
+                        quiz={quiz}
+                        isOwner={data.is_owner}
+                      />
+                    ))
+                  ) : (
+                    <div className="col-span-2 flex flex-col items-center justify-center py-20 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
+                      <div className="text-gray-400 text-5xl mb-4">📝</div>
+                      <div className="text-gray-500 font-medium text-lg">
+                        No quizzes available yet.
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             ) : content == "topic" ? (
@@ -264,7 +322,7 @@ export default function CourseId() {
                     <div key={topic.topicId || index} className="mt-5">
                       <Topics2
                         handleNavigate={() =>
-                          handleNavigateToTopic((index+1).toString())
+                          handleNavigateToTopic((index + 1).toString())
                         }
                         handleDel={(e) => handleDelTopics(e, topic.topicId)}
                         index={index}
@@ -273,7 +331,6 @@ export default function CourseId() {
                       />
                     </div>
                   ))}
-                <div className="flex flex-col gap-4">{/* <Topics /> */}</div>
               </div>
             ) : null}
           </div>
@@ -290,9 +347,21 @@ export default function CourseId() {
           >
             Cancle
           </button>
-          <button className="bg-blue-500 text-white font-bold px-4 py-2.5 rounded-lg text-center cursor-pointer" onClick={handleUpdateTopics}>Confirm</button>
+          <button
+            className="bg-blue-500 text-white font-bold px-4 py-2.5 rounded-lg text-center cursor-pointer"
+            onClick={handleUpdateTopics}
+          >
+            Confirm
+          </button>
         </div>
       ) : null}
+      <button
+        onClick={() => {
+          console.log(quizzes);
+        }}
+      >
+        click
+      </button>
     </div>
   );
 }

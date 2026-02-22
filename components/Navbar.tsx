@@ -37,7 +37,7 @@ export function HomeNavbar() {
   }
 
   return (
-    <nav className="min-w-[250px] h-screen px-4 py-10 sticky top-0">
+    <nav className="min-w-[280px] h-screen px-4 py-10 sticky top-0 bg-white border-r border-gray-300 shadow-[4px_0_24px_rgba(0,0,0,0.02)] transition-all">
       <div className="flex flex-col h-full">
         <div>
           <h1 className="text-xl text-center bold">Learning buddy</h1>
@@ -105,7 +105,68 @@ export function CourseTopicsNav({
   };
 
   return (
-    <div className="min-w-[300px] max-w-[300px] group relative flex items-center my-2">
+    <div className="max-w-[300px] group relative flex items-center my-2">
+      <button
+        onClick={handleClick}
+        className={`w-full flex items-center py-3 px-3 transition-all duration-200 border-2 rounded-xl text-left cursor-pointer
+          ${isActive ? "bg-blue-50 border-blue-500 text-blue-700 shadow-sm" : "bg-gray-50 border-transparent text-gray-600 hover:bg-gray-100"}
+        `}
+      >
+        <span className="font-medium text-sm mr-6 break-all">
+          #{index} {label}
+        </span>
+      </button>
+
+      {showDelete && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete(parseInt(index) - 1);
+          }}
+          className="absolute right-3 p-1 text-gray-400 hover:text-red-500 transition-colors"
+          title="Delete Topic"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+            />
+          </svg>
+        </button>
+      )}
+    </div>
+  );
+}
+
+export function CourseQuestionsNav({
+  index,
+  label,
+  showDelete,
+  onDelete,
+}: CourseNavItemProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // 1. Check if this specific item is the one currently selected in the URL
+  const activeTopicIndex = searchParams.get("q");
+  const isActive = activeTopicIndex == index;
+
+  const handleClick = () => {
+    // 2. Update the URL. { scroll: false } prevents the page from jumping to the top
+    router.push(`?q=${index}`, { scroll: false });
+  };
+
+  return (
+    <div className="max-w-[200px] group relative flex items-center my-2">
       <button
         onClick={handleClick}
         className={`w-full flex items-center py-3 px-3 transition-all duration-200 border-2 rounded-xl text-left cursor-pointer

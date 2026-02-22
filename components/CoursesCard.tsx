@@ -23,8 +23,14 @@ export default function CoursesCard(
       <div className="flex justify-between text-gray-500">
         <div>{totalTopics} topics</div>
       </div>
-      
-      {is_published ? (
+
+      <Link
+        href={`/course/${id}`}
+        className="bg-blue-500 text-white font-bold p-2 rounded-lg text-center hover:bg-blue-600"
+      >
+        View
+      </Link>
+      {/* {is_published ? (
         <Link
           href={`/course/${id}`}
           className="bg-blue-500 text-white font-bold p-2 rounded-lg text-center hover:bg-blue-600"
@@ -32,12 +38,10 @@ export default function CoursesCard(
           View
         </Link>
       ) : (
-        <div
-          className="bg-gray-500 text-white font-bold p-2 rounded-lg text-center cursor-not-allowed"
-        >
+        <div className="bg-gray-500 text-white font-bold p-2 rounded-lg text-center cursor-not-allowed">
           View
         </div>
-      )}
+      )} */}
     </div>
   );
 }

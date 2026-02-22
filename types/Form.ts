@@ -1,4 +1,4 @@
-import { Course } from "./Course";
+import { Course, Quiz2, Topic2 } from "./Course";
 
 export interface EditCourseFormProps {
   data: Course;
@@ -13,4 +13,15 @@ export interface UpdateCourseTopicsProps {
   raw_text: string;
   summary_note: string;
   title: string;
+}
+
+export interface EditQuizFormProps {
+  quiz: Quiz2;
+  setDataForm: (field: keyof Quiz2, value: any) => void;
+  stateChange: () => void;
+}
+
+export interface CreatePreviewQuizFormProps {
+  stageChange: ()=> void;
+  topics: Topic2[];
 }
