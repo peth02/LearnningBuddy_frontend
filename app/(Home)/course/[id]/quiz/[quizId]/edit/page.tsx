@@ -264,7 +264,7 @@ export default function EditQuiz() {
         </section>
         <section className="flex flex-1 mt-10 gap-10">
           <nav className="flex flex-col h-fit mx-auto bg-white rounded-lg shadow-sm py-10 px-5 max-h-200 overflow-y-auto overflow-x-hidden custom-scrollbar">
-            <h3 className="font-semibold w-[350px]">Questions</h3>
+            <h3 className="font-semibold w-[200px]">Questions</h3>
             {editQuiz?.questions.map((question, index) => (
               <CourseQuestionsNav
                 key={index}

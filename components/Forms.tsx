@@ -788,13 +788,14 @@ export function CreateQuizForm({
 
     // 3. Logic การยิง API (ตัวอย่าง)
     try {
-      const res = await createQuizPreview(processedPayload);
+      const res = await createQuizPreview(processedPayload, course_id);
       if (res.ok) {
         stageChange();
-        console.log("response", res)
-        // alert("Generating Quiz");
-        router.push(`/course/${course_id}/quiz/preview?job=${res.jobId}`)
       }
+      // console.log("response", res)
+      // console.log("response", res.job_id)
+      // alert(`Generating Quiz id : ${res.job_id}`);
+      router.push(`/course/${course_id}/quiz/preview?job=${res.job_id}`)
     } catch (error) {
       console.error("Failed to generate draft", error);
     }
@@ -810,7 +811,7 @@ export function CreateQuizForm({
                 <div>
                   Configure Quiz
                   <br />
-                  <span>Set questions per topic with specific formats</span>
+                  {/* <span>Set questions per topic with specific formats</span> */}
                 </div>
                 <button
                   onClick={stageChange}
@@ -821,16 +822,17 @@ export function CreateQuizForm({
               </div>
               <hr />
               <section className="m-5 max-h-[50vh] overflow-auto">
-                <div className="flex">
-                  <p>Select topic</p>
+                <div className="flex justify-between px-5">
+                  <p className="font-bold text-gray-700">Select topic</p>
                   <button
+                    type="button"
                     onClick={handleClearTopics}
-                    className="ml-auto mr-5 cursor-pointer"
+                    className="text-sm font-semibold text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 px-3 py-1 rounded-md transition-colors cursor-pointer"
                   >
                     clear
                   </button>
                 </div>
-                <div className="flex flex-wrap gap-3 mt-3">
+                <div className="flex flex-wrap gap-3 mt-3 px-5">
                   {/* map topics */}
                   {topics?.map((topic, index) => {
                     const isSelected = selectedTopics.includes(topic);
@@ -862,7 +864,6 @@ export function CreateQuizForm({
                           className="bg-gray-200 p-5"
                         >
                           <span>{topic.title}</span>
-                          <span>(0 question)</span>
                         </div>
                         {/* ตัวอย่างส่วนของ Easy Section */}
                         <div className="flex flex-col m-5 p-5 bg-green-50 border border-green-200 rounded-xl">
@@ -1144,7 +1145,7 @@ export function CreateQuizForm({
                 </div>
               </section>
               <hr />
-              <div className="flex justify-between m-5">
+              <div className="flex justify-end m-5">
                 <button
                   type="submit"
                   className="bg-blue-500 text-white font-bold p-2 rounded-lg cursor-pointer hover:bg-blue-600"

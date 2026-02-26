@@ -1,7 +1,7 @@
 "use client";
 
 import { getCourseByID } from "@/services/course";
-import { getQuizByQuizId } from "@/services/quiz";
+import { getQuizByQuizId, getStartQuizById } from "@/services/quiz";
 import { Course, Quiz2 } from "@/types/Course";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -46,7 +46,6 @@ export default function Quiz() {
     })
     .filter(Boolean); // กรองค่าที่เป็น undefined ออกกรณีหาไม่เจอ
 
-  const handleStartQuiz = async () => {};
   useEffect(() => {
     if (!quiz_id) {
       return;
@@ -57,7 +56,7 @@ export default function Quiz() {
         console.log("Data1 loaded:", response1);
         setCourse(response1);
 
-        const response2 = await getQuizByQuizId(quiz_id);
+        const response2 = await getStartQuizById(quiz_id);
         console.log("Data2 loaded:", response2);
         setQuiz(response2);
       } catch (error) {

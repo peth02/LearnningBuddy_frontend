@@ -88,7 +88,7 @@ export default function StartQuiz() {
         total: resultData.max_score,
         feedback: resultData.feedback, // เก็บไว้ใช้แสดงเฉลยในอนาคต
         start_time: resultData.start_time,
-        end_time: resultData.end_time
+        end_time: resultData.end_time,
       });
 
       setIsFinished(true);
@@ -97,6 +97,9 @@ export default function StartQuiz() {
     }
   };
 
+  const handleDebug = () => {
+    console.log("result", results);
+  };
 
   const difficultyStyles = {
     EASY: "bg-green-100 text-green-700 border-green-200",
@@ -225,7 +228,6 @@ export default function StartQuiz() {
               onClick={() => router.push(`/course/${course_id}`)}
               className="flex-1 py-3.5 border border-gray-200 rounded-xl font-bold text-gray-600 hover:bg-gray-50 transition flex items-center justify-center gap-2"
             >
-
               Back to Course
             </button>
             <button
@@ -299,6 +301,58 @@ export default function StartQuiz() {
                 <p className="font-bold text-gray-800 mb-4">
                   {item.question_text}
                 </p>
+                {/* 📋 ส่วนแสดงผล Choices แบบ Inline โดยอ้างอิงจาก correct_choice_ids และ user_choice_ids */}
+                <div className="flex flex-col gap-3 mb-6">
+                  {item.choices.map((choice: any) => (
+                    <div
+                      key={choice.id}
+                      className={`flex items-center gap-3 p-4 border-2 rounded-xl transition-all ${
+                        item.user_choice_ids.includes(choice.id) &&
+                        !item.correct_choice_ids.includes(choice.id)
+                          ? "border-red-500 bg-red-50/30" // ผู้ใช้เลือกแต่ผิด
+                          : item.correct_choice_ids.includes(choice.id)
+                            ? "border-green-500 bg-green-50/30" // ข้อที่ถูกต้อง
+                            : "border-gray-100"
+                      }`}
+                    >
+                      {/* Indicator Dot (Blue Dot Style) */}
+                      <div
+                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center bg-white ${
+                          item.correct_choice_ids.includes(choice.id)
+                            ? "border-green-500"
+                            : item.user_choice_ids.includes(choice.id)
+                              ? "border-red-500"
+                              : "border-gray-300"
+                        }`}
+                      >
+                        {(item.user_choice_ids.includes(choice.id) ||
+                          item.correct_choice_ids.includes(choice.id)) && (
+                          <div
+                            className={`w-2.5 h-2.5 rounded-full animate-in zoom-in duration-300 ${
+                              item.correct_choice_ids.includes(choice.id)
+                                ? "bg-green-500"
+                                : "bg-red-500"
+                            }`}
+                          />
+                        )}
+                      </div>
+
+                      <div className="flex-1 flex justify-between items-center">
+                        <span
+                          className={`text-sm font-medium ${
+                            item.correct_choice_ids.includes(choice.id)
+                              ? "text-green-800 font-bold"
+                              : item.user_choice_ids.includes(choice.id)
+                                ? "text-red-800"
+                                : "text-gray-700"
+                          }`}
+                        >
+                          {choice.choice_text}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
 
                 {/* Explanation Box */}
                 <div className="bg-blue-50/50 border border-blue-100 p-4 rounded-xl">
@@ -313,6 +367,7 @@ export default function StartQuiz() {
             ))}
           </div>
         )}
+        <button onClick={handleDebug}>click</button>
       </div>
     );
   }

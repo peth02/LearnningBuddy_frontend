@@ -34,6 +34,12 @@ export interface Course {
   updated_at: Date;
 }
 
+export interface QuizMetaData {
+  title: string;
+  solution_visibility: "ALWAYS" | "NEVER";
+  is_published: boolean;
+}
+
 export interface Quiz {
   // Quiz from get quizzes
   created_at: Date;
@@ -129,4 +135,15 @@ export interface QuestionFeedback {
 export interface FeedbackChoice {
   id: number;
   choice_text: string;
+}
+
+export interface PreviewQuizResponse {
+  job_id: string;
+  status: "QUEUED" | "PROCESSING" | "COMPLETED" | "FAILED";
+  progress_percent: number;
+  result?: GenerateQuestion;
+}
+
+export interface GenerateQuestion {
+  generated_questions: Question[];
 }

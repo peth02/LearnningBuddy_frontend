@@ -17,6 +17,15 @@ export interface CourseNavItemProps {
   onDelete: (idx: number) => void;
 }
 
+export interface CourseNavItemProps2 {
+  // for preview with job_id
+  index: string;
+  label: string;
+  showDelete: boolean;
+  onDelete: (idx: number) => void;
+  jobId: string;
+}
+
 export interface QuizProps {
   // props for quiz card in course page ( show quiz )
   handleNavigateTo: (id: string) => void;

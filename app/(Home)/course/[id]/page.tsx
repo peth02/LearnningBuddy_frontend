@@ -16,6 +16,7 @@ import {
 import { useParams, useRouter } from "next/navigation";
 import { Course, Quiz, Topic2 } from "@/types/Course";
 import { getQuizzesByCourseId } from "@/services/quiz";
+import { QuizHistoryModal } from "@/components/ShowJobs";
 
 export default function CourseId() {
   const [data, setData] = useState<Course>();
@@ -27,6 +28,7 @@ export default function CourseId() {
   const [editCourse, setEditCourse] = useState(false);
   const [delTopic, setDelTopic] = useState<string[]>([]);
   const [createQuiz, setCreateQuiz] = useState(false);
+  const [showQuizJobs, setShowQuizJobs] = useState(false);
 
   const router = useRouter();
   const params = useParams();
@@ -98,6 +100,10 @@ export default function CourseId() {
   const handleCreateQuiz = () => {
     setCreateQuiz((prev) => !prev);
   };
+
+  const handleShowQuizJobs = () => {
+    setShowQuizJobs((prev) => !prev);
+  }
 
   useEffect(() => {
     if (!id) {
@@ -268,20 +274,36 @@ export default function CourseId() {
               </div>
             ) : content == "quiz" ? (
               <div className="p-10">
-                <div className="place-content-end">
+                <div className="flex justify-between">
                   {/*  only creator can see */}
                   {data?.is_owner ? (
-                    <button
-                      onClick={handleCreateQuiz}
-                      className="mb-5 mr-auto min-w-[100px] bg-blue-500 text-white font-bold p-2 rounded-lg text-center cursor-pointer hover:bg-blue-600"
-                    >
-                      + Create Quiz
-                    </button>
+                    <>
+                      <button
+                        onClick={handleCreateQuiz}
+                        className="mb-5 min-w-[100px] bg-blue-500 text-white font-bold p-2 rounded-lg text-center cursor-pointer hover:bg-blue-600"
+                      >
+                        + Create Quiz
+                      </button>
+                      <button
+                        onClick={handleShowQuizJobs}
+                        className="mb-5 min-w-[100px] bg-blue-500 text-white font-bold p-2 rounded-lg text-center cursor-pointer hover:bg-blue-600"
+                      >
+                        show history
+                      </button>
+                    </>
                   ) : null}
 
                   {createQuiz && (
-                    <CreateQuizForm stageChange={handleCreateQuiz} topics={topics}/>
+                    <CreateQuizForm
+                      stageChange={handleCreateQuiz}
+                      topics={topics}
+                    />
                   )}
+                  {
+                    showQuizJobs && (
+                      <QuizHistoryModal course_id={id} setStage={handleShowQuizJobs}/>
+                    )
+                  }
                 </div>
                 <div className="grid grid-cols-2 gap-5">
                   {data && quizzes && quizzes?.length > 0 ? (
@@ -355,13 +377,13 @@ export default function CourseId() {
           </button>
         </div>
       ) : null}
-      <button
+      {/* <button
         onClick={() => {
           console.log(quizzes);
         }}
       >
         click
-      </button>
+      </button> */}
     </div>
   );
 }

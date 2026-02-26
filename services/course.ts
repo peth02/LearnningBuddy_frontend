@@ -110,7 +110,6 @@ export async function getCourseTopics(course_id: any) {
 }
 
 export async function createCourse(course: any) {
-  console.log("Ready to send to API:", course);
   const url = `${baseURL}/courses`;
   const token = await getToken();
   try {
@@ -201,5 +200,33 @@ export async function updateCourseTopic(course_id: any, topic: Topic2[] | Update
   } catch (error: any) {
     console.error("Error in updateCourseTopic:", error.message);
     throw error; 
+  }
+}
+
+export async function getQuizJobs(course_id: any) {
+    // get quiz jobs in course
+  const token = await getToken();
+  const url = `${baseURL}/courses/${course_id}/quiz-jobs`;
+  if (!token) {
+    console.warn("Login is required");
+    return [];
+  }
+  try {
+    const res = await fetch(url, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(errorData.message || `Fail to get quiz jobs in course ${course_id}`);
+    }
+    console.log(res);
+    return await res.json();
+  } catch (error: any) {
+    console.error("Error in getQuizJobs:", error.message);
+    throw error;
   }
 }
