@@ -162,14 +162,18 @@ export default function PreviewQuiz() {
   const handleSubmit = async () => {
     // handleDebug();
     try {
-      const res = await createQuizFromPreview(course_id, quizMetaData, editQuestions);
-      const creaeted_id = res.quiz_id
-      router.push(`/course/${course_id}`)
+      const res = await createQuizFromPreview(
+        course_id,
+        quizMetaData,
+        editQuestions,
+      );
+      const creaeted_id = res.quiz_id;
+      router.push(`/course/${course_id}`);
       // console.log("create ", res, creaeted_id)
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
   useEffect(() => {
     if (!job_id) return;
     const checkProgress = setInterval(async () => {
@@ -338,6 +342,9 @@ export default function PreviewQuiz() {
     <div className="flex flex-col min-h-screen bg-gray-100">
       <div className="px-20 py-10">
         <section className="bg-white rounded-lg shadow-sm p-10 flex flex-col gap-5">
+          <button onClick={() => router.back()} className="mr-auto">
+            back
+          </button>
           <div>
             <label className="block font-semibold mb-3 text-gray-800">
               Quiz Title
@@ -380,9 +387,7 @@ export default function PreviewQuiz() {
               }
               className="rounded border-gray-300 accent-blue-600 w-4 h-4"
             />
-            <span className="text-gray-800">
-              Publish this quiz
-            </span>
+            <span className="text-gray-800">Publish this quiz</span>
           </label>
         </section>
         <section className="flex flex-1 mt-10 gap-10">

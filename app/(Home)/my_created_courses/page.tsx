@@ -7,11 +7,14 @@ import { PaginationTemp } from "@/components/Pagination";
 import { useSearchParams } from "next/navigation";
 import { CourseMetaData } from "@/types/Course";
 import { getMyCreatedCourses } from "@/services/course";
+import { CourseHistoryModal } from "@/components/ShowJobs";
 
 export default function MyCreatedCourses() {
   const [search, setSearch] = useState<string>("");
   const [datas, setDatas] = useState([]);
   const [createCourse, setCreateCourse] = useState(false);
+  const [showCourseJobs, setShowCourseJobs] = useState(false);
+
   const searchParams = useSearchParams();
   const page = Number(searchParams.get("page")) || 1;
 
@@ -19,13 +22,15 @@ export default function MyCreatedCourses() {
     setSearch(e.target.value);
   };
   const handleCreateCourse = () => {
-    setCreateCourse((prev)=>(!prev))
-  }
-
+    setCreateCourse((prev) => !prev);
+  };
+  const handleShowCourseJobs = () => {
+    setShowCourseJobs((prev) => !prev);
+  };
   useEffect(() => {
     const fetchData = async () => {
       try {
-        let params = `?search=${search}`
+        let params = `?search=${search}`;
         const response = await getMyCreatedCourses(params);
         console.log("Data loaded:", response);
         setDatas(response);
@@ -41,7 +46,18 @@ export default function MyCreatedCourses() {
     <div className="flex flex-col min-h-screen gap-7 py-10 px-20 bg-gray-100">
       <div className="flex items-center">
         <h3 className="text-3xl font-bold">My Created Courses</h3>
-        <button onClick={handleCreateCourse} className="ml-auto bg-blue-500 text-white font-bold p-2 rounded-lg cursor-pointer hover:bg-blue-600">+ Add Course</button>
+        <button
+          onClick={handleCreateCourse}
+          className="ml-auto bg-blue-500 text-white font-bold p-2 rounded-lg cursor-pointer hover:bg-blue-600"
+        >
+          + Add Course
+        </button>
+        <button
+          onClick={handleShowCourseJobs}
+          className="ml-auto bg-blue-500 text-white font-bold p-2 rounded-lg cursor-pointer hover:bg-blue-600"
+        >
+          show history
+        </button>
       </div>
       {/* <SearchBar
         search={search}
@@ -60,11 +76,12 @@ export default function MyCreatedCourses() {
           />
         ))}
       </div>
-      {
-        createCourse && (
-          <CreatePreviewCourseForm stageChange={handleCreateCourse}/>
-        )
-      }
+      {createCourse && (
+        <CreatePreviewCourseForm stageChange={handleCreateCourse} />
+      )}
+      {showCourseJobs && (
+        <CourseHistoryModal setStage={handleShowCourseJobs}/>
+      )}
       {/* <div className="justify-items-center">
         <PaginationTemp page={page} pageSize={9} totalCount={100}/>
       </div> */}

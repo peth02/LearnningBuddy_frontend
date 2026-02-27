@@ -148,6 +148,7 @@ export default function EditQuiz() {
     if (res) {
       window.alert(res.message);
       setIsEdit(false);
+      handleUpdateMeta("questions", editQuestions);
     }
   };
   const handleCancel = () => {

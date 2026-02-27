@@ -1,4 +1,4 @@
-import { Quiz, Topic } from "./Course";
+import { FlashcardDeck, Quiz, Topic } from "./Course";
 
 export interface TopicProps {
   // props for topic card in course page ( show topic )
@@ -32,5 +32,14 @@ export interface QuizProps {
   handleNavigateEdit: (id: string) => void;
   index: number;
   quiz: Quiz;
+  isOwner: boolean;
+}
+
+export interface FlashcardDeckProps {
+  // props for deck card in course page ( show flashcard )
+  handleNavigateTo: (id: string) => void;
+  handleNavigateEdit: (id: string) => void;
+  index: number;
+  deck: FlashcardDeck;
   isOwner: boolean;
 }

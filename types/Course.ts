@@ -147,3 +147,49 @@ export interface PreviewQuizResponse {
 export interface GenerateQuestion {
   generated_questions: Question[];
 }
+
+export interface DeckMetaData {
+  title: string;
+  is_published: boolean;
+}
+export interface FlashcardDeck {
+  deck_id: string;
+  title: string;
+  is_published: boolean;
+  card_count: number;
+  created_at: string; // หรือใช้ Date หากคุณทำการแปลงข้อมูลก่อนใช้งาน
+  updated_at: string;
+}
+
+export interface FlashcardDeck2 {
+  // deck from get deck by deckId
+  deck_id: string;
+  course_id: string;
+  title: string;
+  is_published: boolean;
+  cards: Flashcard[];
+}
+export interface DeckTopicConfig {
+  topic_id: number;
+  amount: number;
+}
+
+export interface PreviewDeckResponse {
+  job_id: string;
+  course_id: string;
+  course_title: string;
+  status: "QUEUED" | "PROCESSING" | "COMPLETED" | "FAILED";
+  progress_percent: number;
+  result?: GenerateFlashcard;
+}
+
+export interface GenerateFlashcard {
+  generated_cards: Flashcard[];
+}
+
+export interface Flashcard {
+  id?: string;
+  topic_id: string;
+  front_text: string;
+  back_text: string;
+}

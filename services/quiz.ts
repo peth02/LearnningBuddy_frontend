@@ -176,12 +176,12 @@ export async function updateCourseQuizById(
     });
     if (!res.ok) {
       const errorData = await res.json().catch(() => ({}));
-      throw new Error(errorData.message || `Fail to get quiz ${quiz_id}`);
+      throw new Error(errorData.message || `Fail to update quiz ${quiz_id}`);
     }
     console.log(res);
     return await res.json();
   } catch (error: any) {
-    console.error("Error in getQuizByQuizId:", error.message);
+    console.error("Error in updateCourseQuizById:", error.message);
     throw error;
   }
 }

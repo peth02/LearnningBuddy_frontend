@@ -230,3 +230,59 @@ export async function getQuizJobs(course_id: any) {
     throw error;
   }
 }
+
+export async function getFlashcardJobs(course_id: any) {
+    // get flashcard jobs in course
+  const token = await getToken();
+  const url = `${baseURL}/courses/${course_id}/deck-jobs`;
+  if (!token) {
+    console.warn("Login is required");
+    return [];
+  }
+  try {
+    const res = await fetch(url, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(errorData.message || `Fail to get flashcards jobs in course ${course_id}`);
+    }
+    console.log(res);
+    return await res.json();
+  } catch (error: any) {
+    console.error("Error in getFlashcardJobs:", error.message);
+    throw error;
+  }
+}
+
+export async function getCourseJobs() {
+    // get course job
+  const token = await getToken();
+  const url = `${baseURL}/courses/preview/jobs`;
+  if (!token) {
+    console.warn("Login is required");
+    return [];
+  }
+  try {
+    const res = await fetch(url, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(errorData.message || `Fail to get course jobs`);
+    }
+    console.log(res);
+    return await res.json();
+  } catch (error: any) {
+    console.error("Error in getCourseJobs:", error.message);
+    throw error;
+  }
+}
