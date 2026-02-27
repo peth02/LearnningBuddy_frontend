@@ -73,10 +73,12 @@ export default function StartFlashcard() {
         <div className="flex grow-0 w-full">
           <div className="text-m text-wrap w-full">
             <button
-              onClick={() => router.push(`/course/${course_id}`)}
+              onClick={() =>
+                router.push(`/course/${course_id}/flashcard/${deck.deck_id}`)
+              }
               className="text-gray-500 hover:text-blue-600 mb-4 flex items-center gap-2 text-sm font-semibold transition cursor-pointer"
             >
-              ← Back to Course
+              ← Back to Deck
             </button>
 
             <div className="flex justify-between items-start">
@@ -108,7 +110,9 @@ export default function StartFlashcard() {
           className="w-full max-w-2xl aspect-[16/9] perspective-1000 cursor-pointer group"
         >
           <div
-            className={`relative w-full h-full transition-all duration-500 transform-style-3d`}
+            className={`relative w-full h-full transition-all duration-500 transform-style-3d ${
+              isFlipped ? "rotate-y-180" : ""
+            }`}
           >
             {!isFlipped ? (
               <div className="absolute inset-0 backface-hidden bg-white border-2 border-gray-100 rounded-3xl shadow-lg flex flex-col items-center justify-center p-12 text-center group-hover:border-blue-200 transition-colors">
@@ -124,16 +128,16 @@ export default function StartFlashcard() {
               </div>
             ) : (
               <div className="absolute inset-0 backface-hidden bg-white border-2 border-gray-100 rounded-3xl shadow-lg flex flex-col items-center justify-center p-12 text-center group-hover:border-blue-200 transition-colors">
-                <span className="text-xs font-black text-blue-500 uppercase tracking-widest mb-4">
+                <span className="text-xs font-black text-blue-500 uppercase tracking-widest mb-4 rotate-y-180">
                   Answer
                 </span>
-                <p className="text-xl text-blue-900 font-medium leading-relaxed">
+                <p className="text-xl text-blue-900 font-medium leading-relaxed rotate-y-180">
                   {currentCard?.back_text}
                 </p>
-                <div className="mt-4 px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-[10px] font-black uppercase tracking-wider border border-blue-100">
+                <div className="mt-4 px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-[10px] font-black uppercase tracking-wider border border-blue-100 rotate-y-180">
                   Topic: {currentTopicName}
                 </div>
-                <p className="mt-8 text-gray-400 text-sm font-medium animate-pulse">
+                <p className="mt-8 text-gray-400 text-sm font-medium animate-pulse rotate-y-180">
                   Click to show question
                 </p>
               </div>
