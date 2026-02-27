@@ -68,15 +68,14 @@ export default function Quiz() {
 
   return (
     <div className="flex flex-col min-h-screen gap-7 py-10 px-20 bg-gray-100">
-
       {/* 2. Main Content Card */}
       <section className="bg-white rounded-2xl shadow-sm p-10 flex flex-col gap-8">
         <button
-                  onClick={() => router.push(`/course/${course_id}`)}
-                  className="text-gray-500 hover:text-blue-600 mb-4 flex items-center gap-2 text-sm font-semibold transition cursor-pointer"
-                >
-                  ← Back to Course
-                </button>
+          onClick={() => router.push(`/course/${course_id}`)}
+          className="text-gray-500 hover:text-blue-600 mb-4 flex items-center gap-2 text-sm font-semibold transition cursor-pointer"
+        >
+          ← Back to Course
+        </button>
         {/* Quiz Header */}
         <div>
           <h1 className="text-3xl font-bold text-gray-800">
@@ -257,7 +256,10 @@ export default function Quiz() {
         </div>
         {/* 5. Action Button */}
         <div className="flex justify-center mt-4">
-          <a href={`/course/${course_id}/quiz/${quiz_id}/start_quiz`} className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-12 rounded-xl transition-all flex items-center gap-3 shadow-lg shadow-blue-200">
+          <a
+            href={`/course/${course_id}/quiz/${quiz_id}/start_quiz`}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-12 rounded-xl transition-all flex items-center gap-3 shadow-lg shadow-blue-200"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="20"
@@ -269,7 +271,6 @@ export default function Quiz() {
             </svg>
             Take Quiz
           </a>
-          
         </div>
       </section>
     </div>
