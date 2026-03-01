@@ -11,6 +11,7 @@ export interface TopicProps {
 
 export interface CourseNavItemProps {
   // props for navbar in course's topics page
+  job_id?: string;
   index: string;
   label: string;
   showDelete: boolean;

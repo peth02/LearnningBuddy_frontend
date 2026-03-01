@@ -1,9 +1,30 @@
+export interface PreviewCourseResponse {
+  job_id: string;
+  status: "QUEUED" | "PROCESSING" | "COMPLETED" | "FAILED";
+  result?: GenerateCourse;
+}
+
+export interface GenerateCourse {
+  title: string;
+  description: string;
+  is_published?: boolean;
+  topics: Topic3[];
+}
+
+export interface Topic3 {
+  // topic for create course from preview
+  order_index: string;
+  description: string;
+  raw_text: string;
+  summary_note: string;
+  title: string;
+}
 export interface CourseMetaData {
-  id: string;
+  id?: string;
   title: string;
   description: string;
   is_published: boolean;
-  totalTopics: number;
+  totalTopics?: number;
 }
 export interface Topic {
   // Topic for getting course using get url/courses/{course_id}

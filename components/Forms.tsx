@@ -246,8 +246,8 @@ export function CreatePreviewCourseForm(props: any) {
     setSubmitStatus("submitting");
     setIsLoading(true);
 
-    await new Promise((resolve) => setTimeout(resolve, 50));
-    const url = `${baseURL}/courses/preview`;
+    // await new Promise((resolve) => setTimeout(resolve, 50));
+    const url = `${baseURL}/courses/preview/jobs`;
     console.log("sending ", name, desc, file, "to ", url);
     const token = await getToken();
     console.log("user", token);
@@ -274,9 +274,10 @@ export function CreatePreviewCourseForm(props: any) {
       if (res.ok) {
         const data = await res.json();
         console.log("Server response:", data);
-        setSubmitStatus("success");
-        setStatusMsg("Course created successfully!");
-        setCourse(data);
+        // setSubmitStatus("success");
+        // setStatusMsg("Course created successfully!");
+        // setCourse(data);
+        router.push(`my_created_courses/preview_job?job=${data.job_id}`)
       } else {
         setSubmitStatus("error");
         const errorText = await res.text();
@@ -285,6 +286,7 @@ export function CreatePreviewCourseForm(props: any) {
     } catch (error: any) {
       setSubmitStatus("error");
       setStatusMsg(error.message || "An unexpected error occurred");
+      setFile(null);
     } finally {
       setIsLoading(false);
     }
@@ -494,53 +496,6 @@ export function CreatePreviewCourseForm(props: any) {
         {/* Loading & Result Overlay */}
         {submitStatus !== "idle" && (
           <div className="fixed w-full h-full inset-0 bg-white rounded-lg z-[60] flex flex-col items-center justify-center p-6 text-center">
-            {/* 1. แสดงตอนกำลังส่งข้อมูล (Submitting) */}
-            {submitStatus === "submitting" && (
-              <div className="flex flex-col items-center justify-center p-20 gap-4">
-                <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin"></div>
-
-                <div className="text-center">
-                  <h3 className="text-lg font-semibold text-gray-700">
-                    Creating your course...
-                  </h3>
-                  <p className="text-sm text-gray-500">
-                    Please wait while we process your PDF file.
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* 2. แสดงเมื่อสำเร็จ (Success) */}
-            {submitStatus === "success" && (
-              <div className="w-full h-full bg-white flex flex-col justify-center">
-                <div className="flex justify-center mb-4 text-green-500">
-                  {/* Success Icon */}
-                  <svg
-                    className="w-16 h-16"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                </div>
-                <h3 className="text-xl font-bold text-gray-800 mb-2">
-                  Success!
-                </h3>
-                <p className="text-gray-600 mb-6">{statusMsg}</p>
-                <button
-                  onClick={() => router.push("/my_created_courses/preview")}
-                  className="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors"
-                >
-                  View Preview Course
-                </button>
-              </div>
-            )}
 
             {/* 3. แสดงเมื่อเกิดข้อผิดพลาด (Error) */}
             {submitStatus === "error" && (

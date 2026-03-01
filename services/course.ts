@@ -1,8 +1,74 @@
 import { getToken } from "@/lib/session";
-import { Course, Topic2 } from "@/types/Course";
-import { UpdateCourseTopicsProps } from "@/types/Form"
+import { Course, CourseMetaData, Topic2, Topic3 } from "@/types/Course";
+import { UpdateCourseTopicsProps } from "@/types/Form";
 
 const baseURL = process.env.NEXT_PUBLIC_BE_BASE_API;
+
+export async function getCoursePreviewByJobId(job_id: any) {
+  const token = await getToken();
+  const url = `${baseURL}/courses/preview/jobs/${job_id}`;
+  if (!token) {
+    console.warn("Login is required");
+    return [];
+  }
+  try {
+    const res = await fetch(url, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(errorData.message || "Fail to get course by job id");
+    }
+    console.log(res);
+    return await res.json();
+  } catch (error: any) {
+    console.error("Error in getCoursePreviewByJobId:", error.message);
+    throw error;
+  }
+}
+
+export async function createCourseFromPreview(
+  courseMetaData: CourseMetaData,
+  topics: Topic3[],
+) {
+  const url = `${baseURL}/courses`;
+  const token = await getToken();
+  try {
+    // create form data
+    if (courseMetaData && topics) {
+      const sendData = {
+        title: courseMetaData.title,
+        description: courseMetaData.description,
+        is_published: courseMetaData.is_published,
+        topics: topics,
+      };
+      if (!token) {
+        console.warn("Login is required");
+        return [];
+      }
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(sendData),
+      });
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || `Fail to create course`);
+      }
+      console.log(res);
+      return await res.json();
+    }
+  } catch (error: any) {
+    console.error("Error in createCourseFromPreview:", error.message);
+    throw error;
+  }
+}
 
 export async function getCourses(params?: any) {
   const token = await getToken();
@@ -166,7 +232,10 @@ export async function enrollCourse(course_id: any) {
   return await res.json();
 }
 
-export async function updateCourseTopic(course_id: any, topic: Topic2[] | UpdateCourseTopicsProps[]) {
+export async function updateCourseTopic(
+  course_id: any,
+  topic: Topic2[] | UpdateCourseTopicsProps[],
+) {
   const token = await getToken();
   const url = `${baseURL}/courses/${course_id}/content`;
   const sendData = {
@@ -183,7 +252,7 @@ export async function updateCourseTopic(course_id: any, topic: Topic2[] | Update
     const res = await fetch(url, {
       method: "PUT",
       headers: {
-        "Authorization": `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(sendData),
@@ -196,15 +265,14 @@ export async function updateCourseTopic(course_id: any, topic: Topic2[] | Update
 
     console.log("Update success:", res.status);
     return await res.json();
-
   } catch (error: any) {
     console.error("Error in updateCourseTopic:", error.message);
-    throw error; 
+    throw error;
   }
 }
 
 export async function getQuizJobs(course_id: any) {
-    // get quiz jobs in course
+  // get quiz jobs in course
   const token = await getToken();
   const url = `${baseURL}/courses/${course_id}/quiz-jobs`;
   if (!token) {
@@ -221,7 +289,9 @@ export async function getQuizJobs(course_id: any) {
     });
     if (!res.ok) {
       const errorData = await res.json().catch(() => ({}));
-      throw new Error(errorData.message || `Fail to get quiz jobs in course ${course_id}`);
+      throw new Error(
+        errorData.message || `Fail to get quiz jobs in course ${course_id}`,
+      );
     }
     console.log(res);
     return await res.json();
@@ -232,7 +302,7 @@ export async function getQuizJobs(course_id: any) {
 }
 
 export async function getFlashcardJobs(course_id: any) {
-    // get flashcard jobs in course
+  // get flashcard jobs in course
   const token = await getToken();
   const url = `${baseURL}/courses/${course_id}/deck-jobs`;
   if (!token) {
@@ -249,7 +319,10 @@ export async function getFlashcardJobs(course_id: any) {
     });
     if (!res.ok) {
       const errorData = await res.json().catch(() => ({}));
-      throw new Error(errorData.message || `Fail to get flashcards jobs in course ${course_id}`);
+      throw new Error(
+        errorData.message ||
+          `Fail to get flashcards jobs in course ${course_id}`,
+      );
     }
     console.log(res);
     return await res.json();
@@ -260,7 +333,7 @@ export async function getFlashcardJobs(course_id: any) {
 }
 
 export async function getCourseJobs() {
-    // get course job
+  // get course job
   const token = await getToken();
   const url = `${baseURL}/courses/preview/jobs`;
   if (!token) {

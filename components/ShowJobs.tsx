@@ -412,7 +412,7 @@ export function CourseHistoryModal({
                       <td className="py-5 text-right">
                         <button
                           onClick={() => {
-                            // router.push(`/course/${course_id}/quiz/preview?job=${job.job_id}`);
+                            router.push(`/my_created_courses/preview_job?job=${job.job_id}`);
                           }}
                           className="bg-white border-2 border-blue-100 text-blue-600 hover:bg-blue-600 hover:text-white hover:border-blue-600 px-4 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm active:scale-95 cursor-pointer"
                         >
