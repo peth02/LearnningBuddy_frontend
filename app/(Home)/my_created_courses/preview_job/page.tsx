@@ -107,17 +107,14 @@ export default function PreviewCourse() {
   };
 
   const handleSubmit = async () => {
-    // handleDebug();
     try {
       const res = await createCourseFromPreview(
         courseMetaData,
         editTopics,
       );
-      //   const creaeted_id = res.quiz_id;
       router.push(`/course/${res.course_id}`);
-      // console.log("create ", res, creaeted_id)
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -127,8 +124,6 @@ export default function PreviewCourse() {
       try {
         const res = await getCoursePreviewByJobId(job_id);
         setLoadingData(res);
-        console.log("this is res,", res);
-
         if (res.status == "COMPLETED") {
           clearInterval(checkProgress);
           setCourseMetaData({
@@ -147,12 +142,6 @@ export default function PreviewCourse() {
     return () => clearInterval(checkProgress);
   }, [job_id]);
 
-  const handleDebug = () => {
-    console.log("topics", topics);
-    console.log("edit topics", editTopics);
-    console.log("meta data", courseMetaData);
-    console.log("job id", job_id);
-  };
   if (loadingData.status == "QUEUED" || loadingData.status == "PROCESSING") {
     return (
       <div className="flex flex-col justify-center items-center min-h-screen bg-gray-100 px-20 py-10">
@@ -428,7 +417,6 @@ export default function PreviewCourse() {
           Confirm
         </button>
       </div>
-      <button onClick={handleDebug}>debug</button>
     </div>
   );
 }

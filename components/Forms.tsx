@@ -50,26 +50,23 @@ export function EditCourseForm({
       });
       if (res.ok) {
         const data = await res.json();
-        console.log("Server response:", data);
         alert("Successfully edit course");
         setDataForm("title", sendData.title);
         setDataForm("description", sendData.description);
         setDataForm("is_published", sendData.is_published);
-        console.log("edit Course");
         stateChange();
       } else {
         const errorText = await res.text();
         console.error("Upload failed:", errorText);
       }
     } catch (error: any) {
-      console.log("error", error);
+      console.error("error", error);
     }
   };
 
   const DeleteCourseHandler = async () => {
     const remove = confirm("do you want to delete this course");
     if (remove) {
-      console.log("deleting Course");
       const url = `${baseURL}/courses/${data.course_id}`;
       const token = await getToken();
       try {
@@ -87,7 +84,6 @@ export function EditCourseForm({
         });
         if (res.ok) {
           const data = await res.json();
-          console.log("Server response:", data);
           alert("Successfully delet course");
           router.push("/home");
         } else {
@@ -95,10 +91,8 @@ export function EditCourseForm({
           console.error("Delete failed:", errorText);
         }
       } catch (error: any) {
-        console.log("error", error);
+        console.error("error", error);
       }
-    } else {
-      console.log("phewww almost delete a course");
     }
   };
 
@@ -248,9 +242,8 @@ export function CreatePreviewCourseForm(props: any) {
 
     // await new Promise((resolve) => setTimeout(resolve, 50));
     const url = `${baseURL}/courses/preview/jobs`;
-    console.log("sending ", name, desc, file, "to ", url);
+    // console.log("sending ", name, desc, file, "to ", url);
     const token = await getToken();
-    console.log("user", token);
     try {
       // create form data
       const sendData = new FormData();
@@ -273,7 +266,7 @@ export function CreatePreviewCourseForm(props: any) {
       });
       if (res.ok) {
         const data = await res.json();
-        console.log("Server response:", data);
+        // console.log("Server response:", data);
         // setSubmitStatus("success");
         // setStatusMsg("Course created successfully!");
         // setCourse(data);
@@ -742,7 +735,7 @@ export function CreateQuizForm({
     });
 
     // 2. แสดงผลลัพธ์ข้อมูลที่รวมแล้ว
-    console.log("Combined Payload for API:", processedPayload);
+    // console.log("Combined Payload for API:", processedPayload);
 
     // 3. Logic การยิง API (ตัวอย่าง)
     try {
@@ -817,7 +810,7 @@ export function CreateQuizForm({
                       className="mx-5 my-2 border-1 rounded-lg overflow-hidden animate-in slide-in-from-bottom-2 duration-300"
                     >
                       <div
-                        onClick={() => console.log("click")}
+                        // onClick={() => console.log("click")}
                         className="bg-gray-200 p-5"
                       >
                         <span>{topic.title}</span>
@@ -1158,7 +1151,6 @@ export function EditQuizMetaForm({
   const DeleteQuizHandler = async () => {
     const remove = confirm("do you want to delete this quiz");
     if (remove) {
-      console.log("deleting Quiz");
       const url = `${baseURL}/quizzes/${quiz.quiz_id}`;
       const token = await getToken();
       try {
@@ -1176,7 +1168,6 @@ export function EditQuizMetaForm({
         });
         if (res.ok) {
           const data = await res.json();
-          console.log("Server response:", data);
           alert("Successfully delet quiz");
           router.push(`/course/${quiz.course_id}`);
         } else {
@@ -1184,10 +1175,8 @@ export function EditQuizMetaForm({
           console.error("Delete failed:", errorText);
         }
       } catch (error: any) {
-        console.log("error", error);
+        console.error("error", error);
       }
-    } else {
-      console.log("phewww almost delete a quiz");
     }
   };
   return (
@@ -1306,8 +1295,6 @@ export function CreateFlashCardForm({
   };
 
   const handleSubmit = async () => {
-
-    console.log("Flashcard Payload:",  deckConfigs);
 
     try {
       const res = await createFlashcardPreview(deckConfigs, course_id);

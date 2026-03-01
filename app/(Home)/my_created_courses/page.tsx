@@ -32,7 +32,6 @@ export default function MyCreatedCourses() {
       try {
         let params = `?search=${search}`;
         const response = await getMyCreatedCourses(params);
-        console.log("Data loaded:", response);
         setDatas(response);
       } catch (error) {
         console.error(error);

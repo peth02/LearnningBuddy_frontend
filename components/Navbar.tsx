@@ -24,7 +24,6 @@ export function HomeNavbar() {
   useEffect(() => {
     async function fetchUser() {
       const user = await getUser();
-      console.log("Current user:", user);
       setUser(user);
     }
     fetchUser();

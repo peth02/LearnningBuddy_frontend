@@ -87,7 +87,6 @@ export default function CourseId() {
       try {
         if (updatedTopics) {
           const res = await updateCourseTopic(id, updatedTopics);
-          console.log("successfully updated topics on server:", res);
         }
         setDelTopic([]);
       } catch (error) {
@@ -132,11 +131,9 @@ export default function CourseId() {
     const fetchData = async () => {
       try {
         const response = await getCourseByID(id);
-        console.log("Data loaded:", response);
         setData(response);
 
         const response2 = await getCourseTopics(id);
-        console.log("Data loaded:", response2);
         setTopics(response2.topics);
       } catch (error) {
         console.error(error);
@@ -154,7 +151,6 @@ export default function CourseId() {
         try {
           const res = await getQuizzesByCourseId(id);
           setQuizzes(res);
-          console.log("quiz", res);
         } catch (error) {
           console.error("Error loading quizzes:", error);
         }
@@ -166,7 +162,6 @@ export default function CourseId() {
         try {
           const res = await getDecksByCourseId(id);
           setFlashcardsDeck(res);
-          console.log("flashcard", res);
         } catch (error) {
           console.error("Error loading flashcards:", error);
         }

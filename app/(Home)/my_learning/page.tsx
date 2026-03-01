@@ -18,7 +18,6 @@ export default function MyLearning() {
       try {
         let params = `?search=${search}`
         const response = await getMyEnrolledCourses(params);
-        console.log("Data loaded:", response);
         setDatas(response);
       } catch (error) {
         console.error(error);

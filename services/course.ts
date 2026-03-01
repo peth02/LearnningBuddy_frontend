@@ -22,7 +22,7 @@ export async function getCoursePreviewByJobId(job_id: any) {
       const errorData = await res.json().catch(() => ({}));
       throw new Error(errorData.message || "Fail to get course by job id");
     }
-    console.log(res);
+    // console.log(res);
     return await res.json();
   } catch (error: any) {
     console.error("Error in getCoursePreviewByJobId:", error.message);
@@ -61,7 +61,7 @@ export async function createCourseFromPreview(
         const errorData = await res.json().catch(() => ({}));
         throw new Error(errorData.message || `Fail to create course`);
       }
-      console.log(res);
+      // console.log(res);
       return await res.json();
     }
   } catch (error: any) {
@@ -87,7 +87,7 @@ export async function getCourses(params?: any) {
   if (!res.ok) {
     throw new Error("Fail to fetch");
   }
-  console.log(res);
+  // console.log(res);
   return await res.json();
 }
 
@@ -108,7 +108,7 @@ export async function getMyCreatedCourses(params?: any) {
   if (!res.ok) {
     throw new Error("Fail to fetch");
   }
-  console.log(res);
+  // console.log(res);
   return await res.json();
 }
 
@@ -129,7 +129,7 @@ export async function getMyEnrolledCourses(params?: any) {
   if (!res.ok) {
     throw new Error("Fail to fetch");
   }
-  console.log(res);
+  // console.log(res);
   return await res.json();
 }
 
@@ -150,7 +150,7 @@ export async function getCourseByID(course_id: any) {
   if (!res.ok) {
     throw new Error("Fail to fetch");
   }
-  console.log(res);
+  // console.log(res);
   return await res.json();
 }
 
@@ -171,7 +171,7 @@ export async function getCourseTopics(course_id: any) {
   if (!res.ok) {
     throw new Error("Fail to fetch");
   }
-  console.log(res);
+  // console.log(res);
   return await res.json();
 }
 
@@ -228,7 +228,7 @@ export async function enrollCourse(course_id: any) {
   if (!res.ok) {
     throw new Error("Fail to enroll");
   }
-  console.log(res);
+  // console.log(res);
   return await res.json();
 }
 
@@ -263,7 +263,7 @@ export async function updateCourseTopic(
       throw new Error(errorData.message || "Fail to update course's topic");
     }
 
-    console.log("Update success:", res.status);
+    // console.log("Update success:", res.status);
     return await res.json();
   } catch (error: any) {
     console.error("Error in updateCourseTopic:", error.message);
@@ -293,7 +293,7 @@ export async function getQuizJobs(course_id: any) {
         errorData.message || `Fail to get quiz jobs in course ${course_id}`,
       );
     }
-    console.log(res);
+    // console.log(res);
     return await res.json();
   } catch (error: any) {
     console.error("Error in getQuizJobs:", error.message);
@@ -324,7 +324,7 @@ export async function getFlashcardJobs(course_id: any) {
           `Fail to get flashcards jobs in course ${course_id}`,
       );
     }
-    console.log(res);
+    // console.log(res);
     return await res.json();
   } catch (error: any) {
     console.error("Error in getFlashcardJobs:", error.message);
@@ -352,7 +352,7 @@ export async function getCourseJobs() {
       const errorData = await res.json().catch(() => ({}));
       throw new Error(errorData.message || `Fail to get course jobs`);
     }
-    console.log(res);
+    // console.log(res);
     return await res.json();
   } catch (error: any) {
     console.error("Error in getCourseJobs:", error.message);

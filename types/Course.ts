@@ -100,6 +100,7 @@ export interface Choice {
   id?: string;
   choice_text: string;
   is_correct: boolean;
+  explanation?: string;
 }
 
 export interface Quiz3 {

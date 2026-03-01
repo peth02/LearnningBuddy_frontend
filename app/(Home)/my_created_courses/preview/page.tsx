@@ -84,7 +84,6 @@ export default function Preview() {
 
     const res = await createCourse(course);
     if (res) {
-      console.log("Server response:", res);
       alert("successfully create course");
       router.push("/my_created_courses");
     }

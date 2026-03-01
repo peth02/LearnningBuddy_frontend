@@ -81,6 +81,7 @@ export default function EditQuiz() {
     const newChoice: Choice = {
       choice_text: "",
       is_correct: false,
+      explanation: "", // ✅ เพิ่มค่าเริ่มต้นสำหรับคำอธิบายตัวเลือก
     };
     const updatedChoices = [...(currentQuestion?.choices || []), newChoice];
     handleQuestionUpdate("choices", updatedChoices);
@@ -168,11 +169,11 @@ export default function EditQuiz() {
     const fetchData = async () => {
       try {
         const response1 = await getCourseByID(course_id);
-        console.log("Data1 loaded:", response1);
+        // console.log("Data1 loaded:", response1);
         setCourse(response1);
 
         const response2 = await getQuizByQuizId(quiz_id);
-        console.log("Data2 loaded:", response2);
+        // console.log("Data2 loaded:", response2);
         setQuiz(response2);
         setEditQuiz(response2);
         setEditQuestions(response2.questions);
@@ -455,74 +456,89 @@ export default function EditQuiz() {
                 </div>
 
                 <div className="flex flex-col gap-4">
-                  {/* ดึงข้อมูลดั้งเดิมจาก currentQuestion.choices มาแสดง */}
                   {currentQuestion?.choices?.map((choice, index) => (
                     <div
                       key={choice.id || index}
-                      className="flex items-center gap-3 group"
+                      className="flex flex-col gap-2 p-4 border-2 border-gray-50 rounded-2xl bg-gray-50/30 group"
                     >
-                      {/* Radio Button สไตล์จุดสีน้ำเงิน (Blue Dot) */}
-                      <button
-                        type="button"
-                        onClick={() =>
-                          handleChoiceUpdate(index, "is_correct", true)
-                        }
-                        className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
-                          choice.is_correct
-                            ? "border-blue-500 bg-white"
-                            : "border-gray-300 hover:border-gray-400"
-                        }`}
-                      >
-                        {/* จุดสีน้ำเงินตรงกลาง */}
-                        {choice.is_correct && (
-                          <div className="w-3 h-3 rounded-full bg-blue-500 animate-in zoom-in duration-200" />
-                        )}
-                      </button>
-
-                      {/* ช่องกรอกตัวเลือก (Input) */}
-                      <input
-                        type="text"
-                        value={choice.choice_text}
-                        onChange={(e) =>
-                          handleChoiceUpdate(
-                            index,
-                            "choice_text",
-                            e.target.value,
-                          )
-                        }
-                        placeholder={`Choice ${index + 1}`}
-                        className={`flex-1 p-3 border-2 rounded-xl outline-none transition-all ${
-                          choice.is_correct
-                            ? "border-blue-200 bg-blue-50/30"
-                            : "border-gray-100 focus:border-blue-400"
-                        }`}
-                      />
-
-                      {/* ปุ่มลบตัวเลือก (คงเหลือขั้นต่ำ 2 ข้อ) */}
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveChoice(index)}
-                        className="p-2 text-gray-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
-                        title="Remove choice"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="20"
-                          height="20"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
+                      <div className="flex items-center gap-3">
+                        {/* Blue Dot Radio Button */}
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleChoiceUpdate(index, "is_correct", true)
+                          }
+                          className={`w-6 h-6 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-all ${
+                            choice.is_correct
+                              ? "border-blue-500 bg-white"
+                              : "border-gray-300 hover:border-gray-400"
+                          }`}
                         >
-                          <path d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                        </svg>
-                      </button>
+                          {choice.is_correct && (
+                            <div className="w-3 h-3 rounded-full bg-blue-500 animate-in zoom-in duration-200" />
+                          )}
+                        </button>
+
+                        {/* Choice Text Input */}
+                        <input
+                          type="text"
+                          value={choice.choice_text}
+                          onChange={(e) =>
+                            handleChoiceUpdate(
+                              index,
+                              "choice_text",
+                              e.target.value,
+                            )
+                          }
+                          placeholder={`Choice ${index + 1}`}
+                          className={`flex-1 p-3 border-2 rounded-xl outline-none transition-all ${
+                            choice.is_correct
+                              ? "border-blue-200 bg-white"
+                              : "border-transparent bg-white focus:border-blue-400"
+                          }`}
+                        />
+
+                        {/* Delete Choice Button */}
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveChoice(index)}
+                          className="p-2 text-gray-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                          </svg>
+                        </button>
+                      </div>
+
+                      {/* ✅ Choice Explanation Input */}
+                      <div className="ml-9">
+                        <textarea
+                          value={choice.explanation || ""}
+                          onChange={(e) =>
+                            handleChoiceUpdate(
+                              index,
+                              "explanation",
+                              e.target.value,
+                            )
+                          }
+                          placeholder="Add explanation for this specific choice (optional)..."
+                          className="w-full p-3 text-xs border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-400 outline-none transition-all resize-none bg-white/50 focus:bg-white"
+                          rows={2}
+                        />
+                      </div>
                     </div>
                   ))}
 
-                  {/* ปุ่มเพิ่มตัวเลือกใหม่ */}
                   <button
                     type="button"
                     onClick={handleAddChoice}

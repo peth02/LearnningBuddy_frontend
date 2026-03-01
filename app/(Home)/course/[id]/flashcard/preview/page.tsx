@@ -101,7 +101,6 @@ export default function PreviewDeck() {
   };
 
   const handleSubmit = async () => {
-    // handleDebug();
     try {
       const res = await createFlashcardFromPreview(
         course_id,
@@ -112,7 +111,7 @@ export default function PreviewDeck() {
       router.push(`/course/${course_id}`);
       // console.log("create ", res, creaeted_id)
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -143,7 +142,7 @@ export default function PreviewDeck() {
         const res = await getCourseByID(course_id);
         if (res) {
           setCourse(res);
-          console.log("Course loaded successfully:", res);
+          // console.log("Course loaded successfully:", res);
         }
       } catch (error) {
         console.error("Fetch course error:", error);
@@ -153,12 +152,7 @@ export default function PreviewDeck() {
     getCourse();
   }, []);
 
-  const handleDebug = () => {
-    console.log("flashcards", flashcards);
-    console.log("edit flashcards", editFlashcards);
-    console.log("meta data", deckMetaData);
-    console.log("job id", job_id);
-  };
+
   // 1. หน้าจอ Loading (เมื่อ progress < 100)
   if (loadingData.progress_percent < 100 && loadingData.status != "FAILED") {
     return (
@@ -416,7 +410,6 @@ export default function PreviewDeck() {
           Confirm
         </button>
       </div>
-      <button onClick={handleDebug}>debug</button>
     </div>
   );
 }

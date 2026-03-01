@@ -128,7 +128,7 @@ export default function topicId() {
     const fetchDataCourse = async () => {
       try {
         const response = await getCourseByID(id);
-        console.log("Data loaded:", response);
+        // console.log("Data loaded:", response);
         setData(response);
       } catch (error) {
         console.error(error);
@@ -137,7 +137,7 @@ export default function topicId() {
     const fetchDataTopic = async () => {
       try {
         const response = await getCourseTopics(id);
-        console.log("Data2 loaded:", response);
+        // console.log("Data2 loaded:", response);
         setTopics(response.topics);
         setEditTopics(response.topics);
       } catch (error) {

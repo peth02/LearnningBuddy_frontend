@@ -22,7 +22,7 @@ export async function getDecksByCourseId(course_id: any) {
       const errorData = await res.json().catch(() => ({}));
       throw new Error(errorData.message || "Fail to get decks");
     }
-    console.log(res);
+    // console.log(res);
     return await res.json();
   } catch (error: any) {
     console.error("Error in getDecksByCourseId:", error.message);
@@ -49,7 +49,7 @@ export async function getDeckByDeckId(deck_id: any) {
       const errorData = await res.json().catch(() => ({}));
       throw new Error(errorData.message || `Fail to get deck ${deck_id}`);
     }
-    console.log(res);
+    // console.log(res);
     return await res.json();
   } catch (error: any) {
     console.error("Error in getDeckByDeckId:", error.message);
@@ -79,7 +79,7 @@ export async function createFlashcardPreview(deckConfigs: any, course_id: any) {
       const errorData = await res.json().catch(() => ({}));
       throw new Error(errorData.message || `Fail to create preview flashcards`);
     }
-    console.log(res);
+    // console.log(res);
     return await res.json();
   } catch (error: any) {
     console.error("Error in createFlashcardPreview:", error.message);
@@ -112,7 +112,7 @@ export async function updateCourseDeckById(
       const errorData = await res.json().catch(() => ({}));
       throw new Error(errorData.message || `Fail to update deck ${deck_id}`);
     }
-    console.log(res);
+    // console.log(res);
     return await res.json();
   } catch (error: any) {
     console.error("Error in updateCourseDeckById:", error.message);
@@ -138,7 +138,7 @@ export async function getFlashcardPreviewByJobId(job_id: any) {
       const errorData = await res.json().catch(() => ({}));
       throw new Error(errorData.message || "Fail to get deck by job id");
     }
-    console.log(res);
+    // console.log(res);
     return await res.json();
   } catch (error: any) {
     console.error("Error in getFlashcardPreviewByJobId:", error.message);
@@ -177,7 +177,7 @@ export async function createFlashcardFromPreview(
         const errorData = await res.json().catch(() => ({}));
         throw new Error(errorData.message || `Fail to create deck`);
       }
-      console.log(res);
+      // console.log(res);
       return await res.json();
     }
   } catch (error: any) {

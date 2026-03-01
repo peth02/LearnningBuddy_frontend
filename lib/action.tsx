@@ -13,7 +13,6 @@ export async function loginAction(formData: FormData) {
   let success = false;
 
   try {
-    console.log("User login :", url);
     const  res = await fetch(url, {
       method: "POST",
       headers: {
@@ -29,11 +28,9 @@ export async function loginAction(formData: FormData) {
       const data = await res.json();
       await createSession(name, data.token);
       success = true;
-    } else {
-      console.log("status :", res.status)
     }
   } catch (error) {
-    console.log("login error :", error)
+    console.error("login error :", error)
   }
 
   if(success) {
@@ -51,7 +48,6 @@ export async function registerAction(formData: FormData) {
   let success = false;
 
   try {
-    console.log("User register :", url);
     const  res = await fetch(url, {
       method: "POST",
       headers: {
@@ -67,13 +63,11 @@ export async function registerAction(formData: FormData) {
 
     if (res.ok) {
       const data = await res.json();
-      console.log("successfully register :", data)
+      // console.log("successfully register :", data)
       success = true;
-    } else {
-      console.log("status :", res.status)
     }
   } catch (error) {
-    console.log("login error :", error)
+    console.error("login error :", error)
   }
 
   if(success) {

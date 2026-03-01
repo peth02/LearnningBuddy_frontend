@@ -22,7 +22,7 @@ export async function getQuizzesByCourseId(course_id: any) {
       const errorData = await res.json().catch(() => ({}));
       throw new Error(errorData.message || "Fail to get quizzes");
     }
-    console.log(res);
+    // console.log(res);
     return await res.json();
   } catch (error: any) {
     console.error("Error in getQuizzesByCourseId:", error.message);
@@ -50,7 +50,7 @@ export async function getQuizByQuizId(quiz_id: any) {
       const errorData = await res.json().catch(() => ({}));
       throw new Error(errorData.message || `Fail to get quiz ${quiz_id}`);
     }
-    console.log(res);
+    // console.log(res);
     return await res.json();
   } catch (error: any) {
     console.error("Error in getQuizByQuizId:", error.message);
@@ -80,7 +80,7 @@ export async function createQuizPreview(quizConfig: any, course_id: any) {
       const errorData = await res.json().catch(() => ({}));
       throw new Error(errorData.message || `Fail to create preview quiz`);
     }
-    console.log(res);
+    // console.log(res);
     return await res.json();
   } catch (error: any) {
     console.error("Error in createQuizPreview:", error.message);
@@ -105,7 +105,7 @@ export async function getQuizPreviewByJobId(job_id: any) {
       const errorData = await res.json().catch(() => ({}));
       throw new Error(errorData.message || "Fail to get quiz by job id");
     }
-    console.log(res);
+    // console.log(res);
     return await res.json();
   } catch (error: any) {
     console.error("Error in getQuizPreviewByJobId:", error.message);
@@ -144,7 +144,7 @@ export async function createQuizFromPreview(
         const errorData = await res.json().catch(() => ({}));
         throw new Error(errorData.message || `Fail to create quiz`);
       }
-      console.log(res);
+      // console.log(res);
       return await res.json();
     }
   } catch (error: any) {
@@ -178,7 +178,7 @@ export async function updateCourseQuizById(
       const errorData = await res.json().catch(() => ({}));
       throw new Error(errorData.message || `Fail to update quiz ${quiz_id}`);
     }
-    console.log(res);
+    // console.log(res);
     return await res.json();
   } catch (error: any) {
     console.error("Error in updateCourseQuizById:", error.message);
@@ -206,7 +206,7 @@ export async function getStartQuizById(quiz_id: any) {
       const errorData = await res.json().catch(() => ({}));
       throw new Error(errorData.message || `Fail to get quiz ${quiz_id}`);
     }
-    console.log(res);
+    // console.log(res);
     return await res.json();
   } catch (error: any) {
     console.error("Error in getQuizByQuizId:", error.message);
@@ -242,7 +242,7 @@ export async function submitQuizAttempt(
         errorData.message || `Fail to submit quiz ${quiz_id} attempt`,
       );
     }
-    console.log(res);
+    // console.log(res);
     return await res.json();
   } catch (error: any) {
     console.error("Error in submitQuizAttempt:", error.message);

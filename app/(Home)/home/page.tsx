@@ -18,7 +18,6 @@ export default function Home() {
       try {
         let params = `?search=${search}`
         const response = await getCourses(params);
-        console.log("Data loaded:", response);
         setDatas(response);
       } catch (error) {
         console.error(error);

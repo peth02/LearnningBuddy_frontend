@@ -29,7 +29,7 @@ export default function StartQuiz() {
     const fetchData = async () => {
       try {
         const response1 = await getStartQuizById(quiz_id);
-        console.log("Data1 loaded:", response1);
+        // console.log("Data1 loaded:", response1);
         setQuiz(response1);
       } catch (error) {
         console.error(error);
@@ -73,7 +73,7 @@ export default function StartQuiz() {
         finalAnswers,
       );
 
-      console.log("Quiz Result Received:", resultData);
+      // console.log("Quiz Result Received:", resultData);
 
       // 2. คำนวณเปอร์เซ็นต์คะแนน
       const scorePercentage = Math.round(
@@ -95,10 +95,6 @@ export default function StartQuiz() {
     } catch (error: any) {
       console.error("Failed to submit quiz:", error.message);
     }
-  };
-
-  const handleDebug = () => {
-    console.log("result", results);
   };
 
   const difficultyStyles = {
@@ -282,7 +278,7 @@ export default function StartQuiz() {
         {/* Expanded Feedback List */}
         {showFeedback && quiz.solution_visibility === "ALWAYS" && (
           <div className="max-w-2xl w-full flex flex-col gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
-            <h4 className="font-bold text-gray-700 px-2">Detailed Review</h4>
+            <h4 className="font-bold text-gray-700 px-2">Solutions Review</h4>
             {results.feedback.map((item: any, idx: number) => (
               <div
                 key={item.question_id}
@@ -301,63 +297,81 @@ export default function StartQuiz() {
                 <p className="font-bold text-gray-800 mb-4">
                   {item.question_text}
                 </p>
-                {/* 📋 ส่วนแสดงผล Choices แบบ Inline โดยอ้างอิงจาก correct_choice_ids และ user_choice_ids */}
+                {/* 📋 ส่วนแสดงผล Choices แบบ Inline พร้อมคำอธิบายแยกรายข้อ */}
                 <div className="flex flex-col gap-3 mb-6">
-                  {item.choices.map((choice: any) => (
-                    <div
-                      key={choice.id}
-                      className={`flex items-center gap-3 p-4 border-2 rounded-xl transition-all ${
-                        item.user_choice_ids.includes(choice.id) &&
-                        !item.correct_choice_ids.includes(choice.id)
-                          ? "border-red-500 bg-red-50/30" // ผู้ใช้เลือกแต่ผิด
-                          : item.correct_choice_ids.includes(choice.id)
-                            ? "border-green-500 bg-green-50/30" // ข้อที่ถูกต้อง
-                            : "border-gray-100"
-                      }`}
-                    >
-                      {/* Indicator Dot (Blue Dot Style) */}
-                      <div
-                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center bg-white ${
-                          item.correct_choice_ids.includes(choice.id)
-                            ? "border-green-500"
-                            : item.user_choice_ids.includes(choice.id)
-                              ? "border-red-500"
-                              : "border-gray-300"
-                        }`}
-                      >
-                        {(item.user_choice_ids.includes(choice.id) ||
-                          item.correct_choice_ids.includes(choice.id)) && (
-                          <div
-                            className={`w-2.5 h-2.5 rounded-full animate-in zoom-in duration-300 ${
-                              item.correct_choice_ids.includes(choice.id)
-                                ? "bg-green-500"
-                                : "bg-red-500"
-                            }`}
-                          />
-                        )}
-                      </div>
+                  {item.choices.map((choice: any, index: number) => {
+                    const isUserSelected = item.user_choice_ids.includes(
+                      choice.id,
+                    );
+                    const isCorrect = item.correct_choice_ids.includes(
+                      choice.id,
+                    );
 
-                      <div className="flex-1 flex justify-between items-center">
-                        <span
-                          className={`text-sm font-medium ${
-                            item.correct_choice_ids.includes(choice.id)
-                              ? "text-green-800 font-bold"
-                              : item.user_choice_ids.includes(choice.id)
-                                ? "text-red-800"
-                                : "text-gray-700"
+                    return (
+                      <div key={choice.id} className="flex flex-col gap-2">
+                        <div
+                          className={`flex items-center gap-3 p-4 border-2 rounded-xl transition-all ${
+                            isUserSelected && !isCorrect
+                              ? "border-red-500 bg-red-50/30"
+                              : isCorrect
+                                ? "border-green-500 bg-green-50/30"
+                                : "border-gray-100"
                           }`}
                         >
-                          {choice.choice_text}
-                        </span>
+                          {/* Indicator Dot (Blue Dot Style) */}
+                          <div
+                            className={`w-5 h-5 rounded-full border-2 flex items-center justify-center bg-white ${
+                              isCorrect
+                                ? "border-green-500"
+                                : isUserSelected
+                                  ? "border-red-500"
+                                  : "border-gray-300"
+                            }`}
+                          >
+                            {(isUserSelected || isCorrect) && (
+                              <div
+                                className={`w-2.5 h-2.5 rounded-full animate-in zoom-in duration-300 ${
+                                  isCorrect ? "bg-green-500" : "bg-red-500"
+                                }`}
+                              />
+                            )}
+                          </div>
+
+                          <div className="flex-1 flex justify-between items-center">
+                            <span
+                              className={`text-sm font-medium ${
+                                isCorrect
+                                  ? "text-green-800 font-bold"
+                                  : isUserSelected
+                                    ? "text-red-800"
+                                    : "text-gray-700"
+                              }`}
+                            >
+                              {choice.choice_text}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* ✅ Choice-specific Explanation (แสดงเฉพาะเมื่อมีข้อมูล) */}
+                        {choice.explanation && (
+                          <div className="ml-8 px-4 py-2 border-l-2 border-blue-200">
+                            <p className="text-sm text-gray-500 leading-relaxed italic">
+                              Choice {index + 1} explanation.
+                            </p>
+                            <p className="text-xs text-gray-500 leading-relaxed italic">
+                              {choice.explanation}
+                            </p>
+                          </div>
+                        )}
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
 
-                {/* Explanation Box */}
+                {/* Overall Question Explanation Box */}
                 <div className="bg-blue-50/50 border border-blue-100 p-4 rounded-xl">
                   <p className="text-xs font-bold text-blue-800 uppercase mb-1">
-                    Explanation
+                    Overall Explanation
                   </p>
                   <p className="text-sm text-blue-700 leading-relaxed">
                     {item.explanation}
@@ -367,7 +381,6 @@ export default function StartQuiz() {
             ))}
           </div>
         )}
-        <button onClick={handleDebug}>click</button>
       </div>
     );
   }

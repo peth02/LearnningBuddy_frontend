@@ -113,11 +113,11 @@ export default function EditDeck() {
     const fetchData = async () => {
       try {
         const response1 = await getCourseByID(course_id);
-        console.log("Data1 loaded:", response1);
+        // console.log("Data1 loaded:", response1);
         setCourse(response1);
 
         const response2 = await getDeckByDeckId(deck_id);
-        console.log("Data2 loaded:", response2);
+        // console.log("Data2 loaded:", response2);
         setDeck(response2);
         setEditDeck(response2);
         setEditCards(response2.cards);
