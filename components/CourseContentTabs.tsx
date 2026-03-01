@@ -33,40 +33,43 @@ export function Topics2({
   return (
     <section
       key={topic.orderIndex}
-      // คลิกที่การ์ดแล้วไปหน้า Topic Detail
       onClick={() => handleNavigate(topic.topicId)}
-      className="bg-white rounded-lg border-2 border-gray-200 px-10 py-7 min-h-[100px] hover:border-blue-400 hover:shadow-md transition cursor-pointer group"
+      /* ✅ ใช้ Style 1: rounded-3xl, border-gray-200, shadow-md และ Hover effects ที่ชัดเจน */
+      className="bg-white rounded-3xl border border-gray-200 p-8 min-h-[110px] shadow-md hover:shadow-2xl hover:border-blue-300 transition-all duration-300 cursor-pointer group relative overflow-hidden"
     >
-      <div className="flex gap-5 items-start">
-        <div className="font-bold text-gray-400 text-xl shrink-0 group-hover:text-blue-500">
-          #{index + 1}
+      <div className="flex gap-6 items-start">
+        {/* 🔢 Index Indicator: ปรับสไตล์ให้ดูพรีเมียมขึ้น */}
+        <div className="w-12 h-12 shrink-0 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center font-black text-xl transition-all duration-300 shadow-sm">
+          {index + 1}
         </div>
 
-        <div className="flex flex-col flex-1 min-w-0 gap-1">
-          <div className="font-bold text-lg text-gray-800 line-clamp-2 break-words">
+        {/* 📝 Content Area */}
+        <div className="flex flex-col flex-1 min-w-0 gap-2">
+          <h4 className="font-black text-lg text-gray-900 uppercase leading-tight line-clamp-1">
             {topic.title}
-          </div>
-          <div className="break-words text-gray-600 line-clamp-2">
-            {topic.description}
-          </div>
+          </h4>
+          <p className="text-sm text-gray-500 leading-relaxed line-clamp-2">
+            {topic.description ||
+              "No additional description available for this topic."}
+          </p>
         </div>
 
+        {/* ⚙️ Actions Area */}
         <div className="ml-auto shrink-0 flex gap-2 items-center">
-          {/* ปุ่ม Delete */}
-          {isOwner ? (
+          {isOwner && (
             <button
               onClick={(e) => handleDel(e, topic.topicId)}
-              className="text-gray-400 hover:text-red-500 p-2 rounded-full hover:bg-red-50 transition"
+              className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-red-500 bg-gray-50 hover:bg-red-50 rounded-xl transition-all active:scale-90"
               title="Delete Topic"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
+                width="20"
+                height="20"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="2"
+                strokeWidth="2.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               >
@@ -75,7 +78,24 @@ export function Topics2({
                 <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
               </svg>
             </button>
-          ) : null}
+          )}
+
+          {/* Chevron Icon บอกใบ้ว่าคลิกได้ */}
+          <div className="text-gray-300 group-hover:text-blue-400 group-hover:translate-x-1 transition-all duration-300">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="m9 18 6-6-6-6" />
+            </svg>
+          </div>
         </div>
       </div>
     </section>
@@ -109,71 +129,95 @@ export function Quizzes({
 }: QuizProps) {
   return (
     <section
-      // คลิกที่การ์ดแล้วไปหน้า Topic Detail
       onClick={() => handleNavigateTo(quiz.quiz_id)}
-      className="bg-white rounded-lg border-2 border-gray-200 px-10 py-7 min-h-[100px] hover:border-blue-400 hover:shadow-md transition cursor-pointer group"
+      /* ✅ Style 1: เพิ่ม relative เพื่อล็อคตำแหน่งปุ่ม Edit และใช้ rounded-3xl พร้อม shadow-md */
+      className="relative bg-white rounded-3xl border border-gray-200 p-8 min-h-[140px] shadow-md hover:shadow-2xl hover:border-blue-300 transition-all duration-300 cursor-pointer group flex flex-col justify-between"
     >
-      <div className="flex gap-5 items-start">
-        <div className="font-bold text-gray-400 text-xl shrink-0 group-hover:text-blue-500">
-          #{index + 1}
-        </div>
-
-        <div className="flex flex-col flex-1 min-w-0 gap-2">
-          <div className="flex items-center gap-3">
-            <div className="font-bold text-lg text-gray-800 line-clamp-2 break-words">
-              {quiz.title}
-            </div>
-            {/* Badge แสดงสถานะการมองเห็นเฉลย */}
-            <span
-              className={`text-[10px] uppercase px-2 py-0.5 rounded-full font-bold ${
-                quiz.solution_visibility === "ALWAYS"
-                  ? "bg-green-100 text-green-600"
-                  : "bg-amber-100 text-amber-600"
-              }`}
-            >
-              Solution:{" "}
-              {quiz.solution_visibility === "ALWAYS" ? "Visible" : "Hidden"}
-            </span>
-          </div>
-
-          <div className="flex items-center gap-4 text-sm text-gray-500">
-            <div className="flex items-center gap-1">
-              <span className="font-medium text-gray-700">
-                {quiz.question_count}
-              </span>{" "}
-              Questions
-            </div>
-            <div className="w-1 h-1 bg-gray-300 rounded-full" />
-            {/* <div className="italic">
-                Solution: {quiz.solution_visibility === "ALWAYS" ? "Visible" : "Hidden"}
-             </div> */}
-          </div>
-        </div>
-        {isOwner ? (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleNavigateEdit(quiz.quiz_id);
-            }}
-            className="flex items-center gap-2 text-gray-600 cursor-pointer hover:underline"
+      {/* ⚙️ Edit Button: ย้ายไปมุมขวาบน */}
+      {isOwner && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            handleNavigateEdit(quiz.quiz_id);
+          }}
+          className="absolute top-6 right-6 z-10 flex items-center gap-2 px-3 py-2 bg-gray-50 text-gray-400 font-black text-[10px] uppercase tracking-widest rounded-xl border border-gray-100 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-100 transition-all shadow-sm active:scale-90  cursor-pointer"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-              <path d="m15 5 4 4" />
-            </svg>
-            Edit
-          </button>
-        ) : null}
+            <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+            <path d="m15 5 4 4" />
+          </svg>
+          Edit
+        </button>
+      )}
+
+      <div className="flex gap-5 items-start">
+        {/* 🔢 Index Indicator */}
+        <div className="w-12 h-12 shrink-0 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center font-black text-xl transition-all duration-300">
+          {index + 1}
+        </div>
+
+        <div className="flex flex-col flex-1 min-w-0 gap-3">
+          <div className="flex flex-col gap-2">
+            {/* ปรับ mr-20 เพื่อกันข้อความยาวไปทับปุ่ม Edit */}
+            <h4 className="font-black text-lg text-gray-900 uppercase leading-tight mr-20">
+              {quiz.title}
+            </h4>
+
+            {/* 🏷️ Status Badges */}
+            <div className="flex flex-wrap gap-2">
+              {quiz.is_published ? (
+                <span className="text-[10px] uppercase px-3 py-1 rounded-full font-black tracking-wider border bg-green-50 text-green-600 border-green-100 shadow-sm">
+                  Public
+                </span>
+              ) : (
+                <span className="text-[10px] uppercase px-3 py-1 rounded-full font-black tracking-wider border bg-gray-100 text-gray-500 border-gray-200 shadow-sm">
+                  Private
+                </span>
+              )}
+
+              <span
+                className={`text-[10px] uppercase px-3 py-1 rounded-full font-black tracking-wider border shadow-sm ${
+                  quiz.solution_visibility === "ALWAYS"
+                    ? "bg-green-50 text-green-600 border-green-100"
+                    : "bg-amber-50 text-amber-600 border-amber-100"
+                }`}
+              >
+                Solution: {quiz.solution_visibility === "ALWAYS" ? "Visible" : "Hidden"}
+              </span>
+            </div>
+          </div>
+
+          {/* 📊 Metadata Area */}
+          <div className="flex items-center gap-4 text-xs font-bold uppercase tracking-widest text-gray-400 mt-2">
+            <div className="flex items-center gap-1.5">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+              </svg>
+              <span>{quiz.question_count} Questions</span>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );
@@ -188,57 +232,72 @@ export function FlashcardDecks({
 }: FlashcardDeckProps) {
   return (
     <section
-      // คลิกที่การ์ดแล้วไปหน้า Topic Detail
       onClick={() => handleNavigateTo(deck.deck_id)}
-      className="bg-white rounded-lg border-2 border-gray-200 px-10 py-7 min-h-[100px] hover:border-blue-400 hover:shadow-md transition cursor-pointer group"
+      /* ✅ Style 1: เพิ่ม relative เพื่อให้ลูกที่ใช้ absolute อ้างอิงตำแหน่งได้ */
+      className="relative bg-white rounded-3xl border border-gray-200 p-8 min-h-[140px] shadow-md hover:shadow-2xl hover:border-blue-300 transition-all duration-300 cursor-pointer group flex flex-col justify-between"
     >
-      <div className="flex gap-5 items-start">
-        <div className="font-bold text-gray-400 text-xl shrink-0 group-hover:text-blue-500">
-          #{index + 1}
-        </div>
-
-        <div className="flex flex-col flex-1 min-w-0 gap-2">
-          <div className="flex items-center gap-3">
-            <div className="font-bold text-lg text-gray-800 line-clamp-2 break-words">
-              {deck.title}
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4 text-sm text-gray-500">
-            <div className="flex items-center gap-1">
-              <span className="font-medium text-gray-700">
-                {deck.card_count}
-              </span>{" "}
-              Questions
-            </div>
-            <div className="w-1 h-1 bg-gray-300 rounded-full" />
-          </div>
-        </div>
-        {isOwner ? (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleNavigateEdit(deck.deck_id);
-            }}
-            className="flex items-center gap-2 text-gray-600 cursor-pointer hover:underline"
+      {/* ⚙️ Edit Button: ย้ายไปมุมขวาบน */}
+      {isOwner && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            handleNavigateEdit(deck.deck_id);
+          }}
+          className="absolute top-5 right-5 z-10 flex items-center gap-2 px-3 py-2 bg-gray-50 text-gray-400 font-black text-[10px] uppercase tracking-widest rounded-xl border border-gray-100 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-100 transition-all shadow-sm active:scale-90 cursor-pointer"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-              <path d="m15 5 4 4" />
-            </svg>
-            Edit
-          </button>
-        ) : null}
+            <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+            <path d="m15 5 4 4" />
+          </svg>
+          Edit
+        </button>
+      )}
+
+      <div className="flex gap-5 items-start">
+        {/* 🔢 Index Indicator */}
+        <div className="w-12 h-12 shrink-0 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center font-black text-xl transition-all duration-300">
+          {index + 1}
+        </div>
+
+        <div className="flex flex-col flex-1 min-w-0 gap-3">
+          <div className="flex flex-col gap-2">
+            {/* ปรับ margin-right เพื่อไม่ให้ชื่อทับกับปุ่ม Edit */}
+            <h4 className="font-black text-lg text-gray-900 uppercase leading-tight mr-16">
+              {deck.title}
+            </h4>
+
+            {/* 🏷️ Status Badges */}
+            <div className="flex flex-wrap gap-2">
+              {deck.is_published ? (
+                <span className="shrink-0 text-[10px] font-black uppercase px-3 py-1 bg-green-50 text-green-600 border border-green-100 rounded-full shadow-sm tracking-widest">
+                  Public
+                </span>
+              ) : (
+                <span className="shrink-0 text-[10px] font-black uppercase px-3 py-1 bg-gray-100 text-gray-500 border border-gray-200 rounded-full shadow-sm tracking-widest">
+                  Private
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* 📊 Metadata Area */}
+          <div className="flex items-center gap-4 text-xs font-bold uppercase tracking-widest text-gray-400 mt-2">
+            <div className="flex items-center gap-1.5">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" /><path d="M3 9h18" /></svg>
+              <span>{deck.card_count} Cards</span>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );

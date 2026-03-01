@@ -199,7 +199,7 @@ export default function topicId() {
               </button>
             )}
           </nav>
-          <div className="w-full bg-white rounded-lg shadow-sm p-10">
+          <div className="w-full bg-white rounded-lg shadow-sm p-10 space-y-10">
             {data?.is_owner ? (
               <>
                 <div>
@@ -336,3 +336,4 @@ export default function topicId() {
     </div>
   );
 }
+

@@ -112,7 +112,7 @@ export function CourseTopicsNav({
         `}
       >
         <span className="font-medium text-sm mr-6 break-all">
-          #{index} {label}
+          {index}. {label}
         </span>
       </button>
 
@@ -173,7 +173,7 @@ export function CourseTopicsPreviewNav({
         `}
       >
         <span className="font-medium text-sm mr-6 break-all">
-          #{index} {label}
+          {index}. {label}
         </span>
       </button>
 
@@ -234,7 +234,7 @@ export function CourseQuestionsNav({
         `}
       >
         <span className="font-medium text-sm mr-6 break-all">
-          #{index} {label}
+          {index}. {label}
         </span>
       </button>
 
@@ -296,7 +296,7 @@ export function CourseQuestionsPreviewNav({
         `}
       >
         <span className="font-medium text-sm mr-6 break-all">
-          #{index} {label}
+          {index}. {label}
         </span>
       </button>
 
@@ -357,7 +357,7 @@ export function CourseFlashcardsNav({
         `}
       >
         <span className="font-medium text-sm mr-6 break-all">
-          #{index} {label}
+          {index}. {label}
         </span>
       </button>
 
@@ -419,7 +419,7 @@ export function CourseFlashcardsPreviewNav({
         `}
       >
         <span className="font-medium text-sm mr-6 break-all">
-          #{index} {label}
+          {index}. {label}
         </span>
       </button>
 

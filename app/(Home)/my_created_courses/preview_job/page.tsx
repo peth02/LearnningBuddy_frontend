@@ -269,9 +269,9 @@ export default function PreviewCourse() {
         <section className="bg-white rounded-lg shadow-sm p-10 flex flex-col gap-5">
           <button
             onClick={() => router.push(`/my_created_courses`)}
-            className="mr-auto"
+            className="mr-auto text-gray-500 hover:text-blue-600 mb-4 flex items-center gap-2 text-sm font-semibold transition cursor-pointer"
           >
-            back
+            ← Back to Courses
           </button>
           <div>
             <label className="block font-semibold mb-3 text-gray-800">

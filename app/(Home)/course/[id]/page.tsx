@@ -302,7 +302,7 @@ export default function CourseId() {
                         onClick={handleShowFlashcardJobs}
                         className="mb-5 min-w-[100px] bg-blue-500 text-white font-bold p-2 rounded-lg text-center cursor-pointer hover:bg-blue-600"
                       >
-                        show history
+                        Generated History
                       </button>
                     </>
                   ) : null}
@@ -358,7 +358,7 @@ export default function CourseId() {
                         onClick={handleShowQuizJobs}
                         className="mb-5 min-w-[100px] bg-blue-500 text-white font-bold p-2 rounded-lg text-center cursor-pointer hover:bg-blue-600"
                       >
-                        show history
+                        Generated History
                       </button>
                     </>
                   ) : null}
