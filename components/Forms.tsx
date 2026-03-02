@@ -1301,7 +1301,7 @@ export function CreateFlashCardForm({
       if (res.ok) {
         stageChange();
       }
-      // router.push(`/course/${course_id}/quiz/preview?job=${res.job_id}`);
+      router.push(`/course/${course_id}/quiz/preview?job=${res.job_id}`);
     } catch (error) {
       console.error("Failed to generate flashcards", error);
     }

@@ -336,8 +336,8 @@ export default function PreviewQuiz() {
     <div className="flex flex-col min-h-screen bg-gray-100">
       <div className="px-20 py-10">
         <section className="bg-white rounded-lg shadow-sm p-10 flex flex-col gap-5">
-          <button onClick={() => router.back()} className="mr-auto">
-            back
+          <button onClick={() => router.push(`/course/${course_id}`)} className="mr-auto text-gray-500 hover:text-blue-600 mb-4 flex items-center gap-2 text-sm font-semibold transition cursor-pointer">
+            ← Back to Course
           </button>
           <div>
             <label className="block font-semibold mb-3 text-gray-800">
