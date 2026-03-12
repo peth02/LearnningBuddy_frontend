@@ -2,26 +2,69 @@
 
 import Link from "next/link";
 import { loginAction } from "@/lib/action";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import Alert from "@/components/Aleart";
 
 export default function Login() {
+  const router = useRouter();
+  const [alert, setAlert] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setAlert(null);
+
+    const formData = new FormData(e.currentTarget);
+    try {
+      const res = await loginAction(formData);
+
+      if (res.success) {
+        setAlert({ message: res.message, type: "success" });
+        router.push("/home");
+      } else {
+        setAlert({
+          message: res.message || "Registration failed",
+          type: "error",
+        });
+      }
+    } catch (error) {
+      setAlert({
+        message: "Something went wrong. Please try again.",
+        type: "error",
+      });
+    }
+  };
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50">
+      {/* 🔔 Floating Alert System (Style 1) */}
+      <div className="fixed top-10 right-10 z-[100] flex flex-col gap-4">
+        {alert && (
+          <Alert
+            message={alert.message}
+            type={alert.type}
+            onClose={() => setAlert(null)}
+          />
+        )}
+      </div>
       <main className="w-full max-w-[450px] rounded-2xl bg-white p-10 shadow-xl shadow-zinc-200/50 border border-zinc-100">
-          <Link
-            href="/home"
-            className="mb-500 text-sm text-zinc-500 hover:text-zinc-900 hover:underline"
-          >
-            <span>←</span> Back to home
-          </Link>
-          <div className="mt-5">
-            <h1 className="text-3xl text-center font-semibold text-black">
-              WELCOME
-            </h1>
-            <p className="mt-2 text-center text-sm text-zinc-500">
-              Please enter your details to sign in
-            </p>
-          </div>
-        <form action={loginAction}>
+        <Link
+          href="/home"
+          className="mb-500 text-sm text-zinc-500 hover:text-zinc-900 hover:underline"
+        >
+          <span>←</span> Back to home
+        </Link>
+        <div className="mt-5">
+          <h1 className="text-3xl text-center font-semibold text-black">
+            WELCOME
+          </h1>
+          <p className="mt-2 text-center text-sm text-zinc-500">
+            Please enter your details to sign in
+          </p>
+        </div>
+        <form onSubmit={handleSubmit}>
           <div className="flex flex-col">
             <label className="mt-10">Name</label>
             <input

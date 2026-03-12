@@ -23,7 +23,7 @@ export default function Register() {
 
       if (res.success) {
         setAlert({ message: res.message, type: "success" });
-        setTimeout(() => router.push("/login"), 3000);
+        setTimeout(() => router.push("/login"), 10000);
       } else {
         setAlert({
           message: res.message || "Registration failed",

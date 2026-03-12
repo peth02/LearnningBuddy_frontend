@@ -9,7 +9,6 @@ export async function loginAction(formData: FormData) {
   const name = formData.get("name") as string;
   const password = formData.get("password") as string;
   const url = `${baseURL}/auth/login`;
-  let success = false;
 
   try {
     const res = await fetch(url, {
@@ -23,17 +22,25 @@ export async function loginAction(formData: FormData) {
       }),
     });
 
+    const data = await res.json();
     if (res.ok && name) {
-      const data = await res.json();
       await createSession(name, data.token);
-      success = true;
+      return { 
+        success: true, 
+        message: "Login successful! Welcome back." 
+      };
+    } else {
+      return { 
+        success: false, 
+        message: "Invalid username or password." 
+      };
     }
   } catch (error) {
     console.error("login error :", error);
-  }
-
-  if (success) {
-    redirect("/home");
+    return {
+      success: false,
+      message: "Network error. Please try again later.",
+    };
   }
 }
 
