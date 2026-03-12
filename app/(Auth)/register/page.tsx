@@ -2,10 +2,54 @@
 
 import Link from "next/link";
 import { registerAction } from "@/lib/action";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Alert from "@/components/Aleart";
 
 export default function Register() {
+  const router = useRouter();
+  const [alert, setAlert] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setAlert(null);
+
+    const formData = new FormData(e.currentTarget);
+    try {
+      const res = await registerAction(formData);
+
+      if (res.success) {
+        setAlert({ message: res.message, type: "success" });
+        setTimeout(() => router.push("/login"), 3000);
+      } else {
+        setAlert({
+          message: res.message || "Registration failed",
+          type: "error",
+        });
+      }
+    } catch (error) {
+      setAlert({
+        message: "Something went wrong. Please try again.",
+        type: "error",
+      });
+    }
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50">
+      {/* 🔔 Floating Alert System (Style 1) */}
+      <div className="fixed top-10 right-10 z-[100] flex flex-col gap-4">
+        {alert && (
+          <Alert
+            message={alert.message}
+            type={alert.type}
+            onClose={() => setAlert(null)}
+          />
+        )}
+      </div>
       <main className="w-full max-w-[450px] rounded-2xl bg-white p-10 shadow-xl shadow-zinc-200/50 border border-zinc-100">
         <Link
           href="/home"
@@ -21,7 +65,7 @@ export default function Register() {
             Please enter your details to create an account
           </p>
         </div>
-        <form action={registerAction}>
+        <form onSubmit={handleSubmit}>
           <div className="flex flex-col">
             <label className="mt-10">Name</label>
             <input
