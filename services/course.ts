@@ -57,16 +57,26 @@ export async function createCourseFromPreview(
         },
         body: JSON.stringify(sendData),
       });
+
+      const data = await res.json();
       if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.message || `Fail to create course`);
+        return {
+          success: false,
+          message: data.details || "Create Course failed. Please try again.",
+        };
       }
-      // console.log(res);
-      return await res.json();
+      return {
+        success: true,
+        message: "Course created successfully! Redirecting!",
+        data: data,
+      };
     }
   } catch (error: any) {
     console.error("Error in createCourseFromPreview:", error.message);
-    throw error;
+    return {
+      success: false,
+      message: "Could not connect to the server.",
+    };
   }
 }
 
@@ -258,16 +268,25 @@ export async function updateCourseTopic(
       body: JSON.stringify(sendData),
     });
 
+    const data = await res.json();
     if (!res.ok) {
-      const errorData = await res.json().catch(() => ({}));
-      throw new Error(errorData.message || "Fail to update course's topic");
+      return {
+        success: false,
+        message: data.details || "Fail to update course's topic",
+      };
     }
 
-    // console.log("Update success:", res.status);
-    return await res.json();
+    return {
+      success: true,
+      message: "Update topics successfully!",
+      data: data,
+    };
   } catch (error: any) {
     console.error("Error in updateCourseTopic:", error.message);
-    throw error;
+    return {
+      success: false,
+      message: "Could not connect to the server.",
+    };
   }
 }
 

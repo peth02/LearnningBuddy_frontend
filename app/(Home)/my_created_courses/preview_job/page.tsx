@@ -1,8 +1,12 @@
 "use client";
 
+import Alert from "@/components/Aleart";
 import Editor from "@/components/Editor";
 import { CourseTopicsNav, CourseTopicsPreviewNav } from "@/components/Navbar";
-import { createCourseFromPreview, getCoursePreviewByJobId } from "@/services/course";
+import {
+  createCourseFromPreview,
+  getCoursePreviewByJobId,
+} from "@/services/course";
 import { CourseMetaData, PreviewCourseResponse, Topic3 } from "@/types/Course";
 import { UpdateCourseTopicsProps } from "@/types/Form";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
@@ -14,6 +18,11 @@ export default function PreviewCourse() {
   const router = useRouter();
 
   const job_id = searchParams.get("job") || null;
+
+  const [alert, setAlert] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
 
   const [loadingData, setLoadingData] = useState<PreviewCourseResponse>({
     job_id: job_id || "",
@@ -108,13 +117,21 @@ export default function PreviewCourse() {
 
   const handleSubmit = async () => {
     try {
-      const res = await createCourseFromPreview(
-        courseMetaData,
-        editTopics,
-      );
-      router.push(`/course/${res.course_id}`);
+      const res: any = await createCourseFromPreview(courseMetaData, editTopics);
+      if (res.success) {
+        setAlert({ message: res.message, type: "success" });
+        setTimeout(() => router.push(`/course/${res.data.course_id}`), 10000);
+      } else {
+        setAlert({
+          message: res.message || "Create course failed",
+          type: "error",
+        });
+      }
     } catch (error) {
-      console.error(error);
+      setAlert({
+        message: "Something went wrong. Please try again.",
+        type: "error",
+      });
     }
   };
 
@@ -173,29 +190,7 @@ export default function PreviewCourse() {
             <p className="text-gray-500 mb-10 text-lg">
               Our AI is crafting custom topics based on your pdf file.
               <br />
-              {/* <span className="text-sm italic text-gray-400">
-                This usually takes less than a minute.
-              </span> */}
             </p>
-
-            {/* Progress Bar Container */}
-            {/* <div className="relative pt-1">
-              <div className="flex justify-center mb-3 items-center justify-between">
-                <div className="text-right">
-                  <span className="text-sm font-bold inline-block text-blue-600 font-mono">
-                    {loadingData.progress_percent}%
-                  </span>
-                </div>
-              </div>
-              <div className="overflow-hidden h-3 mb-4 text-xs flex rounded-full bg-gray-100 shadow-inner">
-                <div
-                  className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-500 transition-all duration-700 ease-in-out relative overflow-hidden"
-                  style={{ width: `${loadingData.progress_percent}%` }}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-[shimmer_2s_infinite]" />
-                </div>
-              </div>
-            </div> */}
 
             <div className="mt-8 flex items-center justify-center gap-2 text-gray-400">
               <div
@@ -265,6 +260,16 @@ export default function PreviewCourse() {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
+      {/* 🔔 Floating Alert System (Style 1) */}
+      <div className="fixed top-10 right-10 z-[100] flex flex-col gap-4">
+        {alert && (
+          <Alert
+            message={alert.message}
+            type={alert.type}
+            onClose={() => setAlert(null)}
+          />
+        )}
+      </div>
       <div className="px-20 py-10">
         <section className="bg-white rounded-lg shadow-sm p-10 flex flex-col gap-5">
           <button
@@ -390,7 +395,7 @@ export default function PreviewCourse() {
                 className={`overflow-hidden transition-all duration-300 ${isOpen ? "opacity-100 mt-4" : "max-h-0 opacity-0"}`}
               >
                 <textarea
-                  defaultValue={currentTopic?.raw_text}
+                  value={currentTopic?.raw_text}
                   onChange={(e) =>
                     handleTopicUpdate("raw_text", e.target.value)
                   }

@@ -23,8 +23,14 @@ import { Course, FlashcardDeck, Quiz, Topic2 } from "@/types/Course";
 import { getQuizzesByCourseId } from "@/services/quiz";
 import { FlashcardHistoryModal, QuizHistoryModal } from "@/components/ShowJobs";
 import { getDecksByCourseId } from "@/services/flashcard";
+import Alert from "@/components/Aleart";
 
 export default function CourseId() {
+  const [alert, setAlert] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
+
   const [data, setData] = useState<Course>();
   const [topics, setTopics] = useState<Topic2[]>([]);
   const [quizzes, setQuizzes] = useState<Quiz[]>();
@@ -84,14 +90,24 @@ export default function CourseId() {
 
     if (topics) {
       const updatedTopics = topics.filter((t) => !delTopic.includes(t.id));
-      try {
-        if (updatedTopics) {
-          const res = await updateCourseTopic(id, updatedTopics);
+      if (updatedTopics) {
+        try {
+          const res:any = await updateCourseTopic(id, updatedTopics);
+          setDelTopic([]);
+          if (res.success) {
+            setAlert({ message: res.message, type: "success" });
+          } else {
+            setAlert({
+              message: res.message || "Update topics failed",
+              type: "error",
+            });
+          }
+        } catch (error) {
+          setAlert({
+            message: "Something went wrong. Please try again.",
+            type: "error",
+          });
         }
-        setDelTopic([]);
-      } catch (error) {
-        console.error("Failed to update:", error);
-        alert("Update failed, please try again.");
       }
     }
   };
@@ -173,6 +189,16 @@ export default function CourseId() {
   return (
     <div>
       <div className="flex flex-col min-h-screen  gap-7 py-10 px-20 bg-gray-100">
+        {/* 🔔 Floating Alert System (Style 1) */}
+        <div className="fixed top-10 right-10 z-[100] flex flex-col gap-4">
+          {alert && (
+            <Alert
+              message={alert.message}
+              type={alert.type}
+              onClose={() => setAlert(null)}
+            />
+          )}
+        </div>
         <section className="bg-white rounded-lg shadow-sm p-10">
           {!editCourse && data ? (
             <div className="flex grow-0 w-full">
@@ -240,6 +266,7 @@ export default function CourseId() {
                 data={data}
                 setDataForm={handleUpdateMeta}
                 stateChange={handleEdit}
+                setAlert={setAlert}
               />
             )
           )}

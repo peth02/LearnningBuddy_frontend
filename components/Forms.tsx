@@ -21,6 +21,7 @@ export function EditCourseForm({
   data,
   setDataForm,
   stateChange,
+  setAlert,
 }: EditCourseFormProps) {
   const router = useRouter();
 
@@ -48,18 +49,20 @@ export function EditCourseForm({
         },
         body: JSON.stringify(sendData),
       });
+      const data2: any = await res.json();
       if (res.ok) {
-        const data = await res.json();
-        alert("Successfully edit course");
+        setAlert({ message: data2.message, type: "success" });
         setDataForm("title", sendData.title);
         setDataForm("description", sendData.description);
         setDataForm("is_published", sendData.is_published);
         stateChange();
       } else {
-        const errorText = await res.text();
-        console.error("Upload failed:", errorText);
+        setAlert({
+          message: data2.message || "Update course metadata failed",
+          type: "error",
+        });
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("error", error);
     }
   };
@@ -113,7 +116,6 @@ export function EditCourseForm({
         <input
           name="description"
           type="text"
-          required
           defaultValue={data?.description}
           placeholder="Description"
           className="flex h-11 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
@@ -270,7 +272,7 @@ export function CreatePreviewCourseForm(props: any) {
         // setSubmitStatus("success");
         // setStatusMsg("Course created successfully!");
         // setCourse(data);
-        router.push(`my_created_courses/preview_job?job=${data.job_id}`)
+        router.push(`my_created_courses/preview_job?job=${data.job_id}`);
       } else {
         setSubmitStatus("error");
         const errorText = await res.text();
@@ -489,7 +491,6 @@ export function CreatePreviewCourseForm(props: any) {
         {/* Loading & Result Overlay */}
         {submitStatus !== "idle" && (
           <div className="fixed w-full h-full inset-0 bg-white rounded-lg z-[60] flex flex-col items-center justify-center p-6 text-center">
-
             {/* 3. แสดงเมื่อเกิดข้อผิดพลาด (Error) */}
             {submitStatus === "error" && (
               <div className="flex flex-col justify-center w-full h-full bg-white ">
@@ -1295,7 +1296,6 @@ export function CreateFlashCardForm({
   };
 
   const handleSubmit = async () => {
-
     try {
       const res = await createFlashcardPreview(deckConfigs, course_id);
       if (res.ok) {

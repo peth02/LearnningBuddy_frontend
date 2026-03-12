@@ -77,7 +77,7 @@ export async function registerAction(formData: FormData) {
 
     return {
       success: true,
-      message: "Account created successfully!",
+      message: "Account created successfully! Redirecting!",
       data: data,
     };
   } catch (error) {

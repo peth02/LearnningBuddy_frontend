@@ -4,6 +4,7 @@ export interface EditCourseFormProps {
   data: Course;
   setDataForm: (field: keyof Course, value: any) => void;
   stateChange: () => void;
+  setAlert: (alert: { message: string; type: "success" | "error" } | null) => void;
 }
 
 export interface UpdateCourseTopicsProps {

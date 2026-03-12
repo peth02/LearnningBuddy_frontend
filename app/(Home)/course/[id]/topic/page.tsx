@@ -1,4 +1,5 @@
 "use client";
+import Alert from "@/components/Aleart";
 import Editor from "@/components/Editor";
 import { CourseTopicsNav } from "@/components/Navbar";
 import {
@@ -12,6 +13,11 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function topicId() {
+  const [alert, setAlert] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
+
   const [data, setData] = useState<Course>();
   const [topics, setTopics] = useState<Topic2[]>();
   const [editTopics, setEditTopics] = useState<UpdateCourseTopicsProps[]>([]);
@@ -114,10 +120,22 @@ export default function topicId() {
     }
   };
   const handleUpdateSubmit = async () => {
-    const res = await updateCourseTopic(id, editTopics);
-    if (res) {
-      window.alert(res.message);
-      setIsEdit(false);
+    try {
+      const res: any = await updateCourseTopic(id, editTopics);
+      if (res.success) {
+        setAlert({ message: res.message, type: "success" });
+        setIsEdit(false);
+      } else {
+        setAlert({
+          message: res.message || "Update topics failed",
+          type: "error",
+        });
+      }
+    } catch (error) {
+      setAlert({
+        message: "Something went wrong. Please try again.",
+        type: "error",
+      });
     }
   };
 
@@ -147,12 +165,20 @@ export default function topicId() {
 
     fetchDataCourse();
     fetchDataTopic();
-    // console.log(data)
-    // console.log(topics)
   }, [id]);
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
+      {/* 🔔 Floating Alert System (Style 1) */}
+      <div className="fixed top-10 right-10 z-[100] flex flex-col gap-4">
+        {alert && (
+          <Alert
+            message={alert.message}
+            type={alert.type}
+            onClose={() => setAlert(null)}
+          />
+        )}
+      </div>
       <div className="px-20 py-10">
         <section className="bg-white rounded-lg shadow-sm p-10">
           {data ? (
@@ -255,7 +281,7 @@ export default function topicId() {
                     className={`overflow-hidden transition-all duration-300 ${isOpen ? "opacity-100 mt-4" : "max-h-0 opacity-0"}`}
                   >
                     <textarea
-                      defaultValue={currentTopic?.raw_text}
+                      value={currentTopic?.raw_text}
                       onChange={(e) =>
                         handleTopicUpdate("raw_text", e.target.value)
                       }
@@ -336,4 +362,3 @@ export default function topicId() {
     </div>
   );
 }
-
