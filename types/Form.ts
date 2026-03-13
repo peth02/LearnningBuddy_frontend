@@ -20,6 +20,7 @@ export interface EditQuizFormProps {
   quiz: Quiz2;
   setDataForm: (field: keyof Quiz2, value: any) => void;
   stateChange: () => void;
+  setAlert: (alert: { message: string; type: "success" | "error" } | null) => void;
 }
 
 export interface CreatePreviewQuizFormProps {

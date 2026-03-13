@@ -64,6 +64,10 @@ export function EditCourseForm({
       }
     } catch (error) {
       console.error("error", error);
+      setAlert({
+        message: "Something went wrong. Please try again.",
+        type: "error",
+      });
     }
   };
 
@@ -87,7 +91,7 @@ export function EditCourseForm({
         });
         if (res.ok) {
           const data = await res.json();
-          alert("Successfully delet course");
+          alert("Successfully delete course");
           router.push("/home");
         } else {
           const errorText = await res.text();
@@ -1113,6 +1117,7 @@ export function EditQuizMetaForm({
   quiz,
   setDataForm,
   stateChange,
+  setAlert,
 }: EditQuizFormProps) {
   const handleUpdateQuiz = async (formData: FormData) => {
     const url = `${baseURL}/quizzes/${quiz.quiz_id}`;
@@ -1136,17 +1141,26 @@ export function EditQuizMetaForm({
         },
         body: JSON.stringify(sendData),
       });
-
+      const data: any = await res.json();
       if (res.ok) {
-        const updatedData = await res.json();
-        alert("Quiz updated successfully");
+        setAlert({ message: "Update quiz successfully", type: "success" });
+        // alert("Quiz updated successfully");
         setDataForm("title", sendData.title);
         setDataForm("is_published", sendData.is_published);
         setDataForm("solution_visibility", sendData.solution_visibility);
         stateChange();
+      } else {
+        setAlert({
+          message: data.message || "Update quiz failed",
+          type: "error",
+        });
       }
     } catch (error) {
       console.error("Update failed", error);
+      setAlert({
+        message: "Something went wrong. Please try again.",
+        type: "error",
+      });
     }
   };
   const DeleteQuizHandler = async () => {

@@ -12,6 +12,7 @@ import {
 import { CourseQuestionsPreviewNav } from "@/components/Navbar";
 import { createQuizFromPreview, getQuizPreviewByJobId } from "@/services/quiz";
 import { getCourseByID } from "@/services/course";
+import Alert from "@/components/Aleart";
 
 export default function PreviewQuiz() {
   const searchParams = useSearchParams();
@@ -20,6 +21,11 @@ export default function PreviewQuiz() {
 
   const course_id = params.id;
   const job_id = searchParams.get("job") || null;
+
+  const [alertBox, setAlertBox] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
 
   const [course, setCourse] = useState<Course>();
   const [loadingData, setLoadingData] = useState<PreviewQuizResponse>({
@@ -161,16 +167,26 @@ export default function PreviewQuiz() {
 
   const handleSubmit = async () => {
     try {
-      const res = await createQuizFromPreview(
+      const res: any = await createQuizFromPreview(
         course_id,
         quizMetaData,
         editQuestions,
       );
-      const creaeted_id = res.quiz_id;
-      router.push(`/course/${course_id}`);
-      // console.log("create ", res, creaeted_id)
+      if (res.success) {
+        setAlertBox({ message: res.message, type: "success" });
+        // const creaeted_id = res.data.quiz_id;
+        setTimeout(() => router.push(`/course/${course_id}`), 5000);
+      } else {
+        setAlertBox({
+          message: res.message || "Create quiz failed",
+          type: "error",
+        });
+      }
     } catch (error) {
-      console.error(error);
+      setAlertBox({
+        message: "Something went wrong. Please try again.",
+        type: "error",
+      });
     }
   };
   useEffect(() => {
@@ -334,9 +350,22 @@ export default function PreviewQuiz() {
   }
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
+      {/* 🔔 Floating Alert System (Style 1) */}
+      <div className="fixed top-10 right-10 z-[100] flex flex-col gap-4">
+        {alertBox && (
+          <Alert
+            message={alertBox.message}
+            type={alertBox.type}
+            onClose={() => setAlertBox(null)}
+          />
+        )}
+      </div>
       <div className="px-20 py-10">
         <section className="bg-white rounded-lg shadow-sm p-10 flex flex-col gap-5">
-          <button onClick={() => router.push(`/course/${course_id}`)} className="mr-auto text-gray-500 hover:text-blue-600 mb-4 flex items-center gap-2 text-sm font-semibold transition cursor-pointer">
+          <button
+            onClick={() => router.push(`/course/${course_id}`)}
+            className="mr-auto text-gray-500 hover:text-blue-600 mb-4 flex items-center gap-2 text-sm font-semibold transition cursor-pointer"
+          >
             ← Back to Course
           </button>
           <div>

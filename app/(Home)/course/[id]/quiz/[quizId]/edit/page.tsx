@@ -1,4 +1,5 @@
 "use client";
+import Alert from "@/components/Aleart";
 import { EditQuizMetaForm } from "@/components/Forms";
 import { CourseQuestionsNav } from "@/components/Navbar";
 import { getCourseByID } from "@/services/course";
@@ -8,6 +9,11 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function EditQuiz() {
+  const [alert, setAlert] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
+
   const [course, setCourse] = useState<Course>();
   const [quiz, setQuiz] = useState<Quiz2>();
   const [editQuiz, setEditQuiz] = useState<Quiz2>();
@@ -89,7 +95,7 @@ export default function EditQuiz() {
 
   const handleRemoveChoice = (choiceIndex: number) => {
     if ((currentQuestion?.choices?.length || 0) <= 2) {
-      alert("A question must have at least 2 choices.");
+      window.alert("A question must have at least 2 choices.");
       return;
     }
     setIsEdit(true);
@@ -145,11 +151,28 @@ export default function EditQuiz() {
     }
   };
   const handleUpdateSubmit = async () => {
-    const res = await updateCourseQuizById(quiz_id, editQuestions);
-    if (res) {
-      window.alert(res.message);
-      setIsEdit(false);
-      handleUpdateMeta("questions", editQuestions);
+    try {
+      const res: any = await updateCourseQuizById(quiz_id, editQuestions);
+      if (res.success) {
+        setAlert({ message: res.message, type: "success" });
+        setIsEdit(false);
+        handleUpdateMeta("questions", editQuestions);
+      } else {
+        setAlert({
+          message: res.message || "Update quiz failed",
+          type: "error",
+        });
+      }
+      // if (res) {
+      //   window.alert(res.data.message);
+      //   setIsEdit(false);
+      //   handleUpdateMeta("questions", editQuestions);
+      // }
+    } catch {
+      setAlert({
+        message: "Something went wrong. Please try again.",
+        type: "error",
+      });
     }
   };
   const handleCancel = () => {
@@ -186,6 +209,16 @@ export default function EditQuiz() {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
+      {/* 🔔 Floating Alert System (Style 1) */}
+      <div className="fixed top-10 right-10 z-[100] flex flex-col gap-4">
+        {alert && (
+          <Alert
+            message={alert.message}
+            type={alert.type}
+            onClose={() => setAlert(null)}
+          />
+        )}
+      </div>
       <div className="px-20 py-10">
         <section className="bg-white rounded-lg shadow-sm p-10">
           {!isEditMeta && quiz ? (
@@ -261,6 +294,7 @@ export default function EditQuiz() {
               quiz={quiz}
               setDataForm={handleUpdateMeta}
               stateChange={handleEdit}
+              setAlert={setAlert}
             />
           ) : null}
         </section>

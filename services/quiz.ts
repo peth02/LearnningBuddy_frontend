@@ -140,16 +140,25 @@ export async function createQuizFromPreview(
         },
         body: JSON.stringify(sendData),
       });
+      const data = await res.json();
       if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.message || `Fail to create quiz`);
+        return {
+          success: false,
+          message: data.details || "Fail to create quiz",
+        };
       }
-      // console.log(res);
-      return await res.json();
+      return {
+        success: true,
+        message: "Create quiz successfully!",
+        data: data,
+      };
     }
   } catch (error: any) {
     console.error("Error in createQuizFromPreview:", error.message);
-    throw error;
+    return {
+      success: false,
+      message: "Could not connect to the server.",
+    };
   }
 }
 
@@ -174,15 +183,24 @@ export async function updateCourseQuizById(
         questions: questions,
       }),
     });
+    const data = await res.json();
     if (!res.ok) {
-      const errorData = await res.json().catch(() => ({}));
-      throw new Error(errorData.message || `Fail to update quiz ${quiz_id}`);
+      return {
+        success: false,
+        message: data.details || `Fail to update quiz ${quiz_id}`,
+      };
     }
-    // console.log(res);
-    return await res.json();
+    return {
+      success: true,
+      message: "Update quiz successfully!",
+      data: data,
+    };
   } catch (error: any) {
     console.error("Error in updateCourseQuizById:", error.message);
-    throw error;
+    return {
+      success: false,
+      message: "Could not connect to the server.",
+    };
   }
 }
 
