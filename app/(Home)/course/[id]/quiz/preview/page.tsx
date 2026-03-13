@@ -22,7 +22,7 @@ export default function PreviewQuiz() {
   const course_id = params.id;
   const job_id = searchParams.get("job") || null;
 
-  const [alertBox, setAlertBox] = useState<{
+  const [alert, setAlert] = useState<{
     message: string;
     type: "success" | "error";
   } | null>(null);
@@ -125,7 +125,7 @@ export default function PreviewQuiz() {
   };
   const handleRemoveChoice = (choiceIndex: number) => {
     if ((currentQuestion?.choices?.length || 0) <= 2) {
-      alert("A question must have at least 2 choices.");
+      window.alert("A question must have at least 2 choices.");
       return;
     }
     const updatedChoices = currentQuestion?.choices.filter(
@@ -173,17 +173,17 @@ export default function PreviewQuiz() {
         editQuestions,
       );
       if (res.success) {
-        setAlertBox({ message: res.message, type: "success" });
+        setAlert({ message: res.message, type: "success" });
         // const creaeted_id = res.data.quiz_id;
         setTimeout(() => router.push(`/course/${course_id}`), 5000);
       } else {
-        setAlertBox({
+        setAlert({
           message: res.message || "Create quiz failed",
           type: "error",
         });
       }
     } catch (error) {
-      setAlertBox({
+      setAlert({
         message: "Something went wrong. Please try again.",
         type: "error",
       });
@@ -352,11 +352,11 @@ export default function PreviewQuiz() {
     <div className="flex flex-col min-h-screen bg-gray-100">
       {/* 🔔 Floating Alert System (Style 1) */}
       <div className="fixed top-10 right-10 z-[100] flex flex-col gap-4">
-        {alertBox && (
+        {alert && (
           <Alert
-            message={alertBox.message}
-            type={alertBox.type}
-            onClose={() => setAlertBox(null)}
+            message={alert.message}
+            type={alert.type}
+            onClose={() => setAlert(null)}
           />
         )}
       </div>
