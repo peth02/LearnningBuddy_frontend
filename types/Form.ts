@@ -37,4 +37,5 @@ export interface EditDeckFormProps {
   deck: FlashcardDeck2;
   setDataForm: (field: keyof FlashcardDeck2, value: any) => void;
   stateChange: () => void;
+  setAlert: (alert: { message: string; type: "success" | "error" } | null) => void;
 }

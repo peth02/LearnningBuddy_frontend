@@ -163,11 +163,6 @@ export default function EditQuiz() {
           type: "error",
         });
       }
-      // if (res) {
-      //   window.alert(res.data.message);
-      //   setIsEdit(false);
-      //   handleUpdateMeta("questions", editQuestions);
-      // }
     } catch {
       setAlert({
         message: "Something went wrong. Please try again.",

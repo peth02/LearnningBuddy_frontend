@@ -1,5 +1,6 @@
 "use client";
 
+import Alert from "@/components/Aleart";
 import { EditDeckMetaForm } from "@/components/Forms";
 import { CourseFlashcardsNav, CourseQuestionsNav } from "@/components/Navbar";
 import { getCourseByID } from "@/services/course";
@@ -15,6 +16,11 @@ export default function EditDeck() {
   const [editCards, setEditCards] = useState<Flashcard[]>([]);
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [isEditMeta, setIsEditMeta] = useState<boolean>(false);
+
+  const [alert, setAlert] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
 
   const router = useRouter();
   const params = useParams();
@@ -87,11 +93,23 @@ export default function EditDeck() {
   };
 
   const handleUpdateSubmit = async () => {
-    const res = await updateCourseDeckById(deck_id, editCards);
-    if (res) {
-      window.alert(res.message);
-      setIsEdit(false);
-      handleUpdateMeta("cards", editCards)
+    try {
+      const res: any = await updateCourseDeckById(deck_id, editCards);
+      if (res.success) {
+        setAlert({ message: res.message, type: "success" });
+        setIsEdit(false);
+        handleUpdateMeta("cards", editCards);
+      } else {
+        setAlert({
+          message: res.message || "Update deck failed",
+          type: "error",
+        });
+      }
+    } catch {
+      setAlert({
+        message: "Something went wrong. Please try again.",
+        type: "error",
+      });
     }
   };
 
@@ -130,6 +148,16 @@ export default function EditDeck() {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
+      {/* 🔔 Floating Alert System (Style 1) */}
+      <div className="fixed top-10 right-10 z-[100] flex flex-col gap-4">
+        {alert && (
+          <Alert
+            message={alert.message}
+            type={alert.type}
+            onClose={() => setAlert(null)}
+          />
+        )}
+      </div>
       <div className="px-20 py-10">
         <section className="bg-white rounded-lg shadow-sm p-10">
           {!isEditMeta && deck ? (
@@ -197,6 +225,7 @@ export default function EditDeck() {
               deck={deck}
               setDataForm={handleUpdateMeta}
               stateChange={handleEdit}
+              setAlert={setAlert}
             />
           ) : null}
         </section>

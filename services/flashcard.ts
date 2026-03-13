@@ -1,5 +1,10 @@
 import { getToken } from "@/lib/session";
-import { DeckMetaData, Flashcard, Question, QuizMetaData } from "@/types/Course";
+import {
+  DeckMetaData,
+  Flashcard,
+  Question,
+  QuizMetaData,
+} from "@/types/Course";
 
 const baseURL = process.env.NEXT_PUBLIC_BE_BASE_API;
 
@@ -87,10 +92,7 @@ export async function createFlashcardPreview(deckConfigs: any, course_id: any) {
   }
 }
 
-export async function updateCourseDeckById(
-  deck_id: any,
-  cards: Flashcard[],
-) {
+export async function updateCourseDeckById(deck_id: any, cards: Flashcard[]) {
   const token = await getToken();
   const url = `${baseURL}/decks/${deck_id}`;
   if (!token) {
@@ -108,15 +110,25 @@ export async function updateCourseDeckById(
         cards: cards,
       }),
     });
+    const data = await res.json();
     if (!res.ok) {
-      const errorData = await res.json().catch(() => ({}));
-      throw new Error(errorData.message || `Fail to update deck ${deck_id}`);
+      return {
+        success: false,
+        message: data.details || `Fail to update deck ${deck_id}`,
+      };
     }
     // console.log(res);
-    return await res.json();
+    return {
+      success: true,
+      message: "Update deck successfully!",
+      data: data,
+    };
   } catch (error: any) {
     console.error("Error in updateCourseDeckById:", error.message);
-    throw error;
+    return {
+      success: false,
+      message: "Could not connect to the server.",
+    };
   }
 }
 
@@ -173,15 +185,24 @@ export async function createFlashcardFromPreview(
         },
         body: JSON.stringify(sendData),
       });
+      const data = await res.json();
       if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.message || `Fail to create deck`);
+        return {
+          success: false,
+          message: data.details || "Fail to create deck",
+        };
       }
-      // console.log(res);
-      return await res.json();
+      return {
+        success: true,
+        message: "Create deck successfully!",
+        data: data,
+      };
     }
   } catch (error: any) {
     console.error("Error in createFlashcardFromPreview:", error.message);
-    throw error;
+    return {
+      success: false,
+      message: "Could not connect to the server.",
+    };
   }
 }

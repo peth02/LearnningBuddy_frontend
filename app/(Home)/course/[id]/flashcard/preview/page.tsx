@@ -1,7 +1,11 @@
 "use client";
+import Alert from "@/components/Aleart";
 import { CourseFlashcardsPreviewNav } from "@/components/Navbar";
 import { getCourseByID } from "@/services/course";
-import { createFlashcardFromPreview, getFlashcardPreviewByJobId } from "@/services/flashcard";
+import {
+  createFlashcardFromPreview,
+  getFlashcardPreviewByJobId,
+} from "@/services/flashcard";
 import {
   Course,
   DeckMetaData,
@@ -18,6 +22,11 @@ export default function PreviewDeck() {
 
   const course_id = params.id;
   const job_id = searchParams.get("job") || null;
+
+  const [alert, setAlert] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
 
   const [course, setCourse] = useState<Course>();
   const [loadingData, setLoadingData] = useState<PreviewDeckResponse>({
@@ -102,16 +111,26 @@ export default function PreviewDeck() {
 
   const handleSubmit = async () => {
     try {
-      const res = await createFlashcardFromPreview(
+      const res: any = await createFlashcardFromPreview(
         course_id,
         deckMetaData,
         editFlashcards,
       );
-    //   const creaeted_id = res.quiz_id;
-      router.push(`/course/${course_id}`);
-      // console.log("create ", res, creaeted_id)
+      if (res.success) {
+        setAlert({ message: res.message, type: "success" });
+        //   const creaeted_id = res.data.quiz_id;
+        setTimeout(() => router.push(`/course/${course_id}`), 5000);
+      } else {
+        setAlert({
+          message: res.message || "Create deck failed",
+          type: "error",
+        });
+      }
     } catch (error) {
-      console.error(error);
+      setAlert({
+        message: "Something went wrong. Please try again.",
+        type: "error",
+      });
     }
   };
 
@@ -151,7 +170,6 @@ export default function PreviewDeck() {
 
     getCourse();
   }, []);
-
 
   // 1. หน้าจอ Loading (เมื่อ progress < 100)
   if (loadingData.progress_percent < 100 && loadingData.status != "FAILED") {
@@ -278,9 +296,22 @@ export default function PreviewDeck() {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
+      {/* 🔔 Floating Alert System (Style 1) */}
+      <div className="fixed top-10 right-10 z-[100] flex flex-col gap-4">
+        {alert && (
+          <Alert
+            message={alert.message}
+            type={alert.type}
+            onClose={() => setAlert(null)}
+          />
+        )}
+      </div>
       <div className="px-20 py-10">
         <section className="bg-white rounded-lg shadow-sm p-10 flex flex-col gap-5">
-          <button onClick={() => router.push(`/course/${course_id}`)} className="mr-auto text-gray-500 hover:text-blue-600 mb-4 flex items-center gap-2 text-sm font-semibold transition cursor-pointer">
+          <button
+            onClick={() => router.push(`/course/${course_id}`)}
+            className="mr-auto text-gray-500 hover:text-blue-600 mb-4 flex items-center gap-2 text-sm font-semibold transition cursor-pointer"
+          >
             ← Back to Course
           </button>
           <div>
@@ -405,7 +436,7 @@ export default function PreviewDeck() {
         </button> */}
         <button
           className="bg-blue-500 text-white font-bold px-4 py-2.5 rounded-lg text-center cursor-pointer"
-            onClick={handleSubmit}
+          onClick={handleSubmit}
         >
           Confirm
         </button>

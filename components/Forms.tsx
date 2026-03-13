@@ -1448,6 +1448,7 @@ export function EditDeckMetaForm({
   deck,
   setDataForm,
   stateChange,
+  setAlert,
 }: EditDeckFormProps) {
   const handleUpdateQuiz = async (formData: FormData) => {
     const url = `${baseURL}/decks/${deck.deck_id}`;
@@ -1469,24 +1470,33 @@ export function EditDeckMetaForm({
         },
         body: JSON.stringify(sendData),
       });
-
+      const data: any = await res.json();
       if (res.ok) {
-        const updatedData = await res.json();
-        alert("Quiz updated successfully");
+        setAlert({ message: "Update deck successfully", type: "success" });
+        // alert("Deck updated successfully");
         setDataForm("title", sendData.title);
         setDataForm("is_published", sendData.is_published);
         stateChange();
+      } else {
+        setAlert({
+          message: data.message || "Update quiz failed",
+          type: "error",
+        });
       }
     } catch (error) {
       console.error("Update failed", error);
+      setAlert({
+        message: "Something went wrong. Please try again.",
+        type: "error",
+      });
     }
   };
   return (
     <section>
-      <h2 className="text-xl font-bold">Edit Quiz Details</h2>
+      <h2 className="text-xl font-bold">Edit Deck Details</h2>
       <Form action={handleUpdateQuiz} className="flex flex-col mt-5 gap-5">
         <div>
-          <label className="block text-sm font-semibold mb-1">Quiz Title</label>
+          <label className="block text-sm font-semibold mb-1">Deck Title</label>
           <input
             name="title"
             type="text"
