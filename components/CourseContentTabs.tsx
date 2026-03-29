@@ -54,8 +54,7 @@ export function Topics2({
           </p>
         </div>
 
-        {/* ⚙️ Actions Area */}
-        <div className="ml-auto shrink-0 flex gap-2 items-center">
+        {/* <div className="ml-auto shrink-0 flex gap-2 items-center">
           {isOwner && (
             <button
               onClick={(e) => handleDel(e, topic.topicId)}
@@ -80,7 +79,6 @@ export function Topics2({
             </button>
           )}
 
-          {/* Chevron Icon บอกใบ้ว่าคลิกได้ */}
           <div className="text-gray-300 group-hover:text-blue-400 group-hover:translate-x-1 transition-all duration-300">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -96,7 +94,7 @@ export function Topics2({
               <path d="m9 18 6-6-6-6" />
             </svg>
           </div>
-        </div>
+        </div> */}
       </div>
     </section>
   );

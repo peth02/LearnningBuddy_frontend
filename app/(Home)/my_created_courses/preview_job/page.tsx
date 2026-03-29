@@ -120,7 +120,7 @@ export default function PreviewCourse() {
       const res: any = await createCourseFromPreview(courseMetaData, editTopics);
       if (res.success) {
         setAlert({ message: res.message, type: "success" });
-        setTimeout(() => router.push(`/course/${res.data.course_id}`), 10000);
+        setTimeout(() => router.push(`/course/${res.data.course_id}`), 3000);
       } else {
         setAlert({
           message: res.message || "Create course failed",

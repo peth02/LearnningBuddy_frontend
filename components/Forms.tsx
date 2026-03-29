@@ -242,7 +242,7 @@ export function CreatePreviewCourseForm(props: any) {
   };
 
   const handleSubmit = async () => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 3000));
     setSubmitStatus("submitting");
     setIsLoading(true);
 

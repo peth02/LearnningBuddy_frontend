@@ -119,7 +119,7 @@ export default function PreviewDeck() {
       if (res.success) {
         setAlert({ message: res.message, type: "success" });
         //   const creaeted_id = res.data.quiz_id;
-        setTimeout(() => router.push(`/course/${course_id}`), 5000);
+        setTimeout(() => router.push(`/course/${course_id}`), 3000);
       } else {
         setAlert({
           message: res.message || "Create deck failed",

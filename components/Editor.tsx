@@ -1,5 +1,15 @@
 "use client";
-import { SuggestionMenuController, useCreateBlockNote, getDefaultReactSlashMenuItems } from "@blocknote/react";
+import { BlockNoteEditor } from "@blocknote/core";
+import {
+  filterSuggestionItems,
+} from "@blocknote/core/extensions";
+import {
+  SuggestionMenuController,
+  DefaultReactSuggestionItem,
+  FormattingToolbarController,
+  useCreateBlockNote,
+  getDefaultReactSlashMenuItems,
+} from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/mantine";
 import { useEffect } from "react";
 // @ts-ignore
@@ -12,6 +22,12 @@ interface EditorProps {
   onChange: (markdown: string) => void;
   isEdible: boolean;
 }
+
+const getCustomSlashMenuItems = (
+  editor: BlockNoteEditor,
+): DefaultReactSuggestionItem[] => [
+  ...getDefaultReactSlashMenuItems(editor).filter((item) => item.group !== "Media"),
+];
 
 export default function Editor({
   initialContent,
@@ -36,6 +52,7 @@ export default function Editor({
       editor={editor}
       theme="light"
       editable={isEdible}
+      slashMenu={false}
       onChange={async () => {
         // ทุกครั้งที่พิมพ์ จะแปลง Block เป็น Markdown String
         const markdown = await editor.blocksToMarkdownLossy(editor.document);
@@ -45,14 +62,9 @@ export default function Editor({
       <SuggestionMenuController
         triggerCharacter="/"
         getItems={async (query) =>
-          getDefaultReactSlashMenuItems(editor)
-            .filter((item) => item.group !== "Media")
-            .filter((item) =>
-              item.title.toLowerCase().includes(query.toLowerCase()) ||
-              item.aliases?.some((alias) => alias.toLowerCase().includes(query.toLowerCase()))
-            )
-        }
+          filterSuggestionItems(getCustomSlashMenuItems(editor), query)}
       />
+      {/* <FormattingToolbarController /> */}
     </BlockNoteView>
   );
 }
