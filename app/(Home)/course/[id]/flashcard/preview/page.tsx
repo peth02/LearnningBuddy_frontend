@@ -316,7 +316,7 @@ export default function PreviewDeck() {
           </button>
           <div>
             <label className="block font-semibold mb-3 text-gray-800">
-              Quiz Title
+              Deck Title
             </label>
             <input
               name="title"
@@ -339,7 +339,7 @@ export default function PreviewDeck() {
               }
               className="rounded border-gray-300 accent-blue-600 w-4 h-4"
             />
-            <span className="text-gray-800">Publish this quiz</span>
+            <span className="text-gray-800">Publish this deck</span>
           </label>
         </section>
         <section className="flex flex-1 mt-10 gap-10">
@@ -360,7 +360,7 @@ export default function PreviewDeck() {
               className="bg-blue-500 text-white font-bold px-4 py-2.5 max-w-[200] rounded-lg text-center cursor-pointer"
               onClick={handleAddCard}
             >
-              + Add quiz
+              + Add card
             </button>
           </nav>
           <div className="w-full bg-white rounded-lg shadow-sm p-10">

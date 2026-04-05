@@ -95,29 +95,32 @@ export default function PreviewCourse() {
 
   const handleDeleteTopic = (indexToDelete: number) => {
     if (!window.confirm("Are you sure you want to delete this topic?")) return;
-    setEditTopics((prev) => {
-      const updated = prev.filter((_, i) => i !== indexToDelete);
 
-      // Logic: If we deleted the current topic or one before it, we need to adjust the URL
-      const currentActive = parseInt(searchParams.get("t") || "1");
+    // 1. Calculate the updated array first
+    const updated = editTopics.filter((_, i) => i !== indexToDelete);
+    const currentActive = parseInt(searchParams.get("t") || "1");
 
-      if (currentActive > updated.length) {
-        // If we deleted the last item and we were on it, go to the new last item
-        router.push(`?job=${job_id}&t=${Math.max(1, updated.length)}`, {
-          scroll: false,
-        });
-      } else if (currentActive > indexToDelete + 1) {
-        // If we deleted an item BEFORE our current one, shift index down by 1
-        router.push(`?job=${job_id}&t=${currentActive - 1}`, { scroll: false });
-      }
+    // 2. Update the state with the pre-calculated array
+    setEditTopics(updated);
 
-      return updated;
-    });
+    // 3. Perform navigation logic outside the setter
+    if (currentActive > updated.length) {
+      // If we deleted the last item and we were on it, go to the new last item
+      router.push(`?job=${job_id}&t=${Math.max(1, updated.length)}`, {
+        scroll: false,
+      });
+    } else if (currentActive > indexToDelete + 1) {
+      // If we deleted an item BEFORE our current one, shift index down by 1
+      router.push(`?job=${job_id}&t=${currentActive - 1}`, { scroll: false });
+    }
   };
 
   const handleSubmit = async () => {
     try {
-      const res: any = await createCourseFromPreview(courseMetaData, editTopics);
+      const res: any = await createCourseFromPreview(
+        courseMetaData,
+        editTopics,
+      );
       if (res.success) {
         setAlert({ message: res.message, type: "success" });
         setTimeout(() => router.push(`/course/${res.data.course_id}`), 3000);
@@ -316,7 +319,7 @@ export default function PreviewCourse() {
               }
               className="rounded border-gray-300 accent-blue-600 w-4 h-4"
             />
-            <span className="text-gray-800">Publish this quiz</span>
+            <span className="text-gray-800">Publish this course</span>
           </label>
         </section>
         <section className="flex flex-1 mt-10 gap-10">

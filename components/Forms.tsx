@@ -242,7 +242,7 @@ export function CreatePreviewCourseForm(props: any) {
   };
 
   const handleSubmit = async () => {
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     setSubmitStatus("submitting");
     setIsLoading(true);
 
@@ -1315,7 +1315,7 @@ export function CreateFlashCardForm({
       if (res.ok) {
         stageChange();
       }
-      router.push(`/course/${course_id}/quiz/preview?job=${res.job_id}`);
+      router.push(`/course/${course_id}/flashcard/preview?job=${res.job_id}`);
     } catch (error) {
       console.error("Failed to generate flashcards", error);
     }
